@@ -5,7 +5,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/linksort/linksort/transport"
+	"github.com/linksort/linksort/handler/user"
+	"github.com/linksort/linksort/payload"
 )
 
 type Config struct{}
@@ -15,9 +16,11 @@ func New(c *Config) http.Handler {
 
 	router.NotFoundHandler = http.HandlerFunc(notFound)
 
+	router.PathPrefix("/api/users").Handler(user.Handler(&user.Config{}))
+
 	return router
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
-	transport.Write(w, r, map[string]string{"message": "Not found"}, http.StatusNotFound)
+	payload.Write(w, r, map[string]string{"message": "Not found"}, http.StatusNotFound)
 }

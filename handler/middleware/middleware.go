@@ -8,7 +8,7 @@ import (
 
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/model"
-	"github.com/linksort/linksort/transport"
+	"github.com/linksort/linksort/payload"
 )
 
 type contextKey int
@@ -26,7 +26,7 @@ func WithUser(s interface {
 
 			c, err := r.Cookie("session_id")
 			if err != nil {
-				transport.Error(w, r, errors.E(op, err,
+				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.Str("missing session cookie")))
 
@@ -34,7 +34,7 @@ func WithUser(s interface {
 			}
 
 			if time.Now().After(c.Expires) {
-				transport.Error(w, r, errors.E(op, err,
+				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.Str("expired session cookie")))
 
@@ -44,7 +44,7 @@ func WithUser(s interface {
 			ctx := r.Context()
 			user, err := s.GetUserBySessionID(ctx, c.Value)
 			if err != nil {
-				transport.Error(w, r, errors.E(op, err,
+				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.Str("invalid session cookie")))
 

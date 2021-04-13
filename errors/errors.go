@@ -30,7 +30,6 @@ type Error struct {
 // one of the extras is an error that implements ClientReporter, its messages,
 // if it has any, are merged into the new error's messages.
 func E(op Op, extras ...interface{}) error {
-	// nolint
 	e := &Error{
 		op:       op,
 		status:   http.StatusInternalServerError,
@@ -86,7 +85,7 @@ func (e *Error) Error() string {
 }
 
 // Message returns a map of strings suitable to be returned to the end user.
-func (e *Error) Message() M {
+func (e *Error) Message() map[string]string {
 	if len(e.messages) == 0 {
 		switch e.status {
 		case http.StatusBadRequest:

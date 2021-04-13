@@ -1,6 +1,6 @@
-// Package transport provides utilities for dealing with HTTP requests and responses.
+// Package payload provides utilities for dealing with HTTP request and response payloads.
 // It integrates with sibling packages log and errors.
-package transport
+package payload
 
 import (
 	"encoding/json"
@@ -26,12 +26,12 @@ type ClientReporter interface {
 	Status() int
 }
 
-// Error writes an appropriate error response to the given response
+// WriteError writes an appropriate error response to the given response
 // writer. If the given error implements ClientReport, then the values from
 // ErrorReport() and StatusCode() are written to the response, except in
 // the case of a 5XX error, where the error is logged and a default message is
 // written to the response.
-func Error(w http.ResponseWriter, r *http.Request, e error) {
+func WriteError(w http.ResponseWriter, r *http.Request, e error) {
 	// nolint
 	if cr, ok := e.(ClientReporter); ok {
 		status := cr.Status()
@@ -55,27 +55,29 @@ func Error(w http.ResponseWriter, r *http.Request, e error) {
 func Read(dst interface{}, r *http.Request) error {
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(dst); err != nil {
-		return errors.E(errors.Op("transport.Read"), http.StatusBadRequest, err,
+		return errors.E(errors.Op("payload.Read"), http.StatusBadRequest, err,
 			map[string]string{"message": "Could not decode request body"})
 	}
 
 	return nil
 }
 
-// Write writes the given interface to the response. If the interface
+// Write writes the given payload to the response. If the payload
 // cannot be marshaled, a 500 error is written instead. If the writer
 // cannot be written to, then this function panics.
 func Write(w http.ResponseWriter, r *http.Request, payload interface{}, status int) {
+	op := errors.Op("payload.Write")
+
 	encoded, err := json.Marshal(payload)
 	if err != nil {
-		handleInternalServerError(w, errors.E(errors.Op("transport.Write"), err))
+		handleInternalServerError(w, errors.E(op, err))
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(status)
 
 		_, err := w.Write(encoded)
 		if err != nil {
-			panic(errors.E(errors.Op("transport.Write"), err))
+			panic(errors.E(op, err))
 		}
 	}
 }
@@ -88,7 +90,7 @@ func Valid(dst interface{}) error {
 
 // ReadValid is equivalent to calling Read followed by Valid.
 func ReadValid(dst interface{}, r *http.Request) error {
-	op := errors.Op("transport.ReadValid")
+	op := errors.Op("payload.ReadValid")
 
 	if err := Read(dst, r); err != nil {
 		return errors.E(op, err)
@@ -109,6 +111,6 @@ func handleInternalServerError(w http.ResponseWriter, e error) {
 	w.WriteHeader(http.StatusInternalServerError)
 
 	if _, err := w.Write(encodedErrResp); err != nil {
-		panic(errors.E(errors.Op("transport.handleInternalServerError"), err))
+		panic(errors.E(errors.Op("payload.handleInternalServerError"), err))
 	}
 }

@@ -3,116 +3,207 @@ package user
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/model"
-	"github.com/linksort/linksort/transport"
+	"github.com/linksort/linksort/payload"
 )
 
 type Config struct {
-	UserStore   model.UserStore
-	UserDeleter interface {
+	UserController interface {
+		CreateUser(context.Context, *CreateUserRequest) (*model.User, error)
+		GetUserBySessionID(context.Context, string) (*model.User, error)
+		UpdateUser(context.Context, *model.User, *UpdateUserRequest) (*model.User, error)
 		DeleteUser(context.Context, *model.User) error
+		ForgotPassword(context.Context, *ForgotPasswordRequest) error
+		ChangePassword(context.Context, *ChangePasswordRequest) (*model.User, error)
 	}
-}
-
-func Handler(c *Config) http.Handler {
-	cc := config{Config: c}
-	r := mux.NewRouter()
-
-	r.HandleFunc("/users", cc.CreateUser).Methods("POST")
-	r.HandleFunc("/sessions", cc.CreateSession).Methods("POST")
-
-	s := r.NewRoute().Subrouter()
-	s.Use(middleware.WithUser(c.UserStore))
-	s.HandleFunc("/users", cc.GetUser).Methods("GET")
-	s.HandleFunc("/users", cc.UpdateUser).Methods("PATCH")
-	s.HandleFunc("/users", cc.DeleteUser).Methods("DELETE")
-	s.HandleFunc("/sessions", cc.DeleteSession).Methods("DELETE")
-
-	return r
+	SessionController interface {
+		CreateSession(context.Context, *CreateSessionRequest) (*model.User, error)
+		DeleteSession(context.Context, *model.User) error
+	}
 }
 
 type config struct{ *Config }
 
-type CreateUserPayload struct {
+func Handler(c *Config) *mux.Router {
+	cc := config{Config: c}
+	r := mux.NewRouter()
+
+	r.HandleFunc("/api/users", cc.CreateUser).Methods("POST")
+	r.HandleFunc("/api/users/forgot-password", cc.ForgotPassword).Methods("POST")
+	r.HandleFunc("/api/users/change-password", cc.ChangePassword).Methods("POST")
+	r.HandleFunc("/api/users/sessions", cc.CreateSession).Methods("POST")
+
+	s := r.NewRoute().Subrouter()
+	s.Use(middleware.WithUser(c.UserController))
+	s.HandleFunc("/api/users", cc.GetUser).Methods("GET")
+	s.HandleFunc("/api/users", cc.UpdateUser).Methods("PATCH")
+	s.HandleFunc("/api/users", cc.DeleteUser).Methods("DELETE")
+	s.HandleFunc("/api/users/sessions", cc.DeleteSession).Methods("DELETE")
+
+	return r
+}
+
+type CreateUserRequest struct {
 	Email     string `json:"email" validate:"required,email"`
 	FirstName string `json:"firstName" validate:"required"`
 	LastName  string `json:"lastName"`
 	Password  string `json:"password" validate:"required,min=6"`
 }
 
+type CreateUserResponse struct {
+	User *model.User `json:"user"`
+}
+
 func (s *config) CreateUser(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.CreateUser")
 	ctx := r.Context()
 
-	var payload CreateUserPayload
-	if err := transport.ReadValid(&payload, r); err != nil {
-		transport.Error(w, r, errors.E(op, err))
+	req := new(CreateUserRequest)
+	if err := payload.ReadValid(req, r); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
-	u, err := s.UserStore.CreateUser(ctx, &model.CreateUserInput{
-		Email:     payload.Email,
-		FirstName: payload.FirstName,
-		LastName:  payload.LastName,
-		Password:  payload.Password,
-	})
+	u, err := s.UserController.CreateUser(ctx, req)
 	if err != nil {
-		transport.Error(w, r, errors.E(op, err))
+		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
 	setSessionCookie(w, u.SessionID)
-	transport.Write(w, r, u, http.StatusCreated)
+	payload.Write(w, r, &CreateUserResponse{u}, http.StatusCreated)
 }
 
-type CreateSessionPayload struct {
+type ForgotPasswordRequest struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
+func (s *config) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.ForgotPassword")
+	ctx := r.Context()
+
+	req := new(ForgotPasswordRequest)
+	if err := payload.ReadValid(req, r); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	err := s.UserController.ForgotPassword(ctx, req)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	payload.Write(w, r, nil, http.StatusNoContent)
+}
+
+type ChangePasswordRequest struct {
+	Signature string `json:"signature" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required,min=6"`
+}
+
+type ChangePasswordResponse struct {
+	User *model.User `json:"user"`
+}
+
+func (s *config) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.ChangePassword")
+	ctx := r.Context()
+
+	req := new(ChangePasswordRequest)
+	if err := payload.ReadValid(req, r); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	u, err := s.UserController.ChangePassword(ctx, req)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	payload.Write(w, r, &ChangePasswordResponse{u}, http.StatusOK)
+}
+
+type CreateSessionRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=6"`
+}
+
+type CreateSessionResponse struct {
+	User *model.User `json:"user"`
 }
 
 func (s *config) CreateSession(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.CreateSession")
 	ctx := r.Context()
 
-	var payload CreateSessionPayload
-	if err := transport.ReadValid(&payload, r); err != nil {
-		transport.Error(w, r, errors.E(op, err))
+	req := new(CreateSessionRequest)
+	if err := payload.ReadValid(req, r); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
-	u, err := s.UserStore.GetUserByEmail(ctx, payload.Email)
+	u, err := s.SessionController.CreateSession(ctx, req)
 	if err != nil {
-		transport.Error(w, r, errors.E(op, err))
-
-		return
-	}
-
-	if err := u.NewSession(ctx, s.UserStore, payload.Password); err != nil {
-		transport.Error(w, r, errors.E(op, err))
+		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
 	setSessionCookie(w, u.SessionID)
-	transport.Write(w, r, u, http.StatusCreated)
+	payload.Write(w, r, &CreateSessionResponse{u}, http.StatusCreated)
 }
 
 func (s *config) GetUser(w http.ResponseWriter, r *http.Request) {
 	u := middleware.UserFromContext(r.Context())
-	transport.Write(w, r, u, http.StatusOK)
+	payload.Write(w, r, u, http.StatusOK)
+}
+
+type UpdateUserRequest struct {
+	Email     string `json:"email" validate:"required,email"`
+	FirstName string `json:"firstName" validate:"required"`
+	LastName  string `json:"lastName"`
+}
+
+type UpdateUserResponse struct {
+	User *model.User `json:"user"`
 }
 
 func (s *config) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.UpdateUser")
-	transport.Error(w, r, errors.E(op, errors.Str("not implemented")))
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+
+	req := new(UpdateUserRequest)
+	if err := payload.ReadValid(req, r); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	u, err := s.UserController.UpdateUser(ctx, u, req)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	payload.Write(w, r, &UpdateUserResponse{u}, http.StatusCreated)
 }
 
 func (s *config) DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -120,14 +211,14 @@ func (s *config) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	u := middleware.UserFromContext(ctx)
 
-	if err := s.UserDeleter.DeleteUser(ctx, u); err != nil {
-		transport.Error(w, r, errors.E(op, err))
+	if err := s.UserController.DeleteUser(ctx, u); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
 	unsetSessionCookie(w)
-	transport.Write(w, r, nil, http.StatusNoContent)
+	payload.Write(w, r, nil, http.StatusNoContent)
 }
 
 func (s *config) DeleteSession(w http.ResponseWriter, r *http.Request) {
@@ -135,12 +226,38 @@ func (s *config) DeleteSession(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	u := middleware.UserFromContext(ctx)
 
-	if err := u.DeleteSession(ctx, s.UserStore); err != nil {
-		transport.Error(w, r, errors.E(op, err))
+	if err := s.SessionController.DeleteSession(ctx, u); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
 	unsetSessionCookie(w)
-	transport.Write(w, r, nil, http.StatusNoContent)
+	payload.Write(w, r, nil, http.StatusNoContent)
+}
+
+func setSessionCookie(w http.ResponseWriter, sessionID string) {
+	http.SetCookie(w, &http.Cookie{
+		Domain:   "linksort.com",
+		Path:     "/",
+		Name:     "session_id",
+		Value:    sessionID,
+		Expires:  time.Now().Add(time.Duration(24*30) * time.Hour),
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
+}
+
+func unsetSessionCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Domain:   "linksort.com",
+		Path:     "/",
+		Name:     "session_id",
+		Value:    "",
+		Expires:  time.Now(),
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
 }
