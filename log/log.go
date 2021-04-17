@@ -30,3 +30,8 @@ func Alarm(err error) {
 	raven.CaptureError(err, nil)
 	_logger.Printf("Internal Server Error: %v", err.Error())
 }
+
+// Fatal is equivalent to Print() followed by a call to os.Exit(1).
+func Fatal(v ...interface{}) {
+	log.Fatal(v...)
+}

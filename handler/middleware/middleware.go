@@ -2,9 +2,11 @@ package middleware
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
-	"time"
+
+	// "time"
 
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/model"
@@ -29,14 +31,6 @@ func WithUser(s interface {
 				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.Str("missing session cookie")))
-
-				return
-			}
-
-			if time.Now().After(c.Expires) {
-				payload.WriteError(w, r, errors.E(op, err,
-					http.StatusUnauthorized,
-					errors.Str("expired session cookie")))
 
 				return
 			}

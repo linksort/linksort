@@ -5,18 +5,25 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/handler/user"
+	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
 
-type Config struct{}
+type Config struct {
+	UserStore model.UserStore
+}
 
 func New(c *Config) http.Handler {
 	router := mux.NewRouter()
 
 	router.NotFoundHandler = http.HandlerFunc(notFound)
 
-	router.PathPrefix("/api/users").Handler(user.Handler(&user.Config{}))
+	router.PathPrefix("/api/users").Handler(user.Handler(&user.Config{
+		UserController:    &controller.User{Store: c.UserStore},
+		SessionController: &controller.Session{},
+	}))
 
 	return router
 }

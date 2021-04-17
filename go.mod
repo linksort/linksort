@@ -10,5 +10,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	go.mongodb.org/mongo-driver v1.5.1
+	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )

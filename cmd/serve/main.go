@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler"
 	"github.com/linksort/linksort/log"
@@ -16,7 +17,12 @@ import (
 func main() {
 	ctx := context.Background()
 
-	h := handler.New(&handler.Config{})
+	mongo, closer, err := db.NewMongoClient(ctx, "192.168.1.126")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h := handler.New(&handler.Config{UserStore: db.NewUserStore(mongo)})
 
 	port := getenv("PORT", "8080")
 	srv := http.Server{Handler: h, Addr: fmt.Sprintf(":%s", port)}
@@ -37,6 +43,12 @@ func main() {
 			log.Printf("HTTP server shutdown error: %v", err)
 		} else {
 			log.Print("HTTP server shutdown")
+		}
+
+		if err := closer(); err != nil {
+			log.Printf("MongoDB shutdown error: %v", err)
+		} else {
+			log.Print("MongoDB connection closed")
 		}
 
 		close(idleConnsClosed)
