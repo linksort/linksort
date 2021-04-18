@@ -6,7 +6,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/controller"
+	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/handler/user"
+	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
@@ -25,7 +27,7 @@ func New(c *Config) http.Handler {
 		SessionController: &controller.Session{},
 	}))
 
-	return router
+	return middleware.WithPanicHandling(log.WithAccessLogging(router))
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {

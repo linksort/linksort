@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net/http"
+	"runtime/debug"
 	"strings"
 
-	// "time"
+	"github.com/getsentry/raven-go"
 
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/model"
@@ -66,4 +67,34 @@ func GetAuthBearerToken(h http.Header) (string, bool) {
 	}
 
 	return "", false
+}
+
+// WithPanicHandling reports errors to Sentry and returns a 500 error to the user.
+func WithPanicHandling(handler http.Handler) http.Handler {
+	// This code is coped and slightly altered from
+	// github.com/getsentry/raven-go@v0.2.0/http.go
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rval := recover(); rval != nil {
+				debug.PrintStack()
+				rvalStr := fmt.Sprint(rval)
+				var packet *raven.Packet
+				if err, ok := rval.(error); ok {
+					packet = raven.NewPacket(
+						rvalStr,
+						raven.NewException(errors.Str(rvalStr), raven.GetOrNewStacktrace(err, 2, 3, nil)),
+						raven.NewHttp(r))
+				} else {
+					packet = raven.NewPacket(
+						rvalStr,
+						raven.NewException(errors.Str(rvalStr), raven.NewStacktrace(2, 3, nil)),
+						raven.NewHttp(r))
+				}
+				raven.Capture(packet, nil)
+				payload.WriteError(w, r, errors.Str(rvalStr))
+			}
+		}()
+
+		handler.ServeHTTP(w, r)
+	})
 }

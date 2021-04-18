@@ -4,7 +4,10 @@ package payload
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"reflect"
+	"strings"
 
 	"github.com/go-playground/validator"
 
@@ -36,24 +39,26 @@ func WriteError(w http.ResponseWriter, r *http.Request, e error) {
 	if cr, ok := e.(ClientReporter); ok {
 		status := cr.Status()
 		if status >= http.StatusInternalServerError {
-			handleInternalServerError(w, e)
+			handleInternalServerError(w, r, e)
 
 			return
 		}
 
-		log.Printf("Client Error: %v", e)
+		log.FromRequest(r).Print(cr.Error())
 
 		Write(w, r, cr.Message(), status)
 
 		return
 	}
 
-	handleInternalServerError(w, e)
+	handleInternalServerError(w, r, e)
 }
 
 // Read unmarshals the payload from the incoming request to the given sturct pointer.
 func Read(dst interface{}, r *http.Request) error {
 	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(dst); err != nil {
 		return errors.E(errors.Op("payload.Read"), http.StatusBadRequest, err,
 			map[string]string{"message": "Could not decode request body"})
@@ -70,7 +75,7 @@ func Write(w http.ResponseWriter, r *http.Request, payload interface{}, status i
 
 	encoded, err := json.Marshal(payload)
 	if err != nil {
-		handleInternalServerError(w, errors.E(op, err))
+		handleInternalServerError(w, r, errors.E(op, err))
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(status)
@@ -84,8 +89,44 @@ func Write(w http.ResponseWriter, r *http.Request, payload interface{}, status i
 
 // Valid validates the given struct.
 func Valid(dst interface{}) error {
-	// TODO: Massage errors
-	return v.Struct(dst)
+	err := v.Struct(dst)
+	if err == nil {
+		return nil
+	}
+
+	userFacingErrors := make(errors.M)
+
+	// nolint
+	for _, err := range err.(validator.ValidationErrors) {
+		fieldName := lowerFirstLetter(err.Field())
+
+		switch err.Tag() {
+		case "required":
+			userFacingErrors[fieldName] = "This field is required."
+		case "min":
+			if err.Type().Kind() == reflect.String {
+				userFacingErrors[fieldName] =
+					fmt.Sprintf("This field must be at least %s characters long.", err.Param())
+			} else {
+				userFacingErrors[fieldName] =
+					fmt.Sprintf("This value does not meet the minimum of %s.", err.Param())
+			}
+		case "max":
+			if err.Type().Kind() == reflect.String {
+				userFacingErrors[fieldName] =
+					fmt.Sprintf("This field must be less than %s characters long.", err.Param())
+			} else {
+				userFacingErrors[fieldName] =
+					fmt.Sprintf("This value exceeds the maximum of %s.", err.Param())
+			}
+		case "email":
+			userFacingErrors[fieldName] = "This isn't a valid email."
+		default:
+			userFacingErrors[fieldName] = err.Tag()
+		}
+	}
+
+	return errors.E(errors.Op("payload.Valid"), err, userFacingErrors, http.StatusBadRequest)
 }
 
 // ReadValid is equivalent to calling Read followed by Valid.
@@ -96,7 +137,7 @@ func ReadValid(dst interface{}, r *http.Request) error {
 		return errors.E(op, err)
 	}
 
-	if err := v.Struct(dst); err != nil {
+	if err := Valid(dst); err != nil {
 		return errors.E(op, err)
 	}
 
@@ -105,12 +146,24 @@ func ReadValid(dst interface{}, r *http.Request) error {
 
 // handleInternalServerError writes the given error to stderr and returns a
 // 500 response with a default message.
-func handleInternalServerError(w http.ResponseWriter, e error) {
-	log.Alarm(e)
+func handleInternalServerError(w http.ResponseWriter, r *http.Request, e error) {
+	log.AlarmWithContext(r.Context(), e)
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
 
 	if _, err := w.Write(encodedErrResp); err != nil {
 		panic(errors.E(errors.Op("payload.handleInternalServerError"), err))
 	}
+}
+
+func lowerFirstLetter(s string) string {
+	if r := rune(s[0]); r >= 'A' && r <= 'Z' {
+		s = strings.ToLower(string(r)) + s[1:]
+	}
+
+	if s[len(s)-2:] == "ID" {
+		s = s[:len(s)-2] + "Id"
+	}
+
+	return s
 }

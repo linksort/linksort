@@ -51,8 +51,8 @@ func Handler(c *Config) *mux.Router {
 
 type CreateUserRequest struct {
 	Email     string `json:"email" validate:"required,email"`
-	FirstName string `json:"firstName" validate:"required"`
-	LastName  string `json:"lastName"`
+	FirstName string `json:"firstName" validate:"required,max=100"`
+	LastName  string `json:"lastName" validate:"max=100"`
 	Password  string `json:"password" validate:"required,min=6"`
 }
 
