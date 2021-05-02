@@ -27,19 +27,20 @@ var (
 
 func Handler() http.Handler {
 	_once.Do(func() {
+		op := errors.Op("testutil.Handler")
 		ctx := context.Background()
 
-		mongo, closer, err := db.NewMongoClient(ctx, "localhost:27018")
+		mongo, closer, err := db.NewMongoClient(ctx, "localhost")
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		if err := mongo.Database("test").Drop(ctx); err != nil {
-			log.Print(errors.E(errors.Op("testutil.Handler"), err))
+			log.Print(errors.E(op, err))
 		}
 
 		if err := db.SetupIndexes(ctx, mongo); err != nil {
-			log.Print(errors.E(errors.Op("testutil.Handler"), err))
+			log.Print(errors.E(op, err))
 		}
 
 		_closer = closer

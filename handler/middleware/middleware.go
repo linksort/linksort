@@ -32,7 +32,7 @@ func WithUser(s interface {
 			if err != nil {
 				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
-					errors.Str("missing session cookie")))
+					errors.M{"message": "Unauthorized"}))
 
 				return
 			}
@@ -42,14 +42,15 @@ func WithUser(s interface {
 			if err != nil {
 				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
-					errors.Str("invalid session cookie")))
+					errors.M{"message": "Unauthorized"}))
 
 				return
 			}
 
 			if time.Now().After(user.SessionExpiry) {
-				payload.WriteError(w, r, errors.E(op, err,
+				payload.WriteError(w, r, errors.E(op,
 					http.StatusUnauthorized,
+					errors.M{"message": "Unauthorized"},
 					errors.Str("expired session cookie")))
 
 				return

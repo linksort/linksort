@@ -169,9 +169,13 @@ func (s *config) CreateSession(w http.ResponseWriter, r *http.Request) {
 	payload.Write(w, r, &CreateSessionResponse{u}, http.StatusCreated)
 }
 
+type GetUserResponse struct {
+	User *model.User `json:"user"`
+}
+
 func (s *config) GetUser(w http.ResponseWriter, r *http.Request) {
 	u := middleware.UserFromContext(r.Context())
-	payload.Write(w, r, u, http.StatusOK)
+	payload.Write(w, r, &GetUserResponse{u}, http.StatusOK)
 }
 
 type UpdateUserRequest struct {

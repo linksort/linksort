@@ -17,7 +17,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	mongo, closer, err := db.NewMongoClient(ctx, "localhost")
+	mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "localhost"))
 	if err != nil {
 		log.Fatal(err)
 	}

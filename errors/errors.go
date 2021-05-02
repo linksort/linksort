@@ -42,9 +42,7 @@ func E(op Op, extras ...interface{}) error {
 			// Merge client reports. If it is attempted to write the same key more
 			// than once, the later write always wins.
 			for k, v := range t.Message() {
-				if _, has := e.messages[k]; !has {
-					e.messages[k] = v
-				}
+				e.messages[k] = v
 			}
 
 			// If there is more than one error, which, as a best practice, there

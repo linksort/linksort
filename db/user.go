@@ -54,7 +54,7 @@ func (s *UserStore) GetUserBySessionID(ctx context.Context, sessionID string) (*
 	err := s.col.FindOne(ctx, bson.M{"sessionId": sessionID}).Decode(usr)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.E(op, err, http.StatusNotFound)
+			return nil, errors.E(op, err, errors.Str("no documents"), http.StatusNotFound)
 		}
 
 		return nil, errors.E(op, err)

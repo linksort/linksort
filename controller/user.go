@@ -15,7 +15,7 @@ type User struct {
 }
 
 func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (*model.User, error) {
-	op := errors.Opf("controller.CreateUser(%s)", req.Email)
+	op := errors.Opf("controller.CreateUser(%q)", req.Email)
 
 	digest, err := model.NewPasswordDigest(req.Password)
 	if err != nil {
@@ -40,7 +40,7 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 }
 
 func (u *User) GetUserBySessionID(ctx context.Context, sessionID string) (*model.User, error) {
-	op := errors.Opf("controller.GetUserBySessionID(%s)", sessionID)
+	op := errors.Opf("controller.GetUserBySessionID(%q)", sessionID)
 
 	usr, err := u.Store.GetUserBySessionID(ctx, sessionID)
 	if err != nil {

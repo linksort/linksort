@@ -42,6 +42,16 @@ func TestCreateUser(t *testing.T) {
 			ExpectBody:   `{"firstName":"This field is required.","password":"This field is required."}`,
 		},
 		{
+			Name: "missing name and password",
+			GivenBody: map[string]interface{}{
+				"email":    "rudolf.carnap@charles.cz",
+				"lastName": "Carnap",
+				"password": "auf",
+			},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"firstName":"This field is required.","password":"This field must be at least 6 characters long."}`,
+		},
+		{
 			Name: "type mismatch",
 			GivenBody: map[string]interface{}{
 				"email":     "kit.fine@nyu.edu",
@@ -91,6 +101,67 @@ func TestCreateUser(t *testing.T) {
 				tt.Assert(jsonpath.Equal("$.user.lastName", tcase.GivenBody["lastName"].(string)))
 			} else {
 				tt.CookieNotPresent("session_id")
+				tt.Body(tcase.ExpectBody)
+			}
+
+			tt.End()
+		})
+	}
+}
+
+func TestGetUser(t *testing.T) {
+	usr := testutil.NewUser(t, context.Background())
+
+	tests := []struct {
+		Name           string
+		GivenSessionID string
+		ExpectStatus   int
+		ExpectBody     string
+	}{
+		{
+			Name:           "success",
+			GivenSessionID: usr.SessionID,
+			ExpectStatus:   http.StatusOK,
+		},
+		{
+			Name:           "missing session cookie",
+			GivenSessionID: "",
+			ExpectStatus:   http.StatusUnauthorized,
+			ExpectBody:     `{"message":"Unauthorized"}`,
+		},
+		{
+			Name:           "invalid session cookie",
+			GivenSessionID: "abcdefghijklmnopqustuvxxyz",
+			ExpectStatus:   http.StatusUnauthorized,
+			ExpectBody:     `{"message":"Unauthorized"}`,
+		},
+		// TODO:
+		{
+			Name:           "expired session cookie",
+			GivenSessionID: "TODO",
+			ExpectStatus:   http.StatusUnauthorized,
+			ExpectBody:     `{"message":"Unauthorized"}`,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			ts := apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Get("/api/users")
+
+			if tcase.GivenSessionID != "" {
+				ts.Cookie("session_id", tcase.GivenSessionID)
+			}
+
+			tt := ts.Expect(t).Status(tcase.ExpectStatus)
+
+			if tcase.ExpectStatus < http.StatusBadRequest {
+				tt.Assert(jsonpath.Equal("$.user.id", usr.ID))
+				tt.Assert(jsonpath.Equal("$.user.email", usr.Email))
+				tt.Assert(jsonpath.Equal("$.user.firstName", usr.FirstName))
+				tt.Assert(jsonpath.Equal("$.user.lastName", usr.LastName))
+			} else {
 				tt.Body(tcase.ExpectBody)
 			}
 
