@@ -25,6 +25,19 @@ func (s *UserStore) CreateUser(ctx context.Context, usr *model.User) (*model.Use
 
 	res, err := s.col.InsertOne(ctx, usr)
 	if err != nil {
+		var e mongo.WriteException
+		if errors.As(err, &e) {
+			for _, we := range e.WriteErrors {
+				if we.Code == 11000 {
+					return nil, errors.E(
+						op,
+						errors.M{"email": "This email has already been registered."},
+						errors.Str("duplicate email"),
+						http.StatusBadRequest)
+				}
+			}
+		}
+
 		return nil, errors.E(op, err)
 	}
 

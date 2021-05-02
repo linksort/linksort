@@ -19,6 +19,7 @@ type User struct {
 	CreatedAt      time.Time          `json:"createdAt"`
 	UpdatedAt      time.Time          `json:"updatedAt"`
 	SessionID      string             `json:"-" bson:"sessionId,omitempty"`
+	SessionExpiry  time.Time          `json:"-" bson:"sessionExpiry,omitempty"`
 	PasswordDigest string             `json:"-" bson:"passwordDigest"`
 }
 

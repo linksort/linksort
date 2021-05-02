@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strings"
+	"time"
 
 	"github.com/getsentry/raven-go"
 
@@ -42,6 +43,14 @@ func WithUser(s interface {
 				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.Str("invalid session cookie")))
+
+				return
+			}
+
+			if time.Now().After(user.SessionExpiry) {
+				payload.WriteError(w, r, errors.E(op, err,
+					http.StatusUnauthorized,
+					errors.Str("expired session cookie")))
 
 				return
 			}

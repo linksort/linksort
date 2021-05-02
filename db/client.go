@@ -36,12 +36,10 @@ func NewMongoClient(
 		return nil
 	}
 
-	err = setupIndexes(ctx, client)
-
 	return client, closer, errors.Wrap(op, err)
 }
 
-func setupIndexes(ctx context.Context, client *mongo.Client) error {
+func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 	_, err := client.Database("test").
 		Collection("users").
 		Indexes().CreateMany(ctx, []mongo.IndexModel{

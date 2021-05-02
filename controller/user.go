@@ -29,6 +29,7 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 		SessionID:      random.Token(),
+		SessionExpiry:  time.Now().Add(time.Hour * time.Duration(24*30)),
 		PasswordDigest: digest,
 	})
 	if err != nil {

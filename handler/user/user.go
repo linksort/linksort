@@ -53,7 +53,7 @@ type CreateUserRequest struct {
 	Email     string `json:"email" validate:"required,email"`
 	FirstName string `json:"firstName" validate:"required,max=100"`
 	LastName  string `json:"lastName" validate:"max=100"`
-	Password  string `json:"password" validate:"required,min=6"`
+	Password  string `json:"password" validate:"required,min=6,max=128"`
 }
 
 type CreateUserResponse struct {
@@ -110,7 +110,7 @@ func (s *config) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 type ChangePasswordRequest struct {
 	Signature string `json:"signature" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
-	Password  string `json:"password" validate:"required,min=6"`
+	Password  string `json:"password" validate:"required,min=6,max=128"`
 }
 
 type ChangePasswordResponse struct {
@@ -140,7 +140,7 @@ func (s *config) ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 type CreateSessionRequest struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=6"`
+	Password string `json:"password" validate:"required,min=6,max=128"`
 }
 
 type CreateSessionResponse struct {

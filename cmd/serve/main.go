@@ -17,7 +17,12 @@ import (
 func main() {
 	ctx := context.Background()
 
-	mongo, closer, err := db.NewMongoClient(ctx, "192.168.1.126")
+	mongo, closer, err := db.NewMongoClient(ctx, "localhost")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.SetupIndexes(ctx, mongo)
 	if err != nil {
 		log.Fatal(err)
 	}
