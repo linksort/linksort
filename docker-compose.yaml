@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  mongo:
+    image: "mongo"
+    restart: "always"
+    volumes:
+      - "db-data:/data/db"
+    ports:
+      - "27017"
+
+  api:
+    build: .
+    volumes:
+      - ".:/var/www"
+    ports:
+      - "8000:8000"
+    environment:
+      - "DB_CONNECTION=mongo"
+      - "PORT=8000"
+    links:
+      - "mongo"
+
+volumes:
+  db-data:
