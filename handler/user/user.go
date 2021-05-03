@@ -3,10 +3,10 @@ package user
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 
+	"github.com/linksort/linksort/cookie"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/model"
@@ -78,7 +78,7 @@ func (s *config) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setSessionCookie(w, u.SessionID)
+	cookie.SetSession(w, u.SessionID)
 	payload.Write(w, r, &CreateUserResponse{u}, http.StatusCreated)
 }
 
@@ -165,7 +165,7 @@ func (s *config) CreateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setSessionCookie(w, u.SessionID)
+	cookie.SetSession(w, u.SessionID)
 	payload.Write(w, r, &CreateSessionResponse{u}, http.StatusCreated)
 }
 
@@ -221,7 +221,7 @@ func (s *config) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	unsetSessionCookie(w)
+	cookie.UnsetSession(w)
 	payload.Write(w, r, nil, http.StatusNoContent)
 }
 
@@ -236,32 +236,6 @@ func (s *config) DeleteSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	unsetSessionCookie(w)
+	cookie.UnsetSession(w)
 	payload.Write(w, r, nil, http.StatusNoContent)
-}
-
-func setSessionCookie(w http.ResponseWriter, sessionID string) {
-	http.SetCookie(w, &http.Cookie{
-		Domain:   "linksort.com",
-		Path:     "/",
-		Name:     "session_id",
-		Value:    sessionID,
-		Expires:  time.Now().Add(time.Duration(24*30) * time.Hour),
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-	})
-}
-
-func unsetSessionCookie(w http.ResponseWriter) {
-	http.SetCookie(w, &http.Cookie{
-		Domain:   "linksort.com",
-		Path:     "/",
-		Name:     "session_id",
-		Value:    "",
-		Expires:  time.Now(),
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-	})
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/getsentry/raven-go"
 
+	"github.com/linksort/linksort/cookie"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
@@ -43,6 +44,7 @@ func WithUser(s interface {
 				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.M{"message": "Unauthorized"}))
+				cookie.UnsetSession(w)
 
 				return
 			}
@@ -52,6 +54,7 @@ func WithUser(s interface {
 					http.StatusUnauthorized,
 					errors.M{"message": "Unauthorized"},
 					errors.Str("expired session cookie")))
+				cookie.UnsetSession(w)
 
 				return
 			}
