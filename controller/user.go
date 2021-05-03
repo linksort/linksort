@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"reflect"
 	"time"
 
 	"github.com/linksort/linksort/errors"
@@ -50,8 +51,25 @@ func (u *User) GetUserBySessionID(ctx context.Context, sessionID string) (*model
 	return usr, nil
 }
 
-func (u *User) UpdateUser(context.Context, *model.User, *handler.UpdateUserRequest) (*model.User, error) {
-	return nil, nil
+func (u *User) UpdateUser(ctx context.Context, usr *model.User, req *handler.UpdateUserRequest) (*model.User, error) {
+	op := errors.Opf("controller.UpdateUser(%q)", usr.Email)
+
+	uv := reflect.ValueOf(usr).Elem()
+	rv := reflect.ValueOf(req).Elem()
+	rt := rv.Type()
+
+	for i := 0; i < rv.NumField(); i++ {
+		if ss := rv.Field(i).String(); ss != "" {
+			uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(ss))
+		}
+	}
+
+	usr, err := u.Store.UpdateUser(ctx, usr)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return usr, nil
 }
 
 func (u *User) DeleteUser(context.Context, *model.User) error {

@@ -180,8 +180,8 @@ func (s *config) GetUser(w http.ResponseWriter, r *http.Request) {
 
 type UpdateUserRequest struct {
 	Email     string `json:"email" validate:"required,email"`
-	FirstName string `json:"firstName" validate:"required"`
-	LastName  string `json:"lastName"`
+	FirstName string `json:"firstName" validate:"required,max=100"`
+	LastName  string `json:"lastName" validate:"max=100"`
 }
 
 type UpdateUserResponse struct {

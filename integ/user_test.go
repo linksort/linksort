@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/linksort/linksort/testutil"
 
@@ -110,7 +111,15 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
-	usr := testutil.NewUser(t, context.Background())
+	ctx := context.Background()
+
+	// success user
+	usr1 := testutil.NewUser(t, ctx)
+
+	// expired session user
+	usr2 := testutil.NewUser(t, ctx)
+	usr2.SessionExpiry = time.Now().Add(-time.Hour)
+	usr2 = testutil.UpdateUser(t, ctx, usr2)
 
 	tests := []struct {
 		Name           string
@@ -120,7 +129,7 @@ func TestGetUser(t *testing.T) {
 	}{
 		{
 			Name:           "success",
-			GivenSessionID: usr.SessionID,
+			GivenSessionID: usr1.SessionID,
 			ExpectStatus:   http.StatusOK,
 		},
 		{
@@ -135,10 +144,9 @@ func TestGetUser(t *testing.T) {
 			ExpectStatus:   http.StatusUnauthorized,
 			ExpectBody:     `{"message":"Unauthorized"}`,
 		},
-		// TODO:
 		{
 			Name:           "expired session cookie",
-			GivenSessionID: "TODO",
+			GivenSessionID: usr2.SessionID,
 			ExpectStatus:   http.StatusUnauthorized,
 			ExpectBody:     `{"message":"Unauthorized"}`,
 		},
@@ -157,10 +165,10 @@ func TestGetUser(t *testing.T) {
 			tt := ts.Expect(t).Status(tcase.ExpectStatus)
 
 			if tcase.ExpectStatus < http.StatusBadRequest {
-				tt.Assert(jsonpath.Equal("$.user.id", usr.ID))
-				tt.Assert(jsonpath.Equal("$.user.email", usr.Email))
-				tt.Assert(jsonpath.Equal("$.user.firstName", usr.FirstName))
-				tt.Assert(jsonpath.Equal("$.user.lastName", usr.LastName))
+				tt.Assert(jsonpath.Equal("$.user.id", usr1.ID))
+				tt.Assert(jsonpath.Equal("$.user.email", usr1.Email))
+				tt.Assert(jsonpath.Equal("$.user.firstName", usr1.FirstName))
+				tt.Assert(jsonpath.Equal("$.user.lastName", usr1.LastName))
 			} else {
 				tt.Body(tcase.ExpectBody)
 			}

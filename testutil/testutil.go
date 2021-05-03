@@ -74,3 +74,14 @@ func NewUser(t *testing.T, ctx context.Context) *model.User {
 
 	return u
 }
+
+func UpdateUser(t *testing.T, ctx context.Context, u *model.User) *model.User {
+	t.Helper()
+
+	u, err := _userStore.UpdateUser(ctx, u)
+	if err != nil {
+		t.Error(err)
+	}
+
+	return u
+}
