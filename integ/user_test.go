@@ -177,3 +177,94 @@ func TestGetUser(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateUser(t *testing.T) {
+	ctx := context.Background()
+	usr1 := testutil.NewUser(t, ctx)
+	usr2 := testutil.NewUser(t, ctx)
+
+	tests := []struct {
+		Name           string
+		GivenSessionID string
+		GivenBody      map[string]string
+		ExpectStatus   int
+		ExpectBody     string
+	}{
+		{
+			Name:           "success",
+			GivenSessionID: usr1.SessionID,
+			GivenBody:      map[string]string{"firstName": "Derek", "lastName": "Parfit", "email": usr1.Email},
+			ExpectStatus:   http.StatusOK,
+		},
+		{
+			Name:           "duplicate email",
+			GivenSessionID: usr1.SessionID,
+			GivenBody:      map[string]string{"firstName": "Derek", "lastName": "Parfit", "email": usr2.Email},
+			ExpectBody:     `{"email":"This email has already been registered."}`,
+			ExpectStatus:   http.StatusBadRequest,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			tt := apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Patch("/api/users").
+				JSON(tcase.GivenBody).
+				Cookie("session_id", tcase.GivenSessionID).
+				Expect(t).Status(tcase.ExpectStatus)
+
+			if tcase.ExpectStatus < http.StatusBadRequest {
+				tt.Assert(jsonpath.Equal("$.user.id", usr1.ID))
+				tt.Assert(jsonpath.Equal("$.user.email", usr1.Email))
+				tt.Assert(jsonpath.Equal("$.user.firstName", "Derek"))
+				tt.Assert(jsonpath.Equal("$.user.lastName", "Parfit"))
+			} else {
+				tt.Body(tcase.ExpectBody)
+			}
+
+			tt.End()
+		})
+	}
+}
+
+func TestDeleteUser(t *testing.T) {
+	ctx := context.Background()
+	usr1 := testutil.NewUser(t, ctx)
+
+	tests := []struct {
+		Name           string
+		GivenSessionID string
+		GivenBody      map[string]string
+		ExpectStatus   int
+		ExpectBody     string
+	}{
+		{
+			Name:           "success",
+			GivenSessionID: usr1.SessionID,
+			ExpectStatus:   http.StatusNoContent,
+		},
+		{
+			Name:           "user no longer exists",
+			GivenSessionID: usr1.SessionID,
+			ExpectStatus:   http.StatusUnauthorized,
+			ExpectBody:     `{"message":"Unauthorized"}`,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			tt := apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Delete("/api/users").
+				Cookie("session_id", tcase.GivenSessionID).
+				Expect(t).Status(tcase.ExpectStatus)
+
+			if tcase.ExpectStatus > http.StatusBadRequest {
+				tt.Body(tcase.ExpectBody)
+			}
+
+			tt.End()
+		})
+	}
+}

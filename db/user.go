@@ -101,6 +101,17 @@ func (s *UserStore) UpdateUser(ctx context.Context, u *model.User) (*model.User,
 	return u, nil
 }
 
-func (s *UserStore) DeleteUser(context.Context, *model.User) error {
+func (s *UserStore) DeleteUser(ctx context.Context, u *model.User) error {
+	op := errors.Opf("UserStore.DeleteUser(%q)", u.ID)
+
+	res, err := s.col.DeleteOne(ctx, bson.M{"_id": u.Key})
+	if err != nil {
+		return errors.E(op, err)
+	}
+
+	if res.DeletedCount != 1 {
+		return errors.E(op, errors.Str("nothing deleted"))
+	}
+
 	return nil
 }

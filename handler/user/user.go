@@ -207,7 +207,7 @@ func (s *config) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload.Write(w, r, &UpdateUserResponse{u}, http.StatusCreated)
+	payload.Write(w, r, &UpdateUserResponse{u}, http.StatusOK)
 }
 
 func (s *config) DeleteUser(w http.ResponseWriter, r *http.Request) {

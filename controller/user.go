@@ -72,7 +72,14 @@ func (u *User) UpdateUser(ctx context.Context, usr *model.User, req *handler.Upd
 	return usr, nil
 }
 
-func (u *User) DeleteUser(context.Context, *model.User) error {
+func (u *User) DeleteUser(ctx context.Context, usr *model.User) error {
+	op := errors.Opf("controller.DeleteUser(%q)", usr.Email)
+
+	err := u.Store.DeleteUser(ctx, usr)
+	if err != nil {
+		return errors.E(op, err)
+	}
+
 	return nil
 }
 
