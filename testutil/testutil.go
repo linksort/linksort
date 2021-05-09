@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"testing"
 
@@ -30,7 +31,7 @@ func Handler() http.Handler {
 		op := errors.Op("testutil.Handler")
 		ctx := context.Background()
 
-		mongo, closer, err := db.NewMongoClient(ctx, "localhost")
+		mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "localhost"))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -57,22 +58,23 @@ func CleanUp() {
 	}
 }
 
-func NewUser(t *testing.T, ctx context.Context) *model.User {
+func NewUser(t *testing.T, ctx context.Context) (*model.User, string) {
 	t.Helper()
 
 	c := controller.User{Store: _userStore}
+	pw := fake.Password(8, 20, true, true, true)
 
 	u, err := c.CreateUser(ctx, &user.CreateUserRequest{
 		Email:     fake.EmailAddress(),
 		FirstName: fake.FirstName(),
 		LastName:  fake.Language(),
-		Password:  fake.Password(8, 20, true, true, true),
+		Password:  pw,
 	})
 	if err != nil {
 		t.Error(err)
 	}
 
-	return u
+	return u, pw
 }
 
 func UpdateUser(t *testing.T, ctx context.Context, u *model.User) *model.User {
@@ -84,4 +86,12 @@ func UpdateUser(t *testing.T, ctx context.Context, u *model.User) *model.User {
 	}
 
 	return u
+}
+
+func getenv(name, fallback string) string {
+	if val, ok := os.LookupEnv(name); ok {
+		return val
+	}
+
+	return fallback
 }

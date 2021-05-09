@@ -24,7 +24,7 @@ func New(c *Config) http.Handler {
 
 	router.PathPrefix("/api/users").Handler(user.Handler(&user.Config{
 		UserController:    &controller.User{Store: c.UserStore},
-		SessionController: &controller.Session{},
+		SessionController: &controller.Session{Store: c.UserStore},
 	}))
 
 	return middleware.WithPanicHandling(log.WithAccessLogging(router))

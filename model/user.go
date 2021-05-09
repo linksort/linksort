@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/linksort/linksort/errors"
+	"github.com/linksort/linksort/random"
 )
 
 type User struct {
@@ -46,4 +47,13 @@ func (u *User) CheckPassword(passwd string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordDigest), []byte(passwd))
 
 	return err == nil
+}
+
+func (u *User) IsSessionExpired() bool {
+	return u.SessionExpiry.After(time.Now())
+}
+
+func (u *User) RefreshSession() {
+	u.SessionID = random.Token()
+	u.SessionExpiry = time.Now().Add(time.Hour * time.Duration(24*30))
 }

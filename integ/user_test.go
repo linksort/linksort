@@ -13,7 +13,7 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	existingUser := testutil.NewUser(t, context.Background())
+	existingUser, _ := testutil.NewUser(t, context.Background())
 
 	tests := []struct {
 		Name         string
@@ -114,10 +114,10 @@ func TestGetUser(t *testing.T) {
 	ctx := context.Background()
 
 	// success user
-	usr1 := testutil.NewUser(t, ctx)
+	usr1, _ := testutil.NewUser(t, ctx)
 
 	// expired session user
-	usr2 := testutil.NewUser(t, ctx)
+	usr2, _ := testutil.NewUser(t, ctx)
 	usr2.SessionExpiry = time.Now().Add(-time.Hour)
 	usr2 = testutil.UpdateUser(t, ctx, usr2)
 
@@ -180,8 +180,8 @@ func TestGetUser(t *testing.T) {
 
 func TestUpdateUser(t *testing.T) {
 	ctx := context.Background()
-	usr1 := testutil.NewUser(t, ctx)
-	usr2 := testutil.NewUser(t, ctx)
+	usr1, _ := testutil.NewUser(t, ctx)
+	usr2, _ := testutil.NewUser(t, ctx)
 
 	tests := []struct {
 		Name           string
@@ -230,7 +230,7 @@ func TestUpdateUser(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	ctx := context.Background()
-	usr1 := testutil.NewUser(t, ctx)
+	usr1, _ := testutil.NewUser(t, ctx)
 
 	tests := []struct {
 		Name           string

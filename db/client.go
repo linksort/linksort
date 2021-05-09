@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,7 +18,7 @@ func NewMongoClient(
 	op := errors.Op("db.NewMongoClient()")
 
 	client, err := mongo.NewClient(options.Client().
-		ApplyURI(fmt.Sprintf("mongodb://%s", uri)))
+		ApplyURI(uri))
 	if err != nil {
 		return nil, nil, errors.E(op, err)
 	}
