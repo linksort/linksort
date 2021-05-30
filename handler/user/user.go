@@ -109,6 +109,7 @@ func (s *config) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 
 type ChangePasswordRequest struct {
 	Signature string `json:"signature" validate:"required"`
+	Timestamp string `json:"timestamp" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required,min=6,max=128"`
 }

@@ -3,6 +3,7 @@ package integ_test
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"testing"
 	"time"
 
@@ -259,6 +260,115 @@ func TestDeleteUser(t *testing.T) {
 				Delete("/api/users").
 				Cookie("session_id", tcase.GivenSessionID).
 				Expect(t).Status(tcase.ExpectStatus)
+
+			if tcase.ExpectStatus > http.StatusBadRequest {
+				tt.Body(tcase.ExpectBody)
+			}
+
+			tt.End()
+		})
+	}
+}
+
+func TestForgotPassword(t *testing.T) {
+	ctx := context.Background()
+	usr1, _ := testutil.NewUser(t, ctx)
+
+	tests := []struct {
+		Name         string
+		GivenBody    map[string]string
+		ExpectStatus int
+		ExpectBody   string
+	}{
+		{
+			Name:         "success",
+			GivenBody:    map[string]string{"email": usr1.Email},
+			ExpectStatus: http.StatusNoContent,
+		},
+		{
+			Name:         "bad payload",
+			GivenBody:    map[string]string{"bla": usr1.Email},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"email":"This field is required."}`,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			tt := apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Post("/api/users/forgot-password").
+				JSON(tcase.GivenBody).
+				Expect(t).
+				Status(tcase.ExpectStatus)
+
+			if tcase.ExpectStatus > http.StatusBadRequest {
+				tt.Body(tcase.ExpectBody)
+			}
+
+			tt.End()
+		})
+	}
+}
+
+func TestChangePassword(t *testing.T) {
+	ctx := context.Background()
+	usr1, _ := testutil.NewUser(t, ctx)
+	link := testutil.Magic(t).Link("forgot-password", usr1.Email, usr1.PasswordDigest)
+
+	mlink, err := url.Parse(link)
+	if err != nil {
+		t.Error(err)
+	}
+
+	tests := []struct {
+		Name         string
+		GivenBody    map[string]string
+		ExpectStatus int
+		ExpectBody   string
+	}{
+		{
+			Name: "bad signature",
+			GivenBody: map[string]string{
+				"signature": "abcdefghijklmnopqustuvxxyz",
+				"timestamp": mlink.Query().Get("t"),
+				"email":     mlink.Query().Get("u"),
+				"password":  "newpassword",
+			},
+			ExpectStatus: http.StatusUnauthorized,
+			ExpectBody:   `{"message":"Unauthorized"}`,
+		},
+		{
+			Name: "success",
+			GivenBody: map[string]string{
+				"signature": mlink.Query().Get("s"),
+				"timestamp": mlink.Query().Get("t"),
+				"email":     mlink.Query().Get("u"),
+				"password":  "newpassword",
+			},
+			ExpectStatus: http.StatusOK,
+		},
+		{
+			Name: "used payload",
+			GivenBody: map[string]string{
+				"signature": mlink.Query().Get("s"),
+				"timestamp": mlink.Query().Get("t"),
+				"email":     mlink.Query().Get("u"),
+				"password":  "newpassword",
+			},
+			ExpectStatus: http.StatusUnauthorized,
+			ExpectBody:   `{"message":"Unauthorized"}`,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			tt := apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Post("/api/users/change-password").
+				JSON(tcase.GivenBody).
+				Expect(t).
+				Status(tcase.ExpectStatus)
 
 			if tcase.ExpectStatus > http.StatusBadRequest {
 				tt.Body(tcase.ExpectBody)

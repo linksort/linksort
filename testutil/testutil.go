@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 
@@ -12,9 +13,11 @@ import (
 
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
+	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler"
 	"github.com/linksort/linksort/handler/user"
+	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
 )
 
@@ -24,6 +27,8 @@ var (
 	_closer    func() error
 	_h         http.Handler
 	_userStore model.UserStore
+	_magic     = magic.New("test-secret")
+	_email     = email.New()
 )
 
 func Handler() http.Handler {
@@ -31,7 +36,7 @@ func Handler() http.Handler {
 		op := errors.Op("testutil.Handler")
 		ctx := context.Background()
 
-		mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "localhost"))
+		mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost"))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,7 +51,11 @@ func Handler() http.Handler {
 
 		_closer = closer
 		_userStore = db.NewUserStore(mongo)
-		_h = handler.New(&handler.Config{UserStore: _userStore})
+		_h = handler.New(&handler.Config{
+			UserStore: _userStore,
+			Magic:     _magic,
+			Email:     _email,
+		})
 	})
 
 	return _h
@@ -65,7 +74,7 @@ func NewUser(t *testing.T, ctx context.Context) (*model.User, string) {
 	pw := fake.Password(8, 20, true, true, true)
 
 	u, err := c.CreateUser(ctx, &user.CreateUserRequest{
-		Email:     fake.EmailAddress(),
+		Email:     strings.ToLower(fake.EmailAddress()),
 		FirstName: fake.FirstName(),
 		LastName:  fake.Language(),
 		Password:  pw,
@@ -86,6 +95,18 @@ func UpdateUser(t *testing.T, ctx context.Context, u *model.User) *model.User {
 	}
 
 	return u
+}
+
+func Magic(t *testing.T) *magic.Client {
+	t.Helper()
+
+	return _magic
+}
+
+func Email(t *testing.T) *email.Client {
+	t.Helper()
+
+	return _email
 }
 
 func getenv(name, fallback string) string {

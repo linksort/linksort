@@ -2,7 +2,9 @@ version: "3"
 
 services:
   mongo:
-    image: "mongo"
+    build:
+      dockerfile: "docker/mongo-dockerfile"
+      context: "."
     restart: "always"
     volumes:
       - "db-data:/data/db"
@@ -10,7 +12,9 @@ services:
       - "27017"
 
   api:
-    build: .
+    build:
+      dockerfile: "docker/app-dockerfile"
+      context: "."
     volumes:
       - ".:/var/www"
     ports:

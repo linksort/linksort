@@ -9,15 +9,17 @@ import (
 	"syscall"
 
 	"github.com/linksort/linksort/db"
+	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler"
 	"github.com/linksort/linksort/log"
+	"github.com/linksort/linksort/magic"
 )
 
 func main() {
 	ctx := context.Background()
 
-	mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "localhost"))
+	mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,7 +29,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	h := handler.New(&handler.Config{UserStore: db.NewUserStore(mongo)})
+	h := handler.New(&handler.Config{
+		UserStore: db.NewUserStore(mongo),
+		Magic:     magic.New(""),
+		Email:     email.New(),
+	})
 
 	port := getenv("PORT", "8080")
 	srv := http.Server{Handler: h, Addr: fmt.Sprintf(":%s", port)}

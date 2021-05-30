@@ -6,15 +6,19 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/controller"
+	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/log"
+	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
 
 type Config struct {
 	UserStore model.UserStore
+	Magic     *magic.Client
+	Email     *email.Client
 }
 
 func New(c *Config) http.Handler {
@@ -23,7 +27,11 @@ func New(c *Config) http.Handler {
 	router.NotFoundHandler = http.HandlerFunc(notFound)
 
 	router.PathPrefix("/api/users").Handler(user.Handler(&user.Config{
-		UserController:    &controller.User{Store: c.UserStore},
+		UserController: &controller.User{
+			Store: c.UserStore,
+			Magic: c.Magic,
+			Email: c.Email,
+		},
 		SessionController: &controller.Session{Store: c.UserStore},
 	}))
 
