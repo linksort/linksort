@@ -1,12 +1,18 @@
 package handler
 
 import (
+	"bytes"
+	"io"
 	"net/http"
+	"net/http/httputil"
+	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/email"
+	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/log"
@@ -24,9 +30,11 @@ type Config struct {
 func New(c *Config) http.Handler {
 	router := mux.NewRouter()
 
-	router.NotFoundHandler = http.HandlerFunc(notFound)
+	// API Routes
+	api := router.PathPrefix("/api").Subrouter()
+	api.NotFoundHandler = http.HandlerFunc(notFound)
 
-	router.PathPrefix("/api/users").Handler(user.Handler(&user.Config{
+	api.PathPrefix("/users").Handler(user.Handler(&user.Config{
 		UserController: &controller.User{
 			Store: c.UserStore,
 			Magic: c.Magic,
@@ -34,6 +42,41 @@ func New(c *Config) http.Handler {
 		},
 		SessionController: &controller.Session{Store: c.UserStore},
 	}))
+
+	// ReverseProxy to Frontend
+	router.PathPrefix("/").Handler(&httputil.ReverseProxy{
+		FlushInterval: time.Duration(0),
+		Director: func(r *http.Request) {
+			r.URL.Scheme = "http"
+			r.URL.Host = "localhost:3000"
+			delete(r.Header, "Accept-Encoding")
+		},
+		ModifyResponse: func(r *http.Response) error {
+			if r.Request.URL.Path != "/sockjs-node" &&
+				strings.HasPrefix(r.Header.Get("Content-Type"), "text/html") {
+				op := errors.Op("ReverseProxy.ModifyResponse")
+
+				b, err := io.ReadAll(r.Body)
+				if err != nil {
+					return errors.E(op, err)
+				}
+
+				if err := r.Body.Close(); err != nil {
+					return errors.E(op, err)
+				}
+
+				b = bytes.Replace(b, []byte("//SERVER_DATA//"), []byte("{}"), 1)
+				r.Body = io.NopCloser(bytes.NewReader(b))
+				r.ContentLength = int64(len(b))
+				r.StatusCode = http.StatusOK
+				r.Header.Add("Cache-Control", "no-cache")
+				r.Header.Del("ETag")
+				r.Header.Del("X-Powered-By")
+			}
+
+			return nil
+		},
+	})
 
 	return middleware.WithPanicHandling(log.WithAccessLogging(router))
 }

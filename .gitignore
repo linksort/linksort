@@ -17,3 +17,6 @@ build
 .DS_Store
 .DS_Store?
 .Trashes
+
+# Local libraries
+node_modules
