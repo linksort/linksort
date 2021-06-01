@@ -7,7 +7,7 @@ import (
 
 func SetSession(w http.ResponseWriter, sessionID string) {
 	http.SetCookie(w, &http.Cookie{
-		Domain:   "linksort.com",
+		Domain:   "localhost",
 		Path:     "/",
 		Name:     "session_id",
 		Value:    sessionID,

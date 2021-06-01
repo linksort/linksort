@@ -11,9 +11,18 @@ services:
     ports:
       - "27017"
 
+  frontend:
+    build:
+      dockerfile: "docker/frontend-dockerfile"
+      context: "./frontend"
+    volumes:
+      - ".:/var/www"
+    ports:
+      - "3000"
+
   api:
     build:
-      dockerfile: "docker/app-dockerfile"
+      dockerfile: "docker/api-dockerfile"
       context: "."
     volumes:
       - ".:/var/www"
@@ -24,6 +33,7 @@ services:
       - "PORT=8000"
     links:
       - "mongo"
+      - "frontend"
 
 volumes:
   db-data:

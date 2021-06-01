@@ -1,0 +1,11 @@
+FROM node
+
+WORKDIR /var/www
+
+COPY ./frontend .
+
+RUN yarn
+
+VOLUME ["/var/wwww"]
+
+CMD ["yarn", "start"]

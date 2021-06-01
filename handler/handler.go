@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 
@@ -45,7 +44,6 @@ func New(c *Config) http.Handler {
 
 	// ReverseProxy to Frontend
 	router.PathPrefix("/").Handler(&httputil.ReverseProxy{
-		FlushInterval: time.Duration(0),
 		Director: func(r *http.Request) {
 			r.URL.Scheme = "http"
 			r.URL.Host = "localhost:3000"
