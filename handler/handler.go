@@ -2,6 +2,8 @@ package handler
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -63,7 +65,19 @@ func New(c *Config) http.Handler {
 					return errors.E(op, err)
 				}
 
-				b = bytes.Replace(b, []byte("//SERVER_DATA//"), []byte("{}"), 1)
+				var data json.RawMessage
+				cookie, err := r.Request.Cookie("session_id")
+
+				if err != nil {
+					data = json.RawMessage("{}")
+				} else {
+					data, err = getUserData(r.Request.Context(), c.UserStore, cookie.Value)
+					if err != nil {
+						return errors.E(op, err)
+					}
+				}
+
+				b = bytes.Replace(b, []byte("//SERVER_DATA//"), data, 1)
 				r.Body = io.NopCloser(bytes.NewReader(b))
 				r.ContentLength = int64(len(b))
 				r.StatusCode = http.StatusOK
@@ -81,4 +95,22 @@ func New(c *Config) http.Handler {
 
 func notFound(w http.ResponseWriter, r *http.Request) {
 	payload.Write(w, r, map[string]string{"message": "Not found"}, http.StatusNotFound)
+}
+
+func getUserData(ctx context.Context, store model.UserStore, sessionID string) (json.RawMessage, error) {
+	op := errors.Op("getUserData")
+
+	usr, err := store.GetUserBySessionID(ctx, sessionID)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	data, err := json.Marshal(struct {
+		User *model.User `json:"user"`
+	}{usr})
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return data, nil
 }
