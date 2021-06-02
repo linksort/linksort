@@ -102,6 +102,11 @@ func getUserData(ctx context.Context, store model.UserStore, sessionID string) (
 
 	usr, err := store.GetUserBySessionID(ctx, sessionID)
 	if err != nil {
+		lserr := new(errors.Error)
+		if errors.As(err, &lserr) && lserr.Status() == http.StatusNotFound {
+			return json.RawMessage("{}"), nil
+		}
+
 		return nil, errors.E(op, err)
 	}
 

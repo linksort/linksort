@@ -16,7 +16,7 @@ services:
       dockerfile: "docker/frontend-dockerfile"
       context: "./frontend"
     volumes:
-      - ".:/var/www"
+      - "./frontend:/srv/www/linksort.com"
     ports:
       - "3000"
 
@@ -25,7 +25,7 @@ services:
       dockerfile: "docker/api-dockerfile"
       context: "."
     volumes:
-      - ".:/var/www"
+      - ".:/srv/www/linksort.com"
     ports:
       - "8000:8000"
     environment:

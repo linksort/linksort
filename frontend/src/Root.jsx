@@ -4,12 +4,12 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import { extendTheme } from "@chakra-ui/react";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
-import { Text } from "@chakra-ui/react";
 
 import "./theme/prose.css";
 import theme from "./theme/theme";
 
-import Login from "./Login";
+import Layout from "./Layout";
+import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 
 const chakraTheme = extendTheme({
@@ -19,16 +19,21 @@ const chakraTheme = extendTheme({
 
 const queryClient = new QueryClient();
 
+if (window.__SERVER_DATA__.user) {
+  queryClient.setQueryData("user", window.__SERVER_DATA__.user);
+}
+
 export default function App() {
   return (
     <ChakraProvider theme={chakraTheme}>
       <QueryClientProvider client={queryClient}>
-        <Text>Hello world!</Text>
         <BrowserRouter>
-          <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/sign-up" component={SignUp} />
-          </Switch>
+          <Layout>
+            <Switch>
+              <Route path="/sign-in" component={SignIn} />
+              <Route path="/sign-up" component={SignUp} />
+            </Switch>
+          </Layout>
         </BrowserRouter>
       </QueryClientProvider>
     </ChakraProvider>

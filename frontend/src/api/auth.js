@@ -12,6 +12,12 @@ export function login(payload) {
   });
 }
 
+export function signOut() {
+  return apiRequest(`/api/users/sessions`, {
+    method: "DELETE",
+  });
+}
+
 /*
  * @param {Object} payload
  * @param {string} payload.email

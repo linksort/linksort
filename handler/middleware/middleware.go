@@ -41,20 +41,20 @@ func WithUser(s interface {
 			ctx := r.Context()
 			user, err := s.GetUserBySessionID(ctx, c.Value)
 			if err != nil {
+				cookie.UnsetSession(w)
 				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.M{"message": "Unauthorized"}))
-				cookie.UnsetSession(w)
 
 				return
 			}
 
 			if time.Now().After(user.SessionExpiry) {
+				cookie.UnsetSession(w)
 				payload.WriteError(w, r, errors.E(op,
 					http.StatusUnauthorized,
 					errors.M{"message": "Unauthorized"},
 					errors.Str("expired session cookie")))
-				cookie.UnsetSession(w)
 
 				return
 			}

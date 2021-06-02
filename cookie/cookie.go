@@ -20,7 +20,7 @@ func SetSession(w http.ResponseWriter, sessionID string) {
 
 func UnsetSession(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
-		Domain:   "linksort.com",
+		Domain:   "localhost",
 		Path:     "/",
 		Name:     "session_id",
 		Value:    "",

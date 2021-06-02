@@ -73,6 +73,12 @@ func Read(dst interface{}, r *http.Request) error {
 func Write(w http.ResponseWriter, r *http.Request, payload interface{}, status int) {
 	op := errors.Op("payload.Write")
 
+	if payload == nil {
+		w.WriteHeader(status)
+
+		return
+	}
+
 	encoded, err := json.Marshal(payload)
 	if err != nil {
 		handleInternalServerError(w, r, errors.E(op, err))
