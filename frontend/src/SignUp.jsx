@@ -1,9 +1,7 @@
 import React from "react";
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useFormik } from "formik";
-import { useMutation } from "react-query";
 import {
-  Stack,
   Heading,
   FormControl,
   FormLabel,
@@ -11,17 +9,13 @@ import {
   FormHelperText,
   FormErrorMessage,
   Button,
+  Box,
 } from "@chakra-ui/react";
 
-import * as API from "./api/auth";
+import { useSignUp } from "./api/auth";
 
-export default function Login() {
-  const history = useHistory();
-
-  const mutation = useMutation(API.signUp, {
-    onSuccess: () => history.push("/"),
-  });
-
+export default function SignUp() {
+  const mutation = useSignUp();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -33,19 +27,16 @@ export default function Login() {
   });
 
   return (
-    <Stack
-      as="form"
-      width="100%"
-      maxWidth="40ch"
-      spacing={6}
-      onSubmit={formik.handleSubmit}
-    >
-      <Heading fontSize="3xl">Sign up</Heading>
+    <Box as="form" width="100%" maxWidth="36ch" onSubmit={formik.handleSubmit}>
+      <Heading fontSize="3xl" mb={6}>
+        Sign up
+      </Heading>
 
       <FormControl
         id="firstName"
         isInvalid={mutation.error?.firstName}
         isRequired
+        mb={6}
       >
         <FormLabel>First name</FormLabel>
         <Input
@@ -58,7 +49,7 @@ export default function Login() {
         <FormErrorMessage>{mutation.error?.firstName}</FormErrorMessage>
       </FormControl>
 
-      <FormControl id="lastName" isInvalid={mutation.error?.lastName}>
+      <FormControl id="lastName" isInvalid={mutation.error?.lastName} mb={6}>
         <FormLabel>Last name</FormLabel>
         <Input
           type="text"
@@ -73,6 +64,7 @@ export default function Login() {
         id="email"
         isInvalid={mutation.error?.message || mutation.error?.email}
         isRequired
+        mb={6}
       >
         <FormLabel>Email address</FormLabel>
         <Input
@@ -91,6 +83,7 @@ export default function Login() {
         id="password"
         isInvalid={mutation.error?.password}
         isRequired
+        mb={6}
       >
         <FormLabel>Password</FormLabel>
         <Input
@@ -106,13 +99,19 @@ export default function Login() {
         </FormHelperText>
       </FormControl>
 
-      <Button type="submit" isLoading={formik.isSubmitting} colorScheme="brand">
+      <Button
+        type="submit"
+        isLoading={formik.isSubmitting}
+        colorScheme="brand"
+        mb={4}
+        w="100%"
+      >
         Submit
       </Button>
 
-      <Button as={Link} variant="link" to="/sign-in">
+      <Button as={Link} variant="ghost" w="100%" to="/sign-in">
         Already have an account? Sign in.
       </Button>
-    </Stack>
+    </Box>
   );
 }

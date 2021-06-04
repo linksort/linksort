@@ -19,10 +19,6 @@ const chakraTheme = extendTheme({
 
 const queryClient = new QueryClient();
 
-if (window.__SERVER_DATA__.user) {
-  queryClient.setQueryData("user", window.__SERVER_DATA__.user);
-}
-
 export default function App() {
   return (
     <ChakraProvider theme={chakraTheme}>

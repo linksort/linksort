@@ -1,17 +1,8 @@
 import React from "react";
-import { useQueryClient, useMutation } from "react-query";
-import { useHistory, Link } from "react-router-dom";
-import {
-  Container,
-  Flex,
-  Box,
-  Heading,
-  Text,
-  Stack,
-  Button,
-} from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import { Container, Flex, Box, Heading, Text, Stack } from "@chakra-ui/react";
 
-import * as API from "./api/auth";
+import { useSignOut, useUser } from "./api/auth";
 
 function UnderlineLink({ to, href, children }) {
   const sx = {
@@ -37,13 +28,8 @@ function UnderlineLink({ to, href, children }) {
 }
 
 export default function Layout({ children }) {
-  const queryClient = useQueryClient();
-  const user = queryClient.getQueryData("user");
-
-  const history = useHistory();
-  const signOut = useMutation(API.signOut, {
-    onSuccess: () => history.push("/sign-in"),
-  });
+  const user = useUser();
+  const signOutMutation = useSignOut();
 
   return (
     <Container maxWidth="7xl" centerContent px={6}>
@@ -65,9 +51,9 @@ export default function Layout({ children }) {
         <Stack direction="row" as="nav" spacing={6}>
           <UnderlineLink href="/blog">Blog</UnderlineLink>
           {user ? (
-            <Button as={Text} onClick={signOut.mutate}>
+            <Text as="button" onClick={signOutMutation.mutate}>
               Sign out
-            </Button>
+            </Text>
           ) : (
             <>
               <UnderlineLink to="/sign-in">Sign in</UnderlineLink>

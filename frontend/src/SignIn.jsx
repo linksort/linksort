@@ -1,27 +1,20 @@
 import React from "react";
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useFormik } from "formik";
-import { useMutation } from "react-query";
 import {
-  Stack,
   Heading,
   FormControl,
   FormLabel,
   Input,
-  FormHelperText,
   FormErrorMessage,
   Button,
+  Box,
 } from "@chakra-ui/react";
 
-import * as API from "./api/auth";
+import { useSignIn } from "./api/auth";
 
-export default function Login() {
-  const history = useHistory();
-
-  const mutation = useMutation(API.login, {
-    onSuccess: () => history.push("/"),
-  });
-
+export default function SignIn() {
+  const mutation = useSignIn();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -31,17 +24,14 @@ export default function Login() {
   });
 
   return (
-    <Stack
-      as="form"
-      width="100%"
-      maxWidth="40ch"
-      spacing={6}
-      onSubmit={formik.handleSubmit}
-    >
-      <Heading fontSize="3xl">Sign in</Heading>
+    <Box as="form" width="100%" maxWidth="36ch" onSubmit={formik.handleSubmit}>
+      <Heading fontSize="3xl" mb={6}>
+        Sign in
+      </Heading>
       <FormControl
         id="email"
         isInvalid={mutation.error?.message || mutation.error?.email}
+        mb={6}
       >
         <FormLabel>Email address</FormLabel>
         <Input
@@ -55,9 +45,8 @@ export default function Login() {
         <FormErrorMessage>
           {mutation.error?.message || mutation.error?.email}
         </FormErrorMessage>
-        <FormHelperText>We'll never share your email.</FormHelperText>
       </FormControl>
-      <FormControl id="password" isInvalid={mutation.error?.password}>
+      <FormControl id="password" isInvalid={mutation.error?.password} mb={8}>
         <FormLabel>Password</FormLabel>
         <Input
           type="password"
@@ -67,21 +56,24 @@ export default function Login() {
           required
         />
         <FormErrorMessage>{mutation.error?.password}</FormErrorMessage>
-        <FormHelperText>
-          Your password must be at least six characters long.
-        </FormHelperText>
       </FormControl>
-      <Button type="submit" isLoading={formik.isSubmitting} colorScheme="brand">
+      <Button
+        type="submit"
+        isLoading={formik.isSubmitting}
+        colorScheme="brand"
+        mb={4}
+        w="100%"
+      >
         Submit
       </Button>
 
-      <Button as={Link} variant="link" to="/sign-up">
+      <Button as={Link} variant="ghost" to="/sign-up" mb={2} w="100%">
         Don't have an account? Sign up.
       </Button>
 
-      <Button as={Link} variant="link" to="/forgot-password">
+      <Button as={Link} variant="ghost" to="/forgot-password" w="100%">
         I forgot my password.
       </Button>
-    </Stack>
+    </Box>
   );
 }
