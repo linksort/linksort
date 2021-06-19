@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Container, Flex, Box, Heading, Text, Stack } from "@chakra-ui/react";
 
-import { useSignOut, useUser } from "./api/auth";
+import { useSignOut, useUser } from "../api/auth";
 
 function UnderlineLink({ to, href, children }) {
   const sx = {

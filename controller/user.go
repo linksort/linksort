@@ -103,7 +103,7 @@ func (u *User) ForgotPassword(ctx context.Context, req *handler.ForgotPasswordRe
 		return nil
 	}
 
-	link := u.Magic.Link("forgot-password", usr.Email, usr.PasswordDigest)
+	link := u.Magic.Link("change-password", usr.Email, usr.PasswordDigest)
 
 	err = u.Email.SendForgotPassword(ctx, usr, link)
 	if err != nil {
@@ -137,6 +137,7 @@ func (u *User) ChangePassword(ctx context.Context, req *handler.ChangePasswordRe
 	}
 
 	usr.PasswordDigest = digest
+	usr.RefreshSession()
 
 	usr, err = u.Store.UpdateUser(ctx, usr)
 	if err != nil {

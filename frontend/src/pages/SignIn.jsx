@@ -6,21 +6,18 @@ import {
   FormControl,
   FormLabel,
   Input,
-  FormHelperText,
   FormErrorMessage,
   Button,
   Box,
 } from "@chakra-ui/react";
 
-import { useSignUp } from "./api/auth";
+import { useSignIn } from "../api/auth";
 
-export default function SignUp() {
-  const mutation = useSignUp();
+export default function SignIn() {
+  const mutation = useSignIn();
   const formik = useFormik({
     initialValues: {
       email: "",
-      firstName: "",
-      lastName: "",
       password: "",
     },
     onSubmit: mutation.mutateAsync,
@@ -29,41 +26,11 @@ export default function SignUp() {
   return (
     <Box as="form" width="100%" maxWidth="36ch" onSubmit={formik.handleSubmit}>
       <Heading fontSize="3xl" mb={6}>
-        Sign up
+        Sign in
       </Heading>
-
-      <FormControl
-        id="firstName"
-        isInvalid={mutation.error?.firstName}
-        isRequired
-        mb={6}
-      >
-        <FormLabel>First name</FormLabel>
-        <Input
-          type="text"
-          name="firstName"
-          onChange={formik.handleChange}
-          value={formik.values.firstName}
-          autoFocus
-        />
-        <FormErrorMessage>{mutation.error?.firstName}</FormErrorMessage>
-      </FormControl>
-
-      <FormControl id="lastName" isInvalid={mutation.error?.lastName} mb={6}>
-        <FormLabel>Last name</FormLabel>
-        <Input
-          type="text"
-          name="lastName"
-          onChange={formik.handleChange}
-          value={formik.values.lastName}
-        />
-        <FormErrorMessage>{mutation.error?.lastName}</FormErrorMessage>
-      </FormControl>
-
       <FormControl
         id="email"
         isInvalid={mutation.error?.message || mutation.error?.email}
-        isRequired
         mb={6}
       >
         <FormLabel>Email address</FormLabel>
@@ -72,19 +39,14 @@ export default function SignUp() {
           name="email"
           onChange={formik.handleChange}
           value={formik.values.email}
+          autoFocus
+          required
         />
         <FormErrorMessage>
           {mutation.error?.message || mutation.error?.email}
         </FormErrorMessage>
-        <FormHelperText>We'll never share your email.</FormHelperText>
       </FormControl>
-
-      <FormControl
-        id="password"
-        isInvalid={mutation.error?.password}
-        isRequired
-        mb={6}
-      >
+      <FormControl id="password" isInvalid={mutation.error?.password} mb={8}>
         <FormLabel>Password</FormLabel>
         <Input
           type="password"
@@ -94,11 +56,7 @@ export default function SignUp() {
           required
         />
         <FormErrorMessage>{mutation.error?.password}</FormErrorMessage>
-        <FormHelperText>
-          Your password must be at least six characters long.
-        </FormHelperText>
       </FormControl>
-
       <Button
         type="submit"
         isLoading={formik.isSubmitting}
@@ -109,8 +67,12 @@ export default function SignUp() {
         Submit
       </Button>
 
-      <Button as={Link} variant="ghost" w="100%" to="/sign-in">
-        Already have an account? Sign in.
+      <Button as={Link} variant="ghost" to="/sign-up" mb={2} w="100%">
+        Don't have an account? Sign up.
+      </Button>
+
+      <Button as={Link} variant="ghost" to="/forgot-password" w="100%">
+        I forgot my password.
       </Button>
     </Box>
   );

@@ -80,3 +80,50 @@ export function useSignUp() {
     }
   );
 }
+
+/*
+ * @param {Object} payload
+ * @param {string} payload.email
+ */
+export function useForgotPassword() {
+  const history = useHistory();
+
+  return useMutation(
+    (payload) =>
+      apiRequest(`/api/users/forgot-password`, {
+        body: payload,
+        method: "POST",
+      }),
+    {
+      onSuccess: () => {
+        history.push("/forgot-password-sent-email");
+      },
+    }
+  );
+}
+
+/*
+ * @param {Object} payload
+ * @param {string} payload.email
+ * @param {string} payload.password
+ * @param {string} payload.signature
+ * @param {string} payload.timestamp
+ */
+export function useChangePassword() {
+  const history = useHistory();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (payload) =>
+      apiRequest(`/api/users/change-password`, {
+        body: payload,
+        method: "POST",
+      }),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData("user", data.user);
+        history.push("/");
+      },
+    }
+  );
+}

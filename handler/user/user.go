@@ -136,6 +136,7 @@ func (s *config) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cookie.SetSession(w, u.SessionID)
 	payload.Write(w, r, &ChangePasswordResponse{u}, http.StatusOK)
 }
 

@@ -14,7 +14,7 @@ services:
   frontend:
     build:
       dockerfile: "docker/frontend-dockerfile"
-      context: "./frontend"
+      context: "."
     volumes:
       - "./frontend:/srv/www/linksort.com"
     ports:
