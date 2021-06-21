@@ -6,7 +6,10 @@ export default function apiRequest(url, data = {}) {
     const fullUrl = `${API_ORIGIN}${url}`;
     const headers = new Headers();
 
-    // TODO: CSRF token in headers
+    const csrf = document
+      .querySelector("meta[name='csrf']")
+      .getAttribute("content");
+    headers.append("X-Csrf-Token", csrf);
 
     let body;
     if (!(data.body instanceof FormData)) {

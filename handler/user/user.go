@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -26,6 +27,9 @@ type Config struct {
 		CreateSession(context.Context, *CreateSessionRequest) (*model.User, error)
 		DeleteSession(context.Context, *model.User) error
 	}
+	CSRFVerifier interface {
+		VerifyCSRF(token string, expiry time.Duration) error
+	}
 }
 
 type config struct{ *Config }
@@ -33,6 +37,8 @@ type config struct{ *Config }
 func Handler(c *Config) *mux.Router {
 	cc := config{Config: c}
 	r := mux.NewRouter()
+
+	r.Use(middleware.WithCSRF(c.CSRFVerifier))
 
 	r.HandleFunc("/api/users", cc.CreateUser).Methods("POST")
 	r.HandleFunc("/api/users/forgot-password", cc.ForgotPassword).Methods("POST")

@@ -64,6 +64,29 @@ func WithUser(s interface {
 	}
 }
 
+func WithCSRF(m interface {
+	VerifyCSRF(string, time.Duration) error
+}) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var op errors.Op = "middleware.WithCSRF"
+
+			token := r.Header.Get("X-Csrf-Token")
+
+			err := m.VerifyCSRF(token, time.Hour*24)
+			if err != nil {
+				payload.WriteError(w, r, errors.E(op,
+					http.StatusForbidden,
+					errors.M{"message": "Forbidden"},
+					errors.Str("invalid csrf token")))
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 // UserFromContext returns the User object that was added to the context via
 // WithUser middleware.
 func UserFromContext(ctx context.Context) *model.User {

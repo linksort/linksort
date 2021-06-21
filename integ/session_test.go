@@ -63,6 +63,7 @@ func TestCreateSession(t *testing.T) {
 			tt := apitest.New(tcase.Name).
 				Handler(testutil.Handler()).
 				Post("/api/users/sessions").
+				Header("X-Csrf-Token", testutil.CSRF()).
 				JSON(tcase.GivenBody).
 				Expect(t).Status(tcase.ExpectStatus)
 
@@ -110,13 +111,14 @@ func TestDeleteSession(t *testing.T) {
 			tt := apitest.New(tcase.Name).
 				Handler(testutil.Handler()).
 				Delete("/api/users/sessions").
+				Header("X-Csrf-Token", testutil.CSRF()).
 				Cookie("session_id", tcase.GivenSessionID).
 				Expect(t).Status(tcase.ExpectStatus)
 
 			if tcase.ExpectStatus < http.StatusBadRequest {
 				tt.CookiePresent("session_id")
 			} else {
-				tt.CookieNotPresent("session_id")
+				tt.CookiePresent("session_id")
 				tt.Body(tcase.ExpectBody)
 			}
 

@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -55,6 +56,28 @@ func (c *Client) Verify(email, b64ts, salt, sig string, expiry time.Duration) er
 	}
 
 	return nil
+}
+
+func (c *Client) CSRF() []byte {
+	ts := time.Now().Unix()
+	sts := strconv.FormatInt(ts, 10)
+	b64ts := base64.URLEncoding.EncodeToString([]byte(sts))
+
+	sig := c.getSignature("", b64ts, "")
+	token := fmt.Sprintf("%s.%s", b64ts, sig)
+
+	return []byte(token)
+}
+
+func (c *Client) VerifyCSRF(token string, expiry time.Duration) error {
+	op := errors.Op("magic.VerifyCSRF")
+
+	split := strings.Split(token, ".")
+	if len(split) != 2 {
+		return errors.E(op, http.StatusUnauthorized, errors.Str("invalid signature"))
+	}
+
+	return c.Verify("", split[0], "", split[1], expiry)
 }
 
 func (c *Client) getSignature(email, b64ts, salt string) string {

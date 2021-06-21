@@ -42,6 +42,7 @@ func New(c *Config) http.Handler {
 			Email: c.Email,
 		},
 		SessionController: &controller.Session{Store: c.UserStore},
+		CSRFVerifier:      c.Magic,
 	}))
 
 	// ReverseProxy to Frontend
@@ -78,6 +79,7 @@ func New(c *Config) http.Handler {
 				}
 
 				b = bytes.Replace(b, []byte("//SERVER_DATA//"), data, 1)
+				b = bytes.Replace(b, []byte("//CSRF//"), c.Magic.CSRF(), 1)
 				r.Body = io.NopCloser(bytes.NewReader(b))
 				r.ContentLength = int64(len(b))
 				r.StatusCode = http.StatusOK
