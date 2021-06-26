@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Container, Flex, Box, Heading, Text, Stack } from "@chakra-ui/react";
 
-import { useSignOut, useUser } from "../api/auth";
+import TopRightUserMenu from "./TopRightUserMenu";
+import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
+import { useUser } from "../api/auth";
 
 function UnderlineLink({ to, href, children }) {
   const sx = {
@@ -29,7 +31,6 @@ function UnderlineLink({ to, href, children }) {
 
 export default function Layout({ children }) {
   const user = useUser();
-  const signOutMutation = useSignOut();
 
   return (
     <Container maxWidth="7xl" centerContent px={6}>
@@ -48,14 +49,15 @@ export default function Layout({ children }) {
         >
           <Link to="/">Linksort</Link>
         </Heading>
-        <Stack direction="row" as="nav" spacing={6}>
-          <UnderlineLink href="/blog">Blog</UnderlineLink>
+        <Stack direction="row" as="nav" spacing={4}>
           {user ? (
-            <Text as="button" onClick={signOutMutation.mutate}>
-              Sign out
-            </Text>
+            <>
+              <TopRightNewLinkPopover />
+              <TopRightUserMenu />
+            </>
           ) : (
             <>
+              <UnderlineLink href="/blog">Blog</UnderlineLink>
               <UnderlineLink to="/sign-in">Sign in</UnderlineLink>
               <UnderlineLink to="/sign-up">Sign up</UnderlineLink>
             </>
