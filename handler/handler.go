@@ -42,7 +42,7 @@ func New(c *Config) http.Handler {
 			Email: c.Email,
 		},
 		SessionController: &controller.Session{Store: c.UserStore},
-		CSRFVerifier:      c.Magic,
+		CSRF:              c.Magic,
 	}))
 
 	// ReverseProxy to Frontend
@@ -66,20 +66,13 @@ func New(c *Config) http.Handler {
 					return errors.E(op, err)
 				}
 
-				var data json.RawMessage
-				cookie, err := r.Request.Cookie("session_id")
-
+				d, err := getUserData(r.Request.Context(), c.UserStore, c.Magic, r.Request)
 				if err != nil {
-					data = json.RawMessage("{}")
-				} else {
-					data, err = getUserData(r.Request.Context(), c.UserStore, cookie.Value)
-					if err != nil {
-						return errors.E(op, err)
-					}
+					return errors.E(op, err)
 				}
 
-				b = bytes.Replace(b, []byte("//SERVER_DATA//"), data, 1)
-				b = bytes.Replace(b, []byte("//CSRF//"), c.Magic.CSRF(), 1)
+				b = bytes.Replace(b, []byte("//SERVER_DATA//"), d.userData, 1)
+				b = bytes.Replace(b, []byte("//CSRF//"), d.csrf, 1)
 				r.Body = io.NopCloser(bytes.NewReader(b))
 				r.ContentLength = int64(len(b))
 				r.StatusCode = http.StatusOK
@@ -99,25 +92,53 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 	payload.Write(w, r, map[string]string{"message": "Not found"}, http.StatusNotFound)
 }
 
-func getUserData(ctx context.Context, store model.UserStore, sessionID string) (json.RawMessage, error) {
+type getUserDataResponse struct {
+	userData json.RawMessage
+	csrf     []byte
+}
+
+func getUserData(
+	ctx context.Context,
+	store model.UserStore,
+	magic *magic.Client,
+	r *http.Request,
+) (*getUserDataResponse, error) {
 	op := errors.Op("getUserData")
 
-	usr, err := store.GetUserBySessionID(ctx, sessionID)
+	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		lserr := new(errors.Error)
-		if errors.As(err, &lserr) && lserr.Status() == http.StatusNotFound {
-			return json.RawMessage("{}"), nil
+		if errors.As(err, &http.ErrNoCookie) {
+			return &getUserDataResponse{
+				userData: json.RawMessage("{}"),
+				csrf:     magic.CSRF(),
+			}, nil
 		}
 
 		return nil, errors.E(op, err)
 	}
 
-	data, err := json.Marshal(struct {
+	usr, err := store.GetUserBySessionID(ctx, cookie.Value)
+	if err != nil {
+		lserr := new(errors.Error)
+		if errors.As(err, &lserr) && lserr.Status() == http.StatusNotFound {
+			return &getUserDataResponse{
+				userData: json.RawMessage("{}"),
+				csrf:     magic.CSRF(),
+			}, nil
+		}
+
+		return nil, errors.E(op, err)
+	}
+
+	encodedUser, err := json.Marshal(struct {
 		User *model.User `json:"user"`
 	}{usr})
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
 
-	return data, nil
+	return &getUserDataResponse{
+		userData: encodedUser,
+		csrf:     magic.UserCSRF(usr.SessionID),
+	}, nil
 }

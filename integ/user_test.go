@@ -158,8 +158,7 @@ func TestGetUser(t *testing.T) {
 		t.Run(tcase.Name, func(t *testing.T) {
 			ts := apitest.New(tcase.Name).
 				Handler(testutil.Handler()).
-				Get("/api/users").
-				Header("X-Csrf-Token", testutil.CSRF())
+				Get("/api/users")
 
 			if tcase.GivenSessionID != "" {
 				ts.Cookie("session_id", tcase.GivenSessionID)
@@ -213,7 +212,7 @@ func TestUpdateUser(t *testing.T) {
 			tt := apitest.New(tcase.Name).
 				Handler(testutil.Handler()).
 				Patch("/api/users").
-				Header("X-Csrf-Token", testutil.CSRF()).
+				Header("X-Csrf-Token", testutil.UserCSRF(tcase.GivenSessionID)).
 				JSON(tcase.GivenBody).
 				Cookie("session_id", tcase.GivenSessionID).
 				Expect(t).Status(tcase.ExpectStatus)
@@ -261,7 +260,7 @@ func TestDeleteUser(t *testing.T) {
 			tt := apitest.New(tcase.Name).
 				Handler(testutil.Handler()).
 				Delete("/api/users").
-				Header("X-Csrf-Token", testutil.CSRF()).
+				Header("X-Csrf-Token", testutil.UserCSRF(tcase.GivenSessionID)).
 				Cookie("session_id", tcase.GivenSessionID).
 				Expect(t).Status(tcase.ExpectStatus)
 

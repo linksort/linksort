@@ -120,3 +120,7 @@ func getenv(name, fallback string) string {
 func CSRF() string {
 	return string(_magic.CSRF())
 }
+
+func UserCSRF(sessionID string) string {
+	return string(_magic.UserCSRF(sessionID))
+}

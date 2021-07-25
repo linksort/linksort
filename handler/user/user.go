@@ -27,8 +27,10 @@ type Config struct {
 		CreateSession(context.Context, *CreateSessionRequest) (*model.User, error)
 		DeleteSession(context.Context, *model.User) error
 	}
-	CSRFVerifier interface {
+	CSRF interface {
+		UserCSRF(sessionID string) []byte
 		VerifyCSRF(token string, expiry time.Duration) error
+		VerifyUserCSRF(token string, sessionID string, expiry time.Duration) error
 	}
 }
 
@@ -38,19 +40,20 @@ func Handler(c *Config) *mux.Router {
 	cc := config{Config: c}
 	r := mux.NewRouter()
 
-	r.Use(middleware.WithCSRF(c.CSRFVerifier))
-
-	r.HandleFunc("/api/users", cc.CreateUser).Methods("POST")
-	r.HandleFunc("/api/users/forgot-password", cc.ForgotPassword).Methods("POST")
-	r.HandleFunc("/api/users/change-password", cc.ChangePassword).Methods("POST")
-	r.HandleFunc("/api/users/sessions", cc.CreateSession).Methods("POST")
-
 	s := r.NewRoute().Subrouter()
-	s.Use(middleware.WithUser(c.UserController))
-	s.HandleFunc("/api/users", cc.GetUser).Methods("GET")
-	s.HandleFunc("/api/users", cc.UpdateUser).Methods("PATCH")
-	s.HandleFunc("/api/users", cc.DeleteUser).Methods("DELETE")
-	s.HandleFunc("/api/users/sessions", cc.DeleteSession).Methods("DELETE")
+	s.Use(middleware.WithCSRF(c.CSRF))
+
+	s.HandleFunc("/api/users", cc.CreateUser).Methods("POST")
+	s.HandleFunc("/api/users/forgot-password", cc.ForgotPassword).Methods("POST")
+	s.HandleFunc("/api/users/change-password", cc.ChangePassword).Methods("POST")
+	s.HandleFunc("/api/users/sessions", cc.CreateSession).Methods("POST")
+
+	t := r.NewRoute().Subrouter()
+	t.Use(middleware.WithUser(c.UserController, c.CSRF))
+	t.HandleFunc("/api/users", cc.GetUser).Methods("GET")
+	t.HandleFunc("/api/users", cc.UpdateUser).Methods("PATCH")
+	t.HandleFunc("/api/users", cc.DeleteUser).Methods("DELETE")
+	t.HandleFunc("/api/users/sessions", cc.DeleteSession).Methods("DELETE")
 
 	return r
 }
@@ -85,6 +88,7 @@ func (s *config) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie.SetSession(w, u.SessionID)
+	w.Header().Add("X-Csrf-Token", string(s.CSRF.UserCSRF(u.SessionID)))
 	payload.Write(w, r, &CreateUserResponse{u}, http.StatusCreated)
 }
 
@@ -143,6 +147,7 @@ func (s *config) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie.SetSession(w, u.SessionID)
+	w.Header().Add("X-Csrf-Token", string(s.CSRF.UserCSRF(u.SessionID)))
 	payload.Write(w, r, &ChangePasswordResponse{u}, http.StatusOK)
 }
 
@@ -174,6 +179,7 @@ func (s *config) CreateSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie.SetSession(w, u.SessionID)
+	w.Header().Add("X-Csrf-Token", string(s.CSRF.UserCSRF(u.SessionID)))
 	payload.Write(w, r, &CreateSessionResponse{u}, http.StatusCreated)
 }
 

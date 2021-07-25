@@ -111,7 +111,7 @@ func TestDeleteSession(t *testing.T) {
 			tt := apitest.New(tcase.Name).
 				Handler(testutil.Handler()).
 				Delete("/api/users/sessions").
-				Header("X-Csrf-Token", testutil.CSRF()).
+				Header("X-Csrf-Token", testutil.UserCSRF(usr.SessionID)).
 				Cookie("session_id", tcase.GivenSessionID).
 				Expect(t).Status(tcase.ExpectStatus)
 

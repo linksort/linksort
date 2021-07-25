@@ -20,10 +20,13 @@ type contextKey int
 
 const userKey contextKey = iota
 
-// WithUser adds the authenticated user to the context. If the user cannot be
+// WithUser adds the authenticated user to the context and validates her CSRF
+// token if the incoming request is a write request. If the user cannot be
 // found, then a 401 unauthorized response is returned.
 func WithUser(s interface {
 	GetUserBySessionID(context.Context, string) (*model.User, error)
+}, m interface {
+	VerifyUserCSRF(string, string, time.Duration) error
 }) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -59,11 +62,26 @@ func WithUser(s interface {
 				return
 			}
 
+			if isWriteRequest(r.Method) {
+				token := r.Header.Get("X-Csrf-Token")
+
+				err = m.VerifyUserCSRF(token, user.SessionID, time.Hour*24*7)
+				if err != nil {
+					payload.WriteError(w, r, errors.E(op,
+						http.StatusForbidden,
+						errors.M{"message": "Forbidden"},
+						errors.Str("invalid user csrf token")))
+
+					return
+				}
+			}
+
 			next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, userKey, user)))
 		})
 	}
 }
 
+// WithCSRF validates the X-Csrf-Token header for anonymous users.
 func WithCSRF(m interface {
 	VerifyCSRF(string, time.Duration) error
 }) func(http.Handler) http.Handler {
@@ -71,15 +89,18 @@ func WithCSRF(m interface {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var op errors.Op = "middleware.WithCSRF"
 
-			token := r.Header.Get("X-Csrf-Token")
+			if isWriteRequest(r.Method) {
+				token := r.Header.Get("X-Csrf-Token")
 
-			err := m.VerifyCSRF(token, time.Hour*24)
-			if err != nil {
-				payload.WriteError(w, r, errors.E(op,
-					http.StatusForbidden,
-					errors.M{"message": "Forbidden"},
-					errors.Str("invalid csrf token")))
-				return
+				err := m.VerifyCSRF(token, time.Hour*24)
+				if err != nil {
+					payload.WriteError(w, r, errors.E(op,
+						http.StatusForbidden,
+						errors.M{"message": "Forbidden"},
+						errors.Str("invalid csrf token")))
+
+					return
+				}
 			}
 
 			next.ServeHTTP(w, r)
@@ -133,4 +154,8 @@ func WithPanicHandling(handler http.Handler) http.Handler {
 
 		handler.ServeHTTP(w, r)
 	})
+}
+
+func isWriteRequest(method string) bool {
+	return method == http.MethodDelete || method == http.MethodPatch || method == http.MethodPost || method == http.MethodPut
 }
