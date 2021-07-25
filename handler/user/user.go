@@ -28,6 +28,7 @@ type Config struct {
 		DeleteSession(context.Context, *model.User) error
 	}
 	CSRF interface {
+		CSRF() []byte
 		UserCSRF(sessionID string) []byte
 		VerifyCSRF(token string, expiry time.Duration) error
 		VerifyUserCSRF(token string, sessionID string, expiry time.Duration) error
@@ -236,6 +237,7 @@ func (s *config) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie.UnsetSession(w)
+	w.Header().Add("X-Csrf-Token", string(s.CSRF.CSRF()))
 	payload.Write(w, r, nil, http.StatusNoContent)
 }
 
@@ -251,5 +253,6 @@ func (s *config) DeleteSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie.UnsetSession(w)
+	w.Header().Add("X-Csrf-Token", string(s.CSRF.CSRF()))
 	payload.Write(w, r, nil, http.StatusNoContent)
 }

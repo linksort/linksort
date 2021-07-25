@@ -1,15 +1,33 @@
 const API_ORIGIN = "";
 
+class CSRFStore {
+  csrf = document.querySelector("meta[name='csrf']").getAttribute("content");
+
+  get() {
+    return this.csrf;
+  }
+
+  set(csrf) {
+    this.csrf = csrf;
+  }
+
+  scanResponse(response) {
+    const newCSRF = response.headers.get("X-Csrf-Token");
+    if (newCSRF) {
+      this.set(newCSRF);
+    }
+  }
+}
+
+const csrfstore = new CSRFStore();
+
 export default function apiRequest(url, data = {}) {
   return new Promise((resolve, reject) => {
     const method = data.method || "GET";
     const fullUrl = `${API_ORIGIN}${url}`;
     const headers = new Headers();
 
-    const csrf = document
-      .querySelector("meta[name='csrf']")
-      .getAttribute("content");
-    headers.append("X-Csrf-Token", csrf);
+    headers.append("X-Csrf-Token", csrfstore.get());
 
     let body;
     if (!(data.body instanceof FormData)) {
@@ -27,6 +45,8 @@ export default function apiRequest(url, data = {}) {
       credentials: "same-origin",
     })
       .then((response) => {
+        csrfstore.scanResponse(response);
+
         if (response.status >= 400) {
           response
             .json()
