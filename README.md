@@ -25,4 +25,4 @@ cd frontend
 yarn start
 ```
 
-Go to localhost:8080.
+Go to [http://localhost:8080](http://localhost:8080).

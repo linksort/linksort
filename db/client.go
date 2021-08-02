@@ -53,6 +53,21 @@ func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 				SetSparse(true),
 		},
 	})
+	if err != nil {
+		return errors.Wrap(errors.Op("db.setupIndexes()"), err)
+	}
+
+	_, err = client.Database("test").
+		Collection("links").
+		Indexes().CreateMany(ctx, []mongo.IndexModel{
+		{
+			Keys: bson.D{
+				primitive.E{Key: "userId", Value: 1},
+				primitive.E{Key: "url", Value: 1},
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	})
 
 	return errors.Wrap(errors.Op("db.setupIndexes()"), err)
 }

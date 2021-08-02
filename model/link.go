@@ -10,7 +10,7 @@ import (
 type Link struct {
 	Key         primitive.ObjectID `json:"-" bson:"_id,omitempty"`
 	ID          string             `json:"id"`
-	UserID      string             `json:"-"`
+	UserID      string             `json:"userId"`
 	CreatedAt   time.Time          `json:"createdAt"`
 	UpdatedAt   time.Time          `json:"updatedAt"`
 	Keywords    []string           `json:"keywords"`
@@ -24,10 +24,10 @@ type Link struct {
 	Site        string             `json:"site"`
 }
 
-type GetOption func(map[string]interface{})
+type GetLinksOption func(map[string]interface{})
 
 type LinkStore interface {
-	GetLinksByUser(context.Context, *User, ...GetOption) (*Link, error)
+	GetLinksByUser(context.Context, *User, ...GetLinksOption) ([]*Link, error)
 	GetLinkByID(context.Context, string) (*Link, error)
 	CreateLink(context.Context, *Link) (*Link, error)
 	UpdateLink(context.Context, *Link) (*Link, error)
