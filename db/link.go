@@ -64,7 +64,7 @@ func (s *LinkStore) GetLinksByUser(
 	}
 
 	cur, err := s.col.Find(ctx, bson.M(m), options.Find().
-		SetSort(bson.M{"createdat": -1}).
+		SetSort(bson.M{"createdAt": -1}).
 		SetLimit(int64(p.Limit())).
 		SetSkip(int64(p.Offset())))
 	if err != nil {
@@ -143,7 +143,7 @@ func (s *LinkStore) UpdateLink(ctx context.Context, l *model.Link) (*model.Link,
 	return l, nil
 }
 
-func (s *LinkStore) Delete(ctx context.Context, l *model.Link) error {
+func (s *LinkStore) DeleteLink(ctx context.Context, l *model.Link) error {
 	op := errors.Opf("LinkStore.DeleteLink(%q)", l.ID)
 
 	sess, err := s.client.StartSession()

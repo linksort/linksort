@@ -31,6 +31,7 @@ func main() {
 
 	h := handler.New(&handler.Config{
 		UserStore: db.NewUserStore(mongo),
+		LinkStore: db.NewLinkStore(mongo),
 		Magic:     magic.New(""),
 		Email:     email.New(),
 	})

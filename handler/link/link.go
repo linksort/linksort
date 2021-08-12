@@ -19,7 +19,7 @@ type Config struct {
 		GetLink(context.Context, *model.User, string) (*model.Link, error)
 		GetLinks(context.Context, *model.User, *GetLinksRequest) ([]*model.Link, error)
 		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, error)
-		DeleteLink(context.Context, *model.User, string) (*model.Link, error)
+		DeleteLink(context.Context, *model.User, string) error
 	}
 	UserController interface {
 		GetUserBySessionID(context.Context, string) (*model.User, error)
@@ -174,10 +174,6 @@ func (s *config) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	payload.Write(w, r, &UpdateLinkResponse{l}, http.StatusOK)
 }
 
-type DeleteLinkResponse struct {
-	Link *model.Link `json:"link"`
-}
-
 func (s *config) DelteLink(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.DeleteLink")
 	ctx := r.Context()
@@ -185,12 +181,12 @@ func (s *config) DelteLink(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["linkID"]
 
-	l, err := s.LinkController.DeleteLink(ctx, u, id)
+	err := s.LinkController.DeleteLink(ctx, u, id)
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
-	payload.Write(w, r, &DeleteLinkResponse{l}, http.StatusOK)
+	payload.Write(w, r, nil, http.StatusNoContent)
 }

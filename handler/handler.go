@@ -14,6 +14,7 @@ import (
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
+	"github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/log"
@@ -24,6 +25,7 @@ import (
 
 type Config struct {
 	UserStore model.UserStore
+	LinkStore model.LinkStore
 	Magic     *magic.Client
 	Email     *email.Client
 }
@@ -43,6 +45,17 @@ func New(c *Config) http.Handler {
 		},
 		SessionController: &controller.Session{Store: c.UserStore},
 		CSRF:              c.Magic,
+	}))
+	api.PathPrefix("/links").Handler(link.Handler(&link.Config{
+		LinkController: &controller.Link{
+			Store: c.LinkStore,
+		},
+		UserController: &controller.User{
+			Store: c.UserStore,
+			Magic: c.Magic,
+			Email: c.Email,
+		},
+		CSRF: c.Magic,
 	}))
 
 	// ReverseProxy to Frontend

@@ -27,9 +27,9 @@ type Link struct {
 type GetLinksOption func(map[string]interface{})
 
 type LinkStore interface {
-	GetLinksByUser(context.Context, *User, ...GetLinksOption) ([]*Link, error)
+	GetLinksByUser(context.Context, *User, *Pagination, ...GetLinksOption) ([]*Link, error)
 	GetLinkByID(context.Context, string) (*Link, error)
 	CreateLink(context.Context, *Link) (*Link, error)
 	UpdateLink(context.Context, *Link) (*Link, error)
-	DeleteLink(context.Context, *Link) (*Link, error)
+	DeleteLink(context.Context, *Link) error
 }

@@ -27,6 +27,6 @@ func (l *Link) UpdateLink(ctx context.Context, u *model.User, req *handler.Updat
 	return nil, nil
 }
 
-func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) (*model.Link, error) {
-	return nil, nil
+func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) error {
+	return nil
 }
