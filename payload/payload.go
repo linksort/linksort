@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator"
+	"github.com/microcosm-cc/bluemonday"
 
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/log"
@@ -95,6 +96,22 @@ func Write(w http.ResponseWriter, r *http.Request, payload interface{}, status i
 
 // Valid validates the given struct.
 func Valid(dst interface{}) error {
+	rv := reflect.ValueOf(dst).Elem()
+
+	for i := 0; i < rv.NumField(); i++ {
+		val, ok := rv.Field(i).Interface().(string)
+		if !ok {
+			continue
+		}
+
+		val = strings.TrimSpace(val)
+		val = bluemonday.StrictPolicy().Sanitize(val)
+
+		if rv.Field(i).CanSet() {
+			rv.Field(i).SetString(val)
+		}
+	}
+
 	err := v.Struct(dst)
 	if err == nil {
 		return nil
