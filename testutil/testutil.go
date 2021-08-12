@@ -27,6 +27,7 @@ var (
 	_closer    func() error
 	_h         http.Handler
 	_userStore model.UserStore
+	_linkStore model.LinkStore
 	_magic     = magic.New("test-secret")
 	_email     = email.New()
 )
@@ -51,8 +52,10 @@ func Handler() http.Handler {
 
 		_closer = closer
 		_userStore = db.NewUserStore(mongo)
+		_linkStore = db.NewLinkStore(mongo)
 		_h = handler.New(&handler.Config{
 			UserStore: _userStore,
+			LinkStore: _linkStore,
 			Magic:     _magic,
 			Email:     _email,
 		})

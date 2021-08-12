@@ -5,6 +5,7 @@ package payload
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/http"
 	"reflect"
 	"strings"
@@ -21,6 +22,19 @@ var (
 	encodedErrResp []byte = json.RawMessage(`{"message":"Something has gone wrong"}`)
 	v                     = validator.New()
 )
+
+// nolint
+func init() {
+	v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+
+		if name == "-" {
+			return ""
+		}
+
+		return name
+	})
+}
 
 // ClientReporter provides information about an error such that client and
 // server errors can be distinguished and handled appropriately.
@@ -104,8 +118,10 @@ func Valid(dst interface{}) error {
 			continue
 		}
 
-		val = strings.TrimSpace(val)
-		val = bluemonday.StrictPolicy().Sanitize(val)
+		if rv.Type().Field(i).Name != "Password" {
+			val = strings.TrimSpace(val)
+			val = html.UnescapeString(bluemonday.StrictPolicy().Sanitize(val))
+		}
 
 		if rv.Field(i).CanSet() {
 			rv.Field(i).SetString(val)
@@ -121,7 +137,7 @@ func Valid(dst interface{}) error {
 
 	// nolint
 	for _, err := range err.(validator.ValidationErrors) {
-		fieldName := lowerFirstLetter(err.Field())
+		fieldName := err.Field()
 
 		switch err.Tag() {
 		case "required":
@@ -145,7 +161,7 @@ func Valid(dst interface{}) error {
 		case "email":
 			userFacingErrors[fieldName] = "This isn't a valid email."
 		default:
-			userFacingErrors[fieldName] = err.Tag()
+			userFacingErrors[fieldName] = "This is not valid."
 		}
 	}
 
