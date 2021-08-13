@@ -2,6 +2,8 @@ package controller
 
 import (
 	"context"
+	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/linksort/linksort/errors"
@@ -36,7 +38,18 @@ func (l *Link) CreateLink(ctx context.Context, u *model.User, req *handler.Creat
 }
 
 func (l *Link) GetLink(ctx context.Context, u *model.User, id string) (*model.Link, error) {
-	return nil, nil
+	op := errors.Opf("controller.GetLink(%q)", id)
+
+	link, err := l.Store.GetLinkByID(ctx, id)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	if link.UserID != u.ID {
+		return nil, errors.E(op, errors.Str("no permission"), http.StatusNotFound)
+	}
+
+	return link, nil
 }
 
 func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLinksRequest) ([]*model.Link, error) {
@@ -44,9 +57,38 @@ func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLink
 }
 
 func (l *Link) UpdateLink(ctx context.Context, u *model.User, req *handler.UpdateLinkRequest) (*model.Link, error) {
-	return nil, nil
+	op := errors.Opf("controller.UpdateLink(%q)", req.ID)
+
+	link, err := l.GetLink(ctx, u, req.ID)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	uv := reflect.ValueOf(link).Elem()
+	rv := reflect.ValueOf(req).Elem()
+	rt := rv.Type()
+
+	for i := 0; i < rv.NumField(); i++ {
+		if ss := rv.Field(i).String(); ss != "" && rv.Type().Field(i).Name != "ID" {
+			uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(ss))
+		}
+	}
+
+	link, err = l.Store.UpdateLink(ctx, link)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return link, nil
 }
 
 func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) error {
-	return nil
+	op := errors.Opf("controller.DeleteLink(%q)", id)
+
+	link, err := l.GetLink(ctx, u, id)
+	if err != nil {
+		return errors.E(op, err)
+	}
+
+	return errors.Wrap(op, l.Store.DeleteLink(ctx, link))
 }

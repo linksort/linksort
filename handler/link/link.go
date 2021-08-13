@@ -135,13 +135,13 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 
 type UpdateLinkRequest struct {
 	ID          string `json:"-"`
-	URL         string `json:"url" validate:"required,url,max=2048"`
-	Title       string `json:"title" validate:"max=512"`
-	Favicon     string `json:"favicon" validate:"url,max=512"`
-	Description string `json:"description" validate:"max=2048"`
-	Image       string `json:"image" validate:"url,max=512"`
-	Site        string `json:"site" validate:"max=512"`
-	Corpus      string `json:"corpus" validate:"max=100000"`
+	URL         string `json:"url" validate:"omitempty,url,max=2048"`
+	Title       string `json:"title" validate:"omitempty,max=512"`
+	Favicon     string `json:"favicon" validate:"omitempty,url,max=512"`
+	Description string `json:"description" validate:"omitempty,max=2048"`
+	Image       string `json:"image" validate:"omitempty,url,max=512"`
+	Site        string `json:"site" validate:"omitempty,max=512"`
+	Corpus      string `json:"corpus" validate:"omitempty,max=100000"`
 }
 
 type UpdateLinkResponse struct {

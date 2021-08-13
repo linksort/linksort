@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -16,6 +17,7 @@ import (
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler"
+	"github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
@@ -87,6 +89,26 @@ func NewUser(t *testing.T, ctx context.Context) (*model.User, string) {
 	}
 
 	return u, pw
+}
+
+func NewLink(t *testing.T, ctx context.Context, u *model.User) *model.Link {
+	t.Helper()
+
+	c := controller.Link{Store: _linkStore}
+
+	l, err := c.CreateLink(ctx, u, &link.CreateLinkRequest{
+		URL:         fmt.Sprintf("https://%s", fake.DomainName()),
+		Title:       fake.ProductName(),
+		Favicon:     fmt.Sprintf("https://%s/favicon.ico", fake.DomainName()),
+		Corpus:      fake.Paragraphs(),
+		Description: fake.Paragraph(),
+		Site:        fake.Company(),
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	return l
 }
 
 func UpdateUser(t *testing.T, ctx context.Context, u *model.User) *model.User {
