@@ -53,7 +53,14 @@ func (l *Link) GetLink(ctx context.Context, u *model.User, id string) (*model.Li
 }
 
 func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLinksRequest) ([]*model.Link, error) {
-	return nil, nil
+	op := errors.Op("controller.GetLinks")
+
+	links, err := l.Store.GetLinksByUser(ctx, u, req.Pagination)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return links, nil
 }
 
 func (l *Link) UpdateLink(ctx context.Context, u *model.User, req *handler.UpdateLinkRequest) (*model.Link, error) {

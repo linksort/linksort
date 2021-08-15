@@ -9,6 +9,7 @@ import (
 	"github.com/steinfletcher/apitest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 
+	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/testutil"
 )
 
@@ -130,6 +131,58 @@ func TestGetLink(t *testing.T) {
 				tt.Assert(jsonpath.Equal("$.link.description", lnk1.Description))
 				tt.Assert(jsonpath.Equal("$.link.favicon", lnk1.Favicon))
 				tt.Assert(jsonpath.Equal("$.link.site", lnk1.Site))
+			} else {
+				tt.Body(tcase.ExpectBody)
+			}
+
+			tt.End()
+		})
+	}
+}
+
+func TestGetLinks(t *testing.T) {
+	ctx := context.Background()
+	usr, _ := testutil.NewUser(t, ctx)
+	lnk1 := testutil.NewLink(t, ctx, usr)
+	lnk2 := testutil.NewLink(t, ctx, usr)
+	lnk3 := testutil.NewLink(t, ctx, usr)
+
+	tests := []struct {
+		Name           string
+		GivenSessionID string
+		ExpectStatus   int
+		ExpectBody     string
+	}{
+		{
+			Name:           "success",
+			GivenSessionID: usr.SessionID,
+			ExpectStatus:   http.StatusOK,
+		},
+		{
+			Name:           "bad session",
+			GivenSessionID: "hello",
+			ExpectStatus:   http.StatusUnauthorized,
+			ExpectBody:     `{"message": "Unauthorized"}`,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			tt := apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Get("/api/links").
+				Cookie("session_id", tcase.GivenSessionID).
+				Expect(t).
+				Status(tcase.ExpectStatus)
+
+			if tcase.ExpectStatus < http.StatusBadRequest {
+				for i, lnk := range []*model.Link{lnk3, lnk2, lnk1} {
+					tt.Assert(jsonpath.Equal(fmt.Sprintf("$.links[%d].id", i), lnk.ID))
+					tt.Assert(jsonpath.Equal(fmt.Sprintf("$.links[%d].title", i), lnk.Title))
+					tt.Assert(jsonpath.Equal(fmt.Sprintf("$.links[%d].description", i), lnk.Description))
+					tt.Assert(jsonpath.Equal(fmt.Sprintf("$.links[%d].favicon", i), lnk.Favicon))
+					tt.Assert(jsonpath.Equal(fmt.Sprintf("$.links[%d].site", i), lnk.Site))
+				}
 			} else {
 				tt.Body(tcase.ExpectBody)
 			}

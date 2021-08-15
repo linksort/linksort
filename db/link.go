@@ -57,14 +57,14 @@ func (s *LinkStore) GetLinksByUser(
 ) ([]*model.Link, error) {
 	op := errors.Opf("LinkStore.GetLinksByUser(u=%s)", u.Email)
 
-	m := map[string]interface{}{"userId": u.ID}
+	m := map[string]interface{}{"userid": u.ID}
 
 	for _, f := range opts {
 		f(m)
 	}
 
 	cur, err := s.col.Find(ctx, bson.M(m), options.Find().
-		SetSort(bson.M{"createdAt": -1}).
+		SetSort(bson.M{"createdat": -1}).
 		SetLimit(int64(p.Limit())).
 		SetSkip(int64(p.Offset())))
 	if err != nil {

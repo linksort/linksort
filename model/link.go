@@ -13,7 +13,7 @@ type Link struct {
 	UserID      string             `json:"userId"`
 	CreatedAt   time.Time          `json:"createdAt"`
 	UpdatedAt   time.Time          `json:"updatedAt"`
-	Keywords    []string           `json:"keywords"`
+	Keywords    JSONStringArray    `json:"keywords"`
 	Summary     string             `json:"summary"`
 	Corpus      string             `json:"corpus"`
 	URL         string             `json:"url"`

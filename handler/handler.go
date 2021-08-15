@@ -37,7 +37,7 @@ func New(c *Config) http.Handler {
 	api := router.PathPrefix("/api").Subrouter()
 	api.NotFoundHandler = http.HandlerFunc(notFound)
 
-	api.PathPrefix("/users").Handler(user.Handler(&user.Config{
+	api.PathPrefix("/users").Handler(wrap(user.Handler(&user.Config{
 		UserController: &controller.User{
 			Store: c.UserStore,
 			Magic: c.Magic,
@@ -45,8 +45,8 @@ func New(c *Config) http.Handler {
 		},
 		SessionController: &controller.Session{Store: c.UserStore},
 		CSRF:              c.Magic,
-	}))
-	api.PathPrefix("/links").Handler(link.Handler(&link.Config{
+	})))
+	api.PathPrefix("/links").Handler(wrap(link.Handler(&link.Config{
 		LinkController: &controller.Link{
 			Store: c.LinkStore,
 		},
@@ -56,7 +56,7 @@ func New(c *Config) http.Handler {
 			Email: c.Email,
 		},
 		CSRF: c.Magic,
-	}))
+	})))
 
 	// ReverseProxy to Frontend
 	router.PathPrefix("/").Handler(&httputil.ReverseProxy{
@@ -99,10 +99,6 @@ func New(c *Config) http.Handler {
 	})
 
 	return middleware.WithPanicHandling(log.WithAccessLogging(router))
-}
-
-func notFound(w http.ResponseWriter, r *http.Request) {
-	payload.Write(w, r, map[string]string{"message": "Not found"}, http.StatusNotFound)
 }
 
 type getUserDataResponse struct {
@@ -154,4 +150,19 @@ func getUserData(
 		userData: encodedUser,
 		csrf:     magic.UserCSRF(usr.SessionID),
 	}, nil
+}
+
+func notFound(w http.ResponseWriter, r *http.Request) {
+	payload.Write(w, r, map[string]string{"message": "Not found"}, http.StatusNotFound)
+}
+
+func methodNotAllowed(w http.ResponseWriter, r *http.Request) {
+	payload.Write(w, r, map[string]string{"message": "Method not allowed"}, http.StatusMethodNotAllowed)
+}
+
+func wrap(h *mux.Router) *mux.Router {
+	h.NotFoundHandler = http.HandlerFunc(notFound)
+	h.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowed)
+
+	return h
 }

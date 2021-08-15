@@ -1,8 +1,11 @@
 package testutil
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -148,4 +151,33 @@ func CSRF() string {
 
 func UserCSRF(sessionID string) string {
 	return string(_magic.UserCSRF(sessionID))
+}
+
+func PrintResponse(t *testing.T) func(*http.Response, *http.Request) error {
+	t.Helper()
+
+	return func(res *http.Response, req *http.Request) error {
+		op := errors.Op("testutil.PrintResponse")
+
+		b, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return errors.E(op, err)
+		}
+
+		err = res.Body.Close()
+		if err != nil {
+			return errors.E(op, err)
+		}
+
+		buf := new(bytes.Buffer)
+
+		err = json.Indent(buf, b, "", "  ")
+		if err != nil {
+			return errors.E(op, err)
+		}
+
+		t.Log(buf.String())
+
+		return nil
+	}
 }
