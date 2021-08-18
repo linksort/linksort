@@ -10,6 +10,7 @@ import (
 	"github.com/linksort/linksort/cookie"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler/middleware"
+	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
@@ -41,6 +42,9 @@ func Handler(c *Config) *mux.Router {
 	cc := config{Config: c}
 	r := mux.NewRouter()
 
+	// Always allow users to sign out
+	r.HandleFunc("/api/users/sessions", cc.DeleteSession).Methods("DELETE")
+
 	s := r.NewRoute().Subrouter()
 	s.Use(middleware.WithCSRF(c.CSRF))
 
@@ -54,7 +58,6 @@ func Handler(c *Config) *mux.Router {
 	t.HandleFunc("/api/users", cc.GetUser).Methods("GET")
 	t.HandleFunc("/api/users", cc.UpdateUser).Methods("PATCH")
 	t.HandleFunc("/api/users", cc.DeleteUser).Methods("DELETE")
-	t.HandleFunc("/api/users/sessions", cc.DeleteSession).Methods("DELETE")
 
 	return r
 }
@@ -244,12 +247,38 @@ func (s *config) DeleteUser(w http.ResponseWriter, r *http.Request) {
 func (s *config) DeleteSession(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.DeleteSession")
 	ctx := r.Context()
-	u := middleware.UserFromContext(ctx)
+	logger := log.FromContext(ctx)
 
-	if err := s.SessionController.DeleteSession(ctx, u); err != nil {
-		payload.WriteError(w, r, errors.E(op, err))
+	token := r.Header.Get("X-Csrf-Token")
+	if len(token) == 0 {
+		// Maybe revisit later: We don't need to check the value on sign-out requests
+		// because a new session could have been made elsewhere. We do need to check
+		// that the header exists, however, because custom headers can't be injected
+		// easily in csrf attacks.
+		payload.WriteError(w, r, errors.E(op,
+			http.StatusForbidden,
+			errors.M{"message": "Forbidden"},
+			errors.Str("missing csrf header")))
 
 		return
+	}
+
+	var (
+		err error
+		c   *http.Cookie
+		u   *model.User
+	)
+
+	c, err = r.Cookie("session_id")
+	if err == nil {
+		u, err = s.UserController.GetUserBySessionID(ctx, c.Value)
+		if err == nil {
+			err = s.SessionController.DeleteSession(ctx, u)
+		}
+	}
+
+	if err != nil {
+		logger.Print(errors.E(op, err))
 	}
 
 	cookie.UnsetSession(w)

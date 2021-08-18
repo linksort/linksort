@@ -1,25 +1,8 @@
+import CSRFStore from "./csrf";
+
 const API_ORIGIN = "";
 
-class CSRFStore {
-  csrf = document.querySelector("meta[name='csrf']").getAttribute("content");
-
-  get() {
-    return this.csrf;
-  }
-
-  set(csrf) {
-    this.csrf = csrf;
-  }
-
-  scanResponse(response) {
-    const newCSRF = response.headers.get("X-Csrf-Token");
-    if (newCSRF) {
-      this.set(newCSRF);
-    }
-  }
-}
-
-const csrfstore = new CSRFStore();
+const csrfStore = new CSRFStore();
 
 export default function apiRequest(url, data = {}) {
   return new Promise((resolve, reject) => {
@@ -27,7 +10,7 @@ export default function apiRequest(url, data = {}) {
     const fullUrl = `${API_ORIGIN}${url}`;
     const headers = new Headers();
 
-    headers.append("X-Csrf-Token", csrfstore.get());
+    headers.append("X-Csrf-Token", csrfStore.get());
 
     let body;
     if (!(data.body instanceof FormData)) {
@@ -45,7 +28,7 @@ export default function apiRequest(url, data = {}) {
       credentials: "same-origin",
     })
       .then((response) => {
-        csrfstore.scanResponse(response);
+        csrfStore.scanResponse(response);
 
         if (response.status >= 400) {
           response

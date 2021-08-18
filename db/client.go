@@ -62,7 +62,7 @@ func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 		Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{
 			Keys: bson.D{
-				primitive.E{Key: "userId", Value: 1},
+				primitive.E{Key: "userid", Value: 1},
 				primitive.E{Key: "url", Value: 1},
 			},
 			Options: options.Index().SetUnique(true),

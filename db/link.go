@@ -96,7 +96,7 @@ func (s *LinkStore) CreateLink(ctx context.Context, l *model.Link) (*model.Link,
 				if we.Code == 11000 {
 					return nil, errors.E(
 						op,
-						errors.M{"link": "This link has already been saved."},
+						errors.M{"url": "This link has already been saved."},
 						errors.Str("duplicate link URL"),
 						http.StatusBadRequest)
 				}

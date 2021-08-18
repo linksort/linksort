@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -17,21 +17,43 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
+import { useCreateLink } from "../api/links";
 
 export default function TopRightNewLinkPopover() {
+  const [isOpen, setIsOpen] = useState(false);
   const focus = useRef();
-  const mutation = {};
+  const mutation = useCreateLink();
   const formik = useFormik({
     initialValues: {
       url: "",
     },
-    onSubmit: mutation.mutateAsync,
+    onSubmit: handleSubmit,
   });
 
+  function handleOpen() {
+    setIsOpen(true);
+  }
+
+  function handleClose() {
+    formik.resetForm();
+    setIsOpen(false);
+  }
+
+  async function handleSubmit(params) {
+    await mutation.mutateAsync(params);
+    handleClose();
+  }
+
   return (
-    <Popover placement="bottom-end" initialFocusRef={focus}>
+    <Popover
+      placement="bottom-end"
+      isOpen={isOpen}
+      onClose={handleClose}
+      initialFocusRef={focus}
+      closeOnBlur={true}
+    >
       <PopoverTrigger>
-        <Button colorScheme="brand" leftIcon={<AddIcon />}>
+        <Button colorScheme="brand" leftIcon={<AddIcon />} onClick={handleOpen}>
           New Link
         </Button>
       </PopoverTrigger>
@@ -62,7 +84,7 @@ export default function TopRightNewLinkPopover() {
                 required
               />
               <FormErrorMessage>
-                {mutation.error?.message || mutation.error?.email}
+                {mutation.error?.message || mutation.error?.url}
               </FormErrorMessage>
             </FormControl>
             <Button
