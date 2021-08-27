@@ -1,7 +1,6 @@
 package magic
 
 import (
-	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -25,19 +24,16 @@ func New(secret string) *Client {
 }
 
 func (c *Client) Link(action, email, salt string) string {
-	// Get time and convert to epoc string
-	ts := time.Now().Unix()
-	sts := strconv.FormatInt(ts, 10)
-	b64ts := base64.URLEncoding.EncodeToString([]byte(sts))
+	ts := b64ts()
 
 	u := url.URL{
 		Scheme: "https",
 		Host:   "linksort.com",
 		Path:   action,
 		RawQuery: url.Values{
-			"t": []string{b64ts},
+			"t": []string{ts},
 			"u": []string{strings.ToLower(email)},
-			"s": []string{c.getSignature(email, b64ts, salt)},
+			"s": []string{c.getSignature(email, ts, salt)},
 		}.Encode(),
 	}
 
@@ -59,13 +55,9 @@ func (c *Client) Verify(id, b64ts, salt, sig string, expiry time.Duration) error
 }
 
 func (c *Client) CSRF() []byte {
-	ts := time.Now().Unix()
-	sts := strconv.FormatInt(ts, 10)
-	b64ts := base64.URLEncoding.EncodeToString([]byte(sts))
-
-	sig := c.getSignature("", b64ts, "")
-	token := fmt.Sprintf("%s.%s", b64ts, sig)
-
+	ts := b64ts()
+	sig := c.getSignature("", ts, "")
+	token := fmt.Sprintf("%s.%s", ts, sig)
 	return []byte(token)
 }
 
@@ -81,13 +73,9 @@ func (c *Client) VerifyCSRF(token string, expiry time.Duration) error {
 }
 
 func (c *Client) UserCSRF(sessionID string) []byte {
-	ts := time.Now().Unix()
-	sts := strconv.FormatInt(ts, 10)
-	b64ts := base64.URLEncoding.EncodeToString([]byte(sts))
-
-	sig := c.getSignature("", b64ts, sessionID)
-	token := fmt.Sprintf("%s.%s", b64ts, sig)
-
+	ts := b64ts()
+	sig := c.getSignature("", ts, sessionID)
+	token := fmt.Sprintf("%s.%s", ts, sig)
 	return []byte(token)
 }
 
@@ -109,9 +97,7 @@ func (c *Client) getSignature(id, b64ts, salt string) string {
 		panic(errors.E(errors.Opf("getSignature(b64ts=%s, salt=%s)", b64ts, salt), err))
 	}
 
-	sha := hex.EncodeToString(h.Sum(nil))
-
-	return sha
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 func isExpired(b64ts string, expiry time.Duration) error {
@@ -141,14 +127,15 @@ func timeFromB64(b64ts string) (time.Time, error) {
 		return time.Now(), errors.E(op, http.StatusBadRequest, err)
 	}
 
-	stringTime := bytes.NewBuffer(byteTime).String()
-
-	intTime, err := strconv.Atoi(stringTime)
+	intTime, err := strconv.Atoi(string(byteTime))
 	if err != nil {
 		return time.Now(), errors.E(op, http.StatusBadRequest, err)
 	}
 
-	timestamp := time.Unix(int64(intTime), 0)
+	return time.Unix(int64(intTime), 0), nil
+}
 
-	return timestamp, nil
+func b64ts() string {
+	sts := strconv.FormatInt(time.Now().Unix(), 10)
+	return base64.URLEncoding.EncodeToString([]byte(sts))
 }

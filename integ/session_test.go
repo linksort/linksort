@@ -101,8 +101,7 @@ func TestDeleteSession(t *testing.T) {
 		{
 			Name:           "bad session",
 			GivenSessionID: "abcdefghijklmnopqustuvxxyz",
-			ExpectStatus:   http.StatusUnauthorized,
-			ExpectBody:     `{"message":"Unauthorized"}`,
+			ExpectStatus:   http.StatusNoContent,
 		},
 	}
 

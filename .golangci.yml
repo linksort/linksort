@@ -2,3 +2,4 @@ linters:
   disable:
     - exhaustivestruct
     - gci
+    - paralleltest
