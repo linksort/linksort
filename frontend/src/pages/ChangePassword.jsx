@@ -11,6 +11,7 @@ import {
   FormHelperText,
 } from "@chakra-ui/react";
 
+import { suppressErrors } from "../utils";
 import { useChangePassword } from "../api/auth";
 import useQueryString from "../hooks/useQueryString";
 
@@ -24,7 +25,7 @@ export default function ChangePassword() {
       timestamp: queryValues.t,
       password: "",
     },
-    onSubmit: mutation.mutateAsync,
+    onSubmit: suppressErrors(mutation.mutateAsync),
   });
 
   return (

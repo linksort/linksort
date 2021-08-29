@@ -9,26 +9,30 @@ import (
 	"github.com/linksort/linksort/errors"
 	handler "github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/model"
+	"github.com/linksort/linksort/opengraph"
 )
 
 type Link struct {
-	Store model.LinkStore
+	Store     model.LinkStore
+	OpenGraph *opengraph.Client
 }
 
 func (l *Link) CreateLink(ctx context.Context, u *model.User, req *handler.CreateLinkRequest) (*model.Link, error) {
 	op := errors.Op("controller.CreateLink")
 
+	og := l.OpenGraph.Extract(ctx, req.URL)
+
 	link, err := l.Store.CreateLink(ctx, &model.Link{
 		UserID:      u.ID,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
-		Corpus:      req.Corpus,
-		URL:         req.URL,
-		Title:       req.Title,
-		Description: req.Description,
-		Favicon:     req.Favicon,
-		Image:       req.Image,
-		Site:        req.Site,
+		Corpus:      og.Corpus,
+		URL:         og.URL,
+		Title:       og.Title,
+		Description: og.Description,
+		Favicon:     og.Favicon,
+		Image:       og.Image,
+		Site:        og.Site,
 	})
 	if err != nil {
 		return nil, errors.E(op, err)

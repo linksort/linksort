@@ -18,6 +18,7 @@ import {
 import { AddIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
 import { useCreateLink } from "../api/links";
+import { suppressErrors } from "../utils";
 
 export default function TopRightNewLinkPopover() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function TopRightNewLinkPopover() {
     initialValues: {
       url: "",
     },
-    onSubmit: handleSubmit,
+    onSubmit: suppressErrors(handleSubmit),
   });
 
   function handleOpen() {

@@ -11,6 +11,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 
+import { suppressErrors } from "../utils";
 import { useSignIn } from "../api/auth";
 
 export default function SignIn() {
@@ -20,7 +21,7 @@ export default function SignIn() {
       email: "",
       password: "",
     },
-    onSubmit: mutation.mutateAsync,
+    onSubmit: suppressErrors(mutation.mutateAsync),
   });
 
   return (

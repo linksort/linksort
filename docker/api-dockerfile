@@ -1,6 +1,6 @@
 FROM golang:1.16
 
-WORKDIR /srv/www/linksort.com/
+WORKDIR /opt/linksort/
 
 COPY . .
 
@@ -8,6 +8,6 @@ RUN go get ./...
 
 RUN go get -u github.com/cosmtrek/air
 
-VOLUME ["/srv/www/linksort.com/"]
+VOLUME ["/opt/linksort/"]
 
 CMD ["/go/bin/air"]

@@ -12,6 +12,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 
+import { suppressErrors } from "../utils";
 import { useSignUp } from "../api/auth";
 
 export default function SignUp() {
@@ -23,7 +24,7 @@ export default function SignUp() {
       lastName: "",
       password: "",
     },
-    onSubmit: mutation.mutateAsync,
+    onSubmit: suppressErrors(mutation.mutateAsync),
   });
 
   return (

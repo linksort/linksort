@@ -14,6 +14,7 @@ import (
 	"github.com/linksort/linksort/handler"
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/magic"
+	"github.com/linksort/linksort/opengraph"
 )
 
 func main() {
@@ -34,6 +35,7 @@ func main() {
 		LinkStore: db.NewLinkStore(mongo),
 		Magic:     magic.New(""),
 		Email:     email.New(),
+		OpenGraph: opengraph.NewClient(),
 	})
 
 	port := getenv("PORT", "8080")

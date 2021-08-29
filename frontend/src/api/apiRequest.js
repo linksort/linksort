@@ -4,46 +4,47 @@ const API_ORIGIN = "";
 
 const csrfStore = new CSRFStore();
 
-export default function apiRequest(url, data = {}) {
-  return new Promise((resolve, reject) => {
-    const method = data.method || "GET";
-    const fullUrl = `${API_ORIGIN}${url}`;
-    const headers = new Headers();
+class ApiError extends Error {
+  constructor(json) {
+    super();
 
-    headers.append("X-Csrf-Token", csrfStore.get());
+    const keys = Object.keys(json);
 
-    let body;
-    if (!(data.body instanceof FormData)) {
-      headers.append("Content-Type", "application/json");
-      body = JSON.stringify(data.body);
-    } else {
-      body = data.body;
+    for (let i = 0; i < keys.length; i++) {
+      this[keys[i]] = json[keys[i]];
     }
+  }
+}
 
-    fetch(fullUrl, {
-      headers,
-      method,
-      body,
-      mode: "same-origin",
-      credentials: "same-origin",
-    })
-      .then((response) => {
-        csrfStore.scanResponse(response);
+export default async function apiRequest(url, data = {}) {
+  const method = data.method || "GET";
+  const fullUrl = `${API_ORIGIN}${url}`;
+  const headers = new Headers();
 
-        if (response.status >= 400) {
-          response
-            .json()
-            .then((parsed) => reject(parsed))
-            .catch((e) => reject(e));
-        } else if (response.status === 204) {
-          resolve(response);
-        } else {
-          response
-            .json()
-            .then((parsed) => resolve(parsed))
-            .catch((e) => reject(e));
-        }
-      })
-      .catch((err) => reject(err));
+  headers.append("X-Csrf-Token", csrfStore.get());
+  headers.append("Content-Type", "application/json");
+
+  const body = JSON.stringify(data.body);
+
+  const response = await fetch(fullUrl, {
+    headers,
+    method,
+    body,
+    mode: "same-origin",
+    credentials: "same-origin",
   });
+
+  csrfStore.scanResponse(response);
+
+  if (response.status === 204) {
+    return {};
+  }
+
+  const json = await response.json();
+
+  if (response.status >= 400) {
+    throw new ApiError(json);
+  }
+
+  return json;
 }

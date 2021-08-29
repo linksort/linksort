@@ -11,6 +11,7 @@ import {
   FormHelperText,
 } from "@chakra-ui/react";
 
+import { suppressErrors } from "../utils";
 import { useForgotPassword } from "../api/auth";
 
 export default function ForgotPassword() {
@@ -19,7 +20,7 @@ export default function ForgotPassword() {
     initialValues: {
       email: "",
     },
-    onSubmit: mutation.mutateAsync,
+    onSubmit: suppressErrors(mutation.mutateAsync),
   });
 
   return (

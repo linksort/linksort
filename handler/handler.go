@@ -20,6 +20,7 @@ import (
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
+	"github.com/linksort/linksort/opengraph"
 	"github.com/linksort/linksort/payload"
 )
 
@@ -28,6 +29,7 @@ type Config struct {
 	LinkStore model.LinkStore
 	Magic     *magic.Client
 	Email     *email.Client
+	OpenGraph *opengraph.Client
 }
 
 func New(c *Config) http.Handler {
@@ -48,7 +50,8 @@ func New(c *Config) http.Handler {
 	})))
 	api.PathPrefix("/links").Handler(wrap(link.Handler(&link.Config{
 		LinkController: &controller.Link{
-			Store: c.LinkStore,
+			Store:     c.LinkStore,
+			OpenGraph: c.OpenGraph,
 		},
 		UserController: &controller.User{
 			Store: c.UserStore,

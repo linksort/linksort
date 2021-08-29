@@ -1,11 +1,11 @@
 FROM node
 
-WORKDIR /srv/www/linksort.com/
+WORKDIR /opt/linksort/
 
 COPY ./frontend .
 
 RUN yarn
 
-VOLUME ["/srv/www/linksort.com"]
+VOLUME ["/opt/linksort/"]
 
 CMD ["yarn", "start"]

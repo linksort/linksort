@@ -16,7 +16,7 @@ services:
       dockerfile: "docker/frontend-dockerfile"
       context: "."
     volumes:
-      - "./frontend:/srv/www/linksort.com"
+      - "./frontend:/opt/linksort/"
     ports:
       - "3000"
 
@@ -25,11 +25,11 @@ services:
       dockerfile: "docker/api-dockerfile"
       context: "."
     volumes:
-      - ".:/srv/www/linksort.com"
+      - ".:/opt/linksort/"
     ports:
       - "8000:8000"
     environment:
-      - "DB_CONNECTION=mongo"
+      - "DB_CONNECTION=mongodb://mongo"
       - "PORT=8000"
     links:
       - "mongo"
