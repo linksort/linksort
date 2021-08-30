@@ -31,11 +31,13 @@ func main() {
 	}
 
 	h := handler.New(&handler.Config{
-		UserStore: db.NewUserStore(mongo),
-		LinkStore: db.NewLinkStore(mongo),
-		Magic:     magic.New(""),
-		Email:     email.New(),
-		OpenGraph: opengraph.NewClient(),
+		UserStore:             db.NewUserStore(mongo),
+		LinkStore:             db.NewLinkStore(mongo),
+		Magic:                 magic.New(getenv("APP_SECRET", "")),
+		Email:                 email.New(),
+		OpenGraph:             opengraph.NewClient(),
+		FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
+		FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
 	})
 
 	port := getenv("PORT", "8080")

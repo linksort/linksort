@@ -90,42 +90,28 @@ func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*model.Us
 func (s *UserStore) UpdateUser(ctx context.Context, u *model.User) (*model.User, error) {
 	op := errors.Opf("UserStore.UpdateUser(%q)", u.ID)
 
-	sess, err := s.client.StartSession()
+	u.UpdatedAt = time.Now()
+
+	res, err := s.col.ReplaceOne(ctx, bson.M{"_id": u.Key}, u)
 	if err != nil {
-		return nil, errors.E(op, err)
-	}
-	defer sess.EndSession(ctx)
-
-	_, err = sess.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
-		innerOp := errors.Op("transactionCallback")
-		u.UpdatedAt = time.Now()
-
-		res, err := s.col.ReplaceOne(sessCtx, bson.M{"_id": u.Key}, u)
-		if err != nil {
-			var e mongo.WriteException
-			if errors.As(err, &e) {
-				for _, we := range e.WriteErrors {
-					if we.Code == 11000 {
-						return nil, errors.E(
-							innerOp,
-							errors.M{"email": "This email has already been registered."},
-							errors.Str("duplicate email"),
-							http.StatusBadRequest)
-					}
+		var e mongo.WriteException
+		if errors.As(err, &e) {
+			for _, we := range e.WriteErrors {
+				if we.Code == 11000 {
+					return nil, errors.E(
+						op,
+						errors.M{"email": "This email has already been registered."},
+						errors.Str("duplicate email"),
+						http.StatusBadRequest)
 				}
 			}
-
-			return nil, errors.E(innerOp, err)
 		}
 
-		if res.MatchedCount < 1 {
-			return nil, errors.E(innerOp, errors.Str("no document match"))
-		}
-
-		return nil, nil
-	})
-	if err != nil {
 		return nil, errors.E(op, err)
+	}
+
+	if res.MatchedCount < 1 {
+		return nil, errors.E(op, errors.Str("no document match"))
 	}
 
 	return u, nil
@@ -134,28 +120,13 @@ func (s *UserStore) UpdateUser(ctx context.Context, u *model.User) (*model.User,
 func (s *UserStore) DeleteUser(ctx context.Context, u *model.User) error {
 	op := errors.Opf("UserStore.DeleteUser(%q)", u.ID)
 
-	sess, err := s.client.StartSession()
+	res, err := s.col.DeleteOne(ctx, bson.M{"_id": u.Key})
 	if err != nil {
 		return errors.E(op, err)
 	}
-	defer sess.EndSession(ctx)
 
-	_, err = sess.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
-		innerOp := errors.Op("transactionCallback")
-
-		res, err := s.col.DeleteOne(sessCtx, bson.M{"_id": u.Key})
-		if err != nil {
-			return nil, errors.E(innerOp, err)
-		}
-
-		if res.DeletedCount != 1 {
-			return nil, errors.E(innerOp, errors.Str("nothing deleted"))
-		}
-
-		return nil, nil
-	})
-	if err != nil {
-		return errors.E(op, err)
+	if res.DeletedCount != 1 {
+		return errors.E(op, errors.Str("nothing deleted"))
 	}
 
 	return nil

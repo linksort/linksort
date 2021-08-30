@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -25,11 +26,13 @@ import (
 )
 
 type Config struct {
-	UserStore model.UserStore
-	LinkStore model.LinkStore
-	Magic     *magic.Client
-	Email     *email.Client
-	OpenGraph *opengraph.Client
+	UserStore             model.UserStore
+	LinkStore             model.LinkStore
+	Magic                 *magic.Client
+	Email                 *email.Client
+	OpenGraph             *opengraph.Client
+	FrontendProxyHostname string
+	FrontendProxyPort     string
 }
 
 func New(c *Config) http.Handler {
@@ -65,7 +68,7 @@ func New(c *Config) http.Handler {
 	router.PathPrefix("/").Handler(&httputil.ReverseProxy{
 		Director: func(r *http.Request) {
 			r.URL.Scheme = "http"
-			r.URL.Host = "localhost:3000"
+			r.URL.Host = fmt.Sprintf("%s:%s", c.FrontendProxyHostname, c.FrontendProxyPort)
 			delete(r.Header, "Accept-Encoding")
 		},
 		ModifyResponse: func(r *http.Response) error {

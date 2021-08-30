@@ -115,29 +115,15 @@ func (s *LinkStore) CreateLink(ctx context.Context, l *model.Link) (*model.Link,
 func (s *LinkStore) UpdateLink(ctx context.Context, l *model.Link) (*model.Link, error) {
 	op := errors.Opf("LinkStore.UpdateLink(%q)", l.ID)
 
-	sess, err := s.client.StartSession()
+	l.UpdatedAt = time.Now()
+
+	res, err := s.col.ReplaceOne(ctx, bson.M{"_id": l.Key}, l)
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
-	defer sess.EndSession(ctx)
 
-	_, err = sess.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
-		innerOp := errors.Op("transactionCallback")
-		l.UpdatedAt = time.Now()
-
-		res, err := s.col.ReplaceOne(sessCtx, bson.M{"_id": l.Key}, l)
-		if err != nil {
-			return nil, errors.E(innerOp, err)
-		}
-
-		if res.MatchedCount < 1 {
-			return nil, errors.E(innerOp, errors.Str("no document match"))
-		}
-
-		return nil, nil
-	})
-	if err != nil {
-		return nil, errors.E(op, err)
+	if res.MatchedCount < 1 {
+		return nil, errors.E(op, errors.Str("no document match"))
 	}
 
 	return l, nil
@@ -146,28 +132,13 @@ func (s *LinkStore) UpdateLink(ctx context.Context, l *model.Link) (*model.Link,
 func (s *LinkStore) DeleteLink(ctx context.Context, l *model.Link) error {
 	op := errors.Opf("LinkStore.DeleteLink(%q)", l.ID)
 
-	sess, err := s.client.StartSession()
+	res, err := s.col.DeleteOne(ctx, bson.M{"_id": l.Key})
 	if err != nil {
 		return errors.E(op, err)
 	}
-	defer sess.EndSession(ctx)
 
-	_, err = sess.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
-		innerOp := errors.Op("transactionCallback")
-
-		res, err := s.col.DeleteOne(sessCtx, bson.M{"_id": l.Key})
-		if err != nil {
-			return nil, errors.E(innerOp, err)
-		}
-
-		if res.DeletedCount != 1 {
-			return nil, errors.E(innerOp, errors.Str("nothing deleted"))
-		}
-
-		return nil, nil
-	})
-	if err != nil {
-		return errors.E(op, err)
+	if res.DeletedCount != 1 {
+		return errors.E(op, errors.Str("nothing deleted"))
 	}
 
 	return nil
