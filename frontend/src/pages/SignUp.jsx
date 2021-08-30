@@ -9,9 +9,9 @@ import {
   FormHelperText,
   FormErrorMessage,
   Button,
-  Box,
 } from "@chakra-ui/react";
 
+import FloatingPill from "../components/FloatingPill";
 import { suppressErrors } from "../utils";
 import { useSignUp } from "../api/auth";
 
@@ -28,7 +28,13 @@ export default function SignUp() {
   });
 
   return (
-    <Box as="form" width="100%" maxWidth="36ch" onSubmit={formik.handleSubmit}>
+    <FloatingPill
+      as="form"
+      width="100%"
+      maxWidth="36ch"
+      margin="auto"
+      onSubmit={formik.handleSubmit}
+    >
       <Heading fontSize="3xl" mb={6}>
         Sign up
       </Heading>
@@ -113,6 +119,6 @@ export default function SignUp() {
       <Button as={Link} variant="ghost" w="100%" to="/sign-in">
         Already have an account? Sign in.
       </Button>
-    </Box>
+    </FloatingPill>
   );
 }

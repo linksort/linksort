@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Container, Flex, Box, Heading, Text, Stack } from "@chakra-ui/react";
+import { Container, Flex, Box, Text, Stack } from "@chakra-ui/react";
 
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
+import Logo from "./Logo";
 import { useUser } from "../api/auth";
 
 function UnderlineLink({ to, href, children }) {
@@ -41,14 +42,9 @@ export default function Layout({ children }) {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Heading
-          as="h1"
-          fontSize="md"
-          fontWeight="normal"
-          _hover={{ textDecoration: "underline" }}
-        >
-          <Link to="/">Linksort</Link>
-        </Heading>
+        <Link to="/">
+          <Logo htmlWidth="100rem" />
+        </Link>
         <Stack direction="row" as="nav" spacing={4}>
           {user ? (
             <>
@@ -66,8 +62,11 @@ export default function Layout({ children }) {
       </Flex>
       <Box
         as="main"
-        maxWidth="3xl"
+        width="100%"
+        maxWidth="100%"
         minHeight={["calc(100vh - 14rem)", "calc(100vh - 16rem)"]}
+        display="flex"
+        alignItems="stretch"
       >
         {children}
       </Box>

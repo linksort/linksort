@@ -7,10 +7,11 @@ import {
   Input,
   FormErrorMessage,
   Button,
-  Box,
   FormHelperText,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
+import FloatingPill from "../components/FloatingPill";
 import { suppressErrors } from "../utils";
 import { useForgotPassword } from "../api/auth";
 
@@ -24,7 +25,13 @@ export default function ForgotPassword() {
   });
 
   return (
-    <Box as="form" width="100%" maxWidth="36ch" onSubmit={formik.handleSubmit}>
+    <FloatingPill
+      as="form"
+      width="100%"
+      maxWidth="36ch"
+      margin="auto"
+      onSubmit={formik.handleSubmit}
+    >
       <Heading fontSize="3xl" mb={6}>
         Forgot password
       </Heading>
@@ -59,6 +66,10 @@ export default function ForgotPassword() {
       >
         Submit
       </Button>
-    </Box>
+
+      <Button as={Link} variant="ghost" w="100%" to="/sign-in">
+        Go back to sign in
+      </Button>
+    </FloatingPill>
   );
 }

@@ -7,10 +7,10 @@ import {
   Input,
   FormErrorMessage,
   Button,
-  Box,
   FormHelperText,
 } from "@chakra-ui/react";
 
+import FloatingPill from "../components/FloatingPill";
 import { suppressErrors } from "../utils";
 import { useChangePassword } from "../api/auth";
 import useQueryString from "../hooks/useQueryString";
@@ -29,7 +29,13 @@ export default function ChangePassword() {
   });
 
   return (
-    <Box as="form" width="100%" maxWidth="36ch" onSubmit={formik.handleSubmit}>
+    <FloatingPill
+      as="form"
+      width="100%"
+      maxWidth="36ch"
+      margin="auto"
+      onSubmit={formik.handleSubmit}
+    >
       <Heading fontSize="3xl" mb={6}>
         Change password
       </Heading>
@@ -59,6 +65,6 @@ export default function ChangePassword() {
       >
         Submit
       </Button>
-    </Box>
+    </FloatingPill>
   );
 }

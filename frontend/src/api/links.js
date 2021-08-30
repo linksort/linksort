@@ -24,6 +24,6 @@ export function useLinks({ page = 0 }) {
     ["links"],
     () =>
       apiRequest(`/api/links?page=${page}`).then((response) => response.links),
-    { keepPreviousData: true }
+    { keepPreviousData: true, initialData: () => [] }
   );
 }

@@ -3,7 +3,7 @@ import { Heading, Box, Text } from "@chakra-ui/react";
 
 export default function ForgotPasswordSentEmail() {
   return (
-    <Box width="100%" maxWidth="36ch">
+    <Box width="100%" maxWidth="36ch" margin="auto">
       <Heading fontSize="3xl" mb={6}>
         Check your email
       </Heading>

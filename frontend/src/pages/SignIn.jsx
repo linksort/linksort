@@ -8,9 +8,9 @@ import {
   Input,
   FormErrorMessage,
   Button,
-  Box,
 } from "@chakra-ui/react";
 
+import FloatingPill from "../components/FloatingPill";
 import { suppressErrors } from "../utils";
 import { useSignIn } from "../api/auth";
 
@@ -25,7 +25,13 @@ export default function SignIn() {
   });
 
   return (
-    <Box as="form" width="100%" maxWidth="36ch" onSubmit={formik.handleSubmit}>
+    <FloatingPill
+      as="form"
+      width="100%"
+      maxWidth="36ch"
+      margin="auto"
+      onSubmit={formik.handleSubmit}
+    >
       <Heading fontSize="3xl" mb={6}>
         Sign in
       </Heading>
@@ -75,6 +81,6 @@ export default function SignIn() {
       <Button as={Link} variant="ghost" to="/forgot-password" w="100%">
         I forgot my password.
       </Button>
-    </Box>
+    </FloatingPill>
   );
 }
