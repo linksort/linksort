@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Flex,
   Button,
@@ -11,10 +12,7 @@ import {
   Stack,
   HStack,
   AccordionIcon,
-  MenuIcon,
   Text,
-  Heading,
-  Container,
 } from "@chakra-ui/react";
 import {
   DeleteIcon,
@@ -98,7 +96,13 @@ export default function LinkItem({ link }) {
                 </Text>
                 <HStack spacing={2}>
                   <Button leftIcon={<DeleteIcon />}>Delete</Button>
-                  <Button leftIcon={<EditIcon />}>Edit</Button>
+                  <Button
+                    as={RouterLink}
+                    to={`/links/${link.id}`}
+                    leftIcon={<EditIcon />}
+                  >
+                    Edit
+                  </Button>
                   <Button leftIcon={<StarIcon />}>Favorite</Button>
                 </HStack>
               </Stack>

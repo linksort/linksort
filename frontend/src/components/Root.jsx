@@ -16,6 +16,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 import ForgotPasswordSentEmail from "../pages/ForgotPasswordSentEmail";
 import ChangePassword from "../pages/ChangePassword";
 import Home from "../pages/Home";
+import Link from "../pages/Link";
 
 const chakraTheme = extendTheme({
   ...theme,
@@ -44,6 +45,7 @@ export default function App() {
               path="/change-password"
               component={ChangePassword}
             />
+            <AuthoirzedRoute path="/links/:linkId" component={Link} />
             <AuthoirzedRoute path="/" component={Home} />
           </Switch>
         </BrowserRouter>

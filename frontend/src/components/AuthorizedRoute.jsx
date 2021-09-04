@@ -21,7 +21,7 @@ export default function AuthorizedRoute({ component: Component, ...rest }) {
   const user = useUser();
 
   return (
-    <Container maxWidth="7xl" px={6} position="relative">
+    <Container maxWidth="7xl" px={6} position="relative" overflowX="hidden">
       <Grid
         maxWidth="100%"
         width="100%"

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Flex,
   List,
@@ -62,10 +62,10 @@ export default function Sidebar() {
         alignItems="center"
         marginBottom={6}
       >
-        <Link to="/">
+        <RouterLink to="/">
           <Logo htmlWidth="100rem" />
           <VisuallyHidden>Linksort</VisuallyHidden>
-        </Link>
+        </RouterLink>
       </Flex>
       <List paddingRight={6}>
         <ListItem>
@@ -89,7 +89,13 @@ export default function Sidebar() {
           <SidebarSectionHeader>Folders</SidebarSectionHeader>
           <List marginY={5}>
             <ListItem>
-              <SidebarButton leftIcon={<HamburgerIcon />}>All</SidebarButton>
+              <SidebarButton
+                as={RouterLink}
+                to="/"
+                leftIcon={<HamburgerIcon />}
+              >
+                All
+              </SidebarButton>
             </ListItem>
             <ListItem>
               <SidebarButton leftIcon={<AddIcon />}>New folder</SidebarButton>
