@@ -8,7 +8,6 @@ import { createBreakpoints } from "@chakra-ui/theme-tools";
 import "../theme/prose.css";
 import theme from "../theme/theme";
 
-import Layout from "./Layout";
 import UnauthoirzedRoute from "./UnauthoirzedRoute";
 import AuthoirzedRoute from "./AuthorizedRoute";
 import SignIn from "../pages/SignIn";
@@ -30,25 +29,23 @@ export default function App() {
     <ChakraProvider theme={chakraTheme}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <Layout>
-            <Switch>
-              <UnauthoirzedRoute path="/sign-in" component={SignIn} />
-              <UnauthoirzedRoute path="/sign-up" component={SignUp} />
-              <UnauthoirzedRoute
-                path="/forgot-password"
-                component={ForgotPassword}
-              />
-              <UnauthoirzedRoute
-                path="/forgot-password-sent-email"
-                component={ForgotPasswordSentEmail}
-              />
-              <UnauthoirzedRoute
-                path="/change-password"
-                component={ChangePassword}
-              />
-              <AuthoirzedRoute path="/" component={Home} />
-            </Switch>
-          </Layout>
+          <Switch>
+            <UnauthoirzedRoute path="/sign-in" component={SignIn} />
+            <UnauthoirzedRoute path="/sign-up" component={SignUp} />
+            <UnauthoirzedRoute
+              path="/forgot-password"
+              component={ForgotPassword}
+            />
+            <UnauthoirzedRoute
+              path="/forgot-password-sent-email"
+              component={ForgotPasswordSentEmail}
+            />
+            <UnauthoirzedRoute
+              path="/change-password"
+              component={ChangePassword}
+            />
+            <AuthoirzedRoute path="/" component={Home} />
+          </Switch>
         </BrowserRouter>
       </QueryClientProvider>
     </ChakraProvider>

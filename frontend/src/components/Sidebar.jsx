@@ -1,5 +1,14 @@
 import React from "react";
-import { List, ListItem, Button, Heading } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import {
+  Flex,
+  List,
+  ListItem,
+  Button,
+  Heading,
+  Box,
+  VisuallyHidden,
+} from "@chakra-ui/react";
 import {
   AddIcon,
   CopyIcon,
@@ -8,6 +17,9 @@ import {
   StarIcon,
   UpDownIcon,
 } from "@chakra-ui/icons";
+
+import Logo from "./Logo";
+import MouseType from "./MouseType";
 
 function SidebarButton(props) {
   return (
@@ -40,37 +52,54 @@ function SidebarSectionHeader({ children, ...rest }) {
   );
 }
 
-export default function Sidebar(props) {
+export default function Sidebar() {
   return (
-    <List paddingRight={6}>
-      <ListItem>
-        <SidebarSectionHeader>Filter & Sort</SidebarSectionHeader>
-        <List marginY={4}>
-          <ListItem>
-            <SidebarButton leftIcon={<Search2Icon />}>Search</SidebarButton>
-          </ListItem>
-          <ListItem>
-            <SidebarButton leftIcon={<UpDownIcon />}>Sort by</SidebarButton>
-          </ListItem>
-          <ListItem>
-            <SidebarButton leftIcon={<CopyIcon />}>Group by</SidebarButton>
-          </ListItem>
-          <ListItem>
-            <SidebarButton leftIcon={<StarIcon />}>Favorites</SidebarButton>
-          </ListItem>
-        </List>
-      </ListItem>
-      <ListItem>
-        <SidebarSectionHeader>Folders</SidebarSectionHeader>
-        <List marginY={4}>
-          <ListItem>
-            <SidebarButton leftIcon={<HamburgerIcon />}>All</SidebarButton>
-          </ListItem>
-          <ListItem>
-            <SidebarButton leftIcon={<AddIcon />}>New folder</SidebarButton>
-          </ListItem>
-        </List>
-      </ListItem>
-    </List>
+    <Box position="fixed" minHeight="100vh" width="16rem">
+      <Flex
+        as="header"
+        height="5rem"
+        justifyContent="flex-start"
+        alignItems="center"
+        marginBottom={6}
+      >
+        <Link to="/">
+          <Logo htmlWidth="100rem" />
+          <VisuallyHidden>Linksort</VisuallyHidden>
+        </Link>
+      </Flex>
+      <List paddingRight={6}>
+        <ListItem>
+          <SidebarSectionHeader>Filter & Sort</SidebarSectionHeader>
+          <List marginY={5}>
+            <ListItem>
+              <SidebarButton leftIcon={<Search2Icon />}>Search</SidebarButton>
+            </ListItem>
+            <ListItem>
+              <SidebarButton leftIcon={<UpDownIcon />}>Sort by</SidebarButton>
+            </ListItem>
+            <ListItem>
+              <SidebarButton leftIcon={<CopyIcon />}>Group by</SidebarButton>
+            </ListItem>
+            <ListItem>
+              <SidebarButton leftIcon={<StarIcon />}>Favorites</SidebarButton>
+            </ListItem>
+          </List>
+        </ListItem>
+        <ListItem>
+          <SidebarSectionHeader>Folders</SidebarSectionHeader>
+          <List marginY={5}>
+            <ListItem>
+              <SidebarButton leftIcon={<HamburgerIcon />}>All</SidebarButton>
+            </ListItem>
+            <ListItem>
+              <SidebarButton leftIcon={<AddIcon />}>New folder</SidebarButton>
+            </ListItem>
+          </List>
+        </ListItem>
+      </List>
+      <Box position="absolute" bottom="0" left="0" paddingY={4}>
+        <MouseType align="left" color="gray.600" fontSize="xs" />
+      </Box>
+    </Box>
   );
 }
