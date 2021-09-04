@@ -11,9 +11,9 @@ import {
 } from "@chakra-ui/react";
 
 import FloatingPill from "../components/FloatingPill";
-import { suppressErrors } from "../utils";
-import { useChangePassword } from "../api/auth";
-import useQueryString from "../hooks/useQueryString";
+import { suppressMutationErrors } from "../utils/mutations";
+import { useChangePassword } from "../hooks/auth";
+import useQueryString from "../hooks/queryString";
 
 export default function ChangePassword() {
   const queryValues = useQueryString();
@@ -25,7 +25,7 @@ export default function ChangePassword() {
       timestamp: queryValues.t,
       password: "",
     },
-    onSubmit: suppressErrors(mutation.mutateAsync),
+    onSubmit: suppressMutationErrors(mutation.mutateAsync),
   });
 
   return (

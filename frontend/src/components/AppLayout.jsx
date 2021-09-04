@@ -1,5 +1,4 @@
 import React from "react";
-import { Route, Redirect } from "react-router-dom";
 import {
   Stack,
   Grid,
@@ -13,13 +12,10 @@ import {
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
 import Sidebar from "./Sidebar";
-import { useUser } from "../api/auth";
 
 const HEADER_HEIGHT = "5rem";
 
-export default function AuthorizedRoute({ component: Component, ...rest }) {
-  const user = useUser();
-
+export default function AppLayout({ children }) {
   return (
     <Container maxWidth="7xl" px={6} position="relative" overflowX="hidden">
       <Grid
@@ -89,20 +85,12 @@ export default function AuthorizedRoute({ component: Component, ...rest }) {
             </Container>
           </Box>
           <Box
+            as="main"
             marginTop={HEADER_HEIGHT}
             paddingTop={4}
             paddingLeft={[0, 0, 6, 6]}
           >
-            <Route
-              {...rest}
-              render={() => {
-                if (!!user) {
-                  return <Component />;
-                } else {
-                  return <Redirect to="/sign-in" />;
-                }
-              }}
-            />
+            {children}
           </Box>
         </GridItem>
       </Grid>

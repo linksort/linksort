@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { SettingsIcon } from "@chakra-ui/icons";
 
-import { useSignOut } from "../api/auth";
+import { useSignOut } from "../hooks/auth";
 
 export default function TopRightUserMenu() {
   const signOutMutation = useSignOut();

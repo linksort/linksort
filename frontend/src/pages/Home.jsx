@@ -3,7 +3,7 @@ import { Accordion } from "@chakra-ui/react";
 
 import ErrorScreen from "../components/ErrorScreen";
 import LinkItem from "../components/LinkItem";
-import { useLinks } from "../api/links";
+import { useLinks } from "../hooks/links";
 
 export default function Home() {
   const { data: links, isError, error } = useLinks({ pageNumber: 0 });

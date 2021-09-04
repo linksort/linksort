@@ -8,8 +8,7 @@ import { createBreakpoints } from "@chakra-ui/theme-tools";
 import "../theme/prose.css";
 import theme from "../theme/theme";
 
-import UnauthoirzedRoute from "./UnauthoirzedRoute";
-import AuthoirzedRoute from "./AuthorizedRoute";
+import AuthRoute from "./AuthRoute";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import ForgotPassword from "../pages/ForgotPassword";
@@ -31,22 +30,48 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Switch>
-            <UnauthoirzedRoute path="/sign-in" component={SignIn} />
-            <UnauthoirzedRoute path="/sign-up" component={SignUp} />
-            <UnauthoirzedRoute
+            <AuthRoute
+              isAuthRequired={false}
+              redirectTo="/"
+              path="/sign-in"
+              component={SignIn}
+            />
+            <AuthRoute
+              isAuthRequired={false}
+              redirectTo="/"
+              path="/sign-up"
+              component={SignUp}
+            />
+            <AuthRoute
+              isAuthRequired={false}
+              redirectTo="/"
               path="/forgot-password"
               component={ForgotPassword}
             />
-            <UnauthoirzedRoute
+            <AuthRoute
+              isAuthRequired={false}
+              redirectTo="/"
               path="/forgot-password-sent-email"
               component={ForgotPasswordSentEmail}
             />
-            <UnauthoirzedRoute
+            <AuthRoute
+              isAuthRequired={false}
+              redirectTo="/"
               path="/change-password"
               component={ChangePassword}
             />
-            <AuthoirzedRoute path="/links/:linkId" component={Link} />
-            <AuthoirzedRoute path="/" component={Home} />
+            <AuthRoute
+              isAuthRequired={true}
+              redirectTo="/sign-in"
+              path="/links/:linkId"
+              component={Link}
+            />
+            <AuthRoute
+              isAuthRequired={true}
+              redirectTo="/sign-in"
+              path="/"
+              component={Home}
+            />
           </Switch>
         </BrowserRouter>
       </QueryClientProvider>

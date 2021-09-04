@@ -16,15 +16,18 @@ class ApiError extends Error {
   }
 }
 
-export default async function apiRequest(url, data = {}) {
+export default async function apiFetch(url, data = {}) {
   const method = data.method || "GET";
   const fullUrl = `${API_ORIGIN}${url}`;
   const headers = new Headers();
 
-  headers.append("X-Csrf-Token", csrfStore.get());
-  headers.append("Content-Type", "application/json");
+  let body = null;
 
-  const body = JSON.stringify(data.body);
+  if (["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
+    headers.append("X-Csrf-Token", csrfStore.get());
+    headers.append("Content-Type", "application/json");
+    body = JSON.stringify(data.body);
+  }
 
   const response = await fetch(fullUrl, {
     headers,

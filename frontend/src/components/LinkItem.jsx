@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Flex,
@@ -14,12 +14,9 @@ import {
   AccordionIcon,
   Text,
 } from "@chakra-ui/react";
-import {
-  DeleteIcon,
-  EditIcon,
-  HamburgerIcon,
-  StarIcon,
-} from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, HamburgerIcon } from "@chakra-ui/icons";
+
+import { useDeleteLink } from "../hooks/links";
 
 function Bullet({ favicon }) {
   return (
@@ -47,8 +44,16 @@ function Bullet({ favicon }) {
 }
 
 export default function LinkItem({ link }) {
+  const closeButton = useRef();
+  const mutation = useDeleteLink(link.id);
+
+  function handleDeleteLink() {
+    closeButton.current?.click();
+    mutation.mutateAsync().catch(() => closeButton.current?.click());
+  }
+
   return (
-    <AccordionItem borderTop="unset" borderBottom="unset">
+    <AccordionItem borderTop="unset" borderBottom="unset" key={link.id}>
       {({ isExpanded }) => (
         <>
           <Flex alignItems="center" height={10}>
@@ -65,6 +70,7 @@ export default function LinkItem({ link }) {
               {link.title}
             </Link>
             <AccordionButton
+              ref={closeButton}
               backgroundColor="gray.100"
               marginLeft={2}
               borderRadius="md"
@@ -95,7 +101,9 @@ export default function LinkItem({ link }) {
                   {link.description}
                 </Text>
                 <HStack spacing={2}>
-                  <Button leftIcon={<DeleteIcon />}>Delete</Button>
+                  <Button leftIcon={<DeleteIcon />} onClick={handleDeleteLink}>
+                    Delete
+                  </Button>
                   <Button
                     as={RouterLink}
                     to={`/links/${link.id}`}
@@ -103,7 +111,6 @@ export default function LinkItem({ link }) {
                   >
                     Edit
                   </Button>
-                  <Button leftIcon={<StarIcon />}>Favorite</Button>
                 </HStack>
               </Stack>
             </Box>

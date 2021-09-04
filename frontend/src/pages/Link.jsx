@@ -12,13 +12,15 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
-
-import { useLink } from "../api/links";
 import { useFormik } from "formik";
+
+import { useLink, useUpdateLink } from "../hooks/links";
+import { suppressMutationErrors } from "../utils/mutations";
 
 export default function Link() {
   const { linkId } = useParams();
   const { data: link, isLoading, isSuccess } = useLink(linkId);
+  const mutation = useUpdateLink(linkId);
   const formik = useFormik({
     initialValues: link || {
       title: "",
@@ -30,7 +32,7 @@ export default function Link() {
       createdAt: "",
     },
     enableReinitialize: true,
-    onSubmit: () => {},
+    onSubmit: suppressMutationErrors(mutation.mutateAsync),
   });
 
   if (isLoading) {
@@ -46,7 +48,7 @@ export default function Link() {
 
   if (isSuccess && link) {
     return (
-      <Box maxWidth="60ch">
+      <Box as="form" maxWidth="60ch" onSubmit={formik.handleSubmit}>
         <FormControl id="title" mb={6}>
           <FormLabel>Title</FormLabel>
           <Input

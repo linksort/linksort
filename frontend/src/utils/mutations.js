@@ -1,4 +1,4 @@
-export function suppressErrors(fn) {
+export function suppressMutationErrors(fn) {
   return async (...args) => {
     try {
       await fn(...args);

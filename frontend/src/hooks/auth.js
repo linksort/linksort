@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useHistory } from "react-router-dom";
 
-import apiRequest from "./apiRequest";
+import apiFetch from "../utils/apiFetch";
 
 export function useUser() {
-  const { data } = useQuery("user", () => apiRequest("/api/users"), {
+  const { data } = useQuery("user", () => apiFetch("/api/users"), {
     initialData: () => {
       return window.__SERVER_DATA__.user;
     },
@@ -25,7 +25,7 @@ export function useSignIn() {
 
   return useMutation(
     (payload) =>
-      apiRequest(`/api/users/sessions`, {
+      apiFetch(`/api/users/sessions`, {
         body: payload,
         method: "POST",
       }),
@@ -44,7 +44,7 @@ export function useSignOut() {
 
   return useMutation(
     () =>
-      apiRequest(`/api/users/sessions`, {
+      apiFetch(`/api/users/sessions`, {
         method: "DELETE",
       }),
     {
@@ -68,7 +68,7 @@ export function useSignUp() {
 
   return useMutation(
     (payload) =>
-      apiRequest(`/api/users`, {
+      apiFetch(`/api/users`, {
         body: payload,
         method: "POST",
       }),
@@ -90,7 +90,7 @@ export function useForgotPassword() {
 
   return useMutation(
     (payload) =>
-      apiRequest(`/api/users/forgot-password`, {
+      apiFetch(`/api/users/forgot-password`, {
         body: payload,
         method: "POST",
       }),
@@ -115,7 +115,7 @@ export function useChangePassword() {
 
   return useMutation(
     (payload) =>
-      apiRequest(`/api/users/change-password`, {
+      apiFetch(`/api/users/change-password`, {
         body: payload,
         method: "POST",
       }),

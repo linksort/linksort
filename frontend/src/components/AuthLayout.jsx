@@ -1,10 +1,9 @@
 import React from "react";
-import { Link as RouterLink, Route, Redirect } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { Flex, Box, Stack, Link, Container } from "@chakra-ui/react";
 
 import Logo from "./Logo";
 import MouseType from "./MouseType";
-import { useUser } from "../api/auth";
 
 function UnderlineLink({ to, children, isExternal }) {
   const defaultProps = {
@@ -27,9 +26,9 @@ function UnderlineLink({ to, children, isExternal }) {
   );
 }
 
-export default function UnauthorizedRoute({ component: Component, ...rest }) {
-  const user = useUser();
-
+// AuthLayout sets the layout for all of the pages that deal with
+// authentication, such as SignIn, ForgotPassword, etc.
+export default function AuthLayout({ children }) {
   return (
     <Container maxWidth="7xl" px={6} position="relative">
       <Flex
@@ -56,16 +55,7 @@ export default function UnauthorizedRoute({ component: Component, ...rest }) {
         maxWidth="100%"
         minHeight={["calc(100vh - 14rem)", "calc(100vh - 16rem)"]}
       >
-        <Route
-          {...rest}
-          render={() => {
-            if (!user) {
-              return <Component />;
-            } else {
-              return <Redirect to="/" />;
-            }
-          }}
-        />
+        {children}
       </Box>
       <Flex as="footer" height={32} justifyContent="center" alignItems="center">
         <MouseType />

@@ -12,8 +12,8 @@ import {
 import { Link } from "react-router-dom";
 
 import FloatingPill from "../components/FloatingPill";
-import { suppressErrors } from "../utils";
-import { useForgotPassword } from "../api/auth";
+import { suppressMutationErrors } from "../utils/mutations";
+import { useForgotPassword } from "../hooks/auth";
 
 export default function ForgotPassword() {
   const mutation = useForgotPassword();
@@ -21,7 +21,7 @@ export default function ForgotPassword() {
     initialValues: {
       email: "",
     },
-    onSubmit: suppressErrors(mutation.mutateAsync),
+    onSubmit: suppressMutationErrors(mutation.mutateAsync),
   });
 
   return (

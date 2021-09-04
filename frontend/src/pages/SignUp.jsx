@@ -12,8 +12,8 @@ import {
 } from "@chakra-ui/react";
 
 import FloatingPill from "../components/FloatingPill";
-import { suppressErrors } from "../utils";
-import { useSignUp } from "../api/auth";
+import { suppressMutationErrors } from "../utils/mutations";
+import { useSignUp } from "../hooks/auth";
 
 export default function SignUp() {
   const mutation = useSignUp();
@@ -24,7 +24,7 @@ export default function SignUp() {
       lastName: "",
       password: "",
     },
-    onSubmit: suppressErrors(mutation.mutateAsync),
+    onSubmit: suppressMutationErrors(mutation.mutateAsync),
   });
 
   return (
