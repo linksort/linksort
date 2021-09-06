@@ -54,3 +54,16 @@ export function useGroupBy() {
 
   return { toggleGroup, groupValue };
 }
+
+export function useSearch() {
+  const history = useHistory();
+  const { search, ...rest } = useFilterParams();
+
+  function handleSearch(query) {
+    history.push(
+      `?search=${encodeURIComponent(query)}&${queryString.stringify(rest)}`
+    );
+  }
+
+  return { handleSearch };
+}

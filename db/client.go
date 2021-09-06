@@ -67,6 +67,14 @@ func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 			},
 			Options: options.Index().SetUnique(true),
 		},
+		{
+			Keys: bson.D{
+				primitive.E{Key: "corpus", Value: "text"},
+				primitive.E{Key: "title", Value: "text"},
+				primitive.E{Key: "description", Value: "text"},
+				primitive.E{Key: "site", Value: "text"},
+			},
+		},
 	})
 
 	return errors.Wrap(errors.Op("db.setupIndexes()"), err)

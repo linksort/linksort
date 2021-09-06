@@ -14,13 +14,13 @@ import {
   AddIcon,
   CopyIcon,
   HamburgerIcon,
-  Search2Icon,
   StarIcon,
   UpDownIcon,
 } from "@chakra-ui/icons";
 
 import Logo from "./Logo";
 import MouseType from "./MouseType";
+import SidebarSearchButton from "./SidebarSearchButton";
 import { useSortBy, useGroupBy } from "../hooks/filters";
 
 function SidebarButton(props) {
@@ -77,7 +77,7 @@ export default function Sidebar() {
           <SidebarSectionHeader>Filter & Sort</SidebarSectionHeader>
           <List marginY={5}>
             <ListItem>
-              <SidebarButton leftIcon={<Search2Icon />}>Search</SidebarButton>
+              <SidebarSearchButton />
             </ListItem>
             <ListItem>
               <SidebarButton leftIcon={<UpDownIcon />} onClick={toggleSort}>
