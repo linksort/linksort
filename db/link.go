@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -63,8 +64,15 @@ func (s *LinkStore) GetLinksByUser(
 		f(m)
 	}
 
+	sort := bson.M{"createdat": -1}
+	if val, ok := m["sort"]; ok {
+		sort["createdat"] = val.(int64)
+
+		delete(m, "sort")
+	}
+
 	cur, err := s.col.Find(ctx, bson.M(m), options.Find().
-		SetSort(bson.M{"createdat": -1}).
+		SetSort(sort).
 		SetLimit(int64(p.Limit())).
 		SetSkip(int64(p.Offset())))
 	if err != nil {
@@ -144,10 +152,11 @@ func (s *LinkStore) DeleteLink(ctx context.Context, l *model.Link) error {
 	return nil
 }
 
-func GetLinksFilter(val string) model.GetLinksOption {
+func GetLinksSort(val string) model.GetLinksOption {
 	return func(m map[string]interface{}) {
-		if len(val) > 0 {
-			m["filter"] = val
+		if len(val) > 0 && (val == "1" || val == "-1") {
+			intVal, _ := strconv.ParseInt(val, 10, 0)
+			m["sort"] = intVal
 		}
 	}
 }

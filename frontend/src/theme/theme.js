@@ -19,7 +19,7 @@ const theme = {
   },
 
   shadows: {
-    outline: "0 0 0 3px #b1b5dd",
+    outline: "0 0 0 3px #8080f7",
   },
 
   components: {
@@ -36,20 +36,20 @@ const theme = {
     black: "#000000",
     white: "#FFFFFF",
 
-    primary: "#9297cf", // brand.300
-    accent: "#b1b5dd", // brand.200
+    primary: "#558cff", // brand.300
+    accent: "#80a9ff", // brand.200
 
     brand: {
-      50: "#eff0f8",
-      100: "#d0d3ea",
-      200: "#b1b5dd",
-      300: "#9297cf",
-      400: "#737ac1",
-      500: "#545cb3",
-      600: "#434a98",
-      700: "#353b79",
-      800: "#282c5a",
-      900: "#1a1d3b",
+      50: "#d5e2ff",
+      100: "#aac5ff",
+      200: "#80a9ff",
+      300: "#558cff",
+      400: "#2b6fff",
+      500: "#0a52ff",
+      600: "#0042cc",
+      700: "#003199",
+      800: "#002166",
+      900: "#001033",
     },
 
     whiteAlpha: {

@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/errors"
 	handler "github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/model"
@@ -59,7 +60,9 @@ func (l *Link) GetLink(ctx context.Context, u *model.User, id string) (*model.Li
 func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLinksRequest) ([]*model.Link, error) {
 	op := errors.Op("controller.GetLinks")
 
-	links, err := l.Store.GetLinksByUser(ctx, u, req.Pagination)
+	links, err := l.Store.GetLinksByUser(ctx, u, req.Pagination,
+		db.GetLinksSearch(req.Search),
+		db.GetLinksSort(req.Sort))
 	if err != nil {
 		return nil, errors.E(op, err)
 	}

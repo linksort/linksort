@@ -194,15 +194,3 @@ func handleInternalServerError(w http.ResponseWriter, r *http.Request, e error) 
 		panic(errors.E(errors.Op("payload.handleInternalServerError"), err))
 	}
 }
-
-func lowerFirstLetter(s string) string {
-	if r := rune(s[0]); r >= 'A' && r <= 'Z' {
-		s = strings.ToLower(string(r)) + s[1:]
-	}
-
-	if s[len(s)-2:] == "ID" {
-		s = s[:len(s)-2] + "Id"
-	}
-
-	return s
-}

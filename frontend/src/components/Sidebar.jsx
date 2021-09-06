@@ -8,6 +8,7 @@ import {
   Heading,
   Box,
   VisuallyHidden,
+  Text,
 } from "@chakra-ui/react";
 import {
   AddIcon,
@@ -20,6 +21,7 @@ import {
 
 import Logo from "./Logo";
 import MouseType from "./MouseType";
+import { useSortBy, useGroupBy } from "../hooks/filters";
 
 function SidebarButton(props) {
   return (
@@ -53,6 +55,9 @@ function SidebarSectionHeader({ children, ...rest }) {
 }
 
 export default function Sidebar() {
+  const { toggleSort, sortValue } = useSortBy();
+  const { toggleGroup, groupValue } = useGroupBy();
+
   return (
     <Box position="fixed" minHeight="100vh" width="16rem">
       <Flex
@@ -63,7 +68,7 @@ export default function Sidebar() {
         marginBottom={6}
       >
         <RouterLink to="/">
-          <Logo htmlWidth="100rem" />
+          <Logo />
           <VisuallyHidden>Linksort</VisuallyHidden>
         </RouterLink>
       </Flex>
@@ -75,10 +80,24 @@ export default function Sidebar() {
               <SidebarButton leftIcon={<Search2Icon />}>Search</SidebarButton>
             </ListItem>
             <ListItem>
-              <SidebarButton leftIcon={<UpDownIcon />}>Sort by</SidebarButton>
+              <SidebarButton leftIcon={<UpDownIcon />} onClick={toggleSort}>
+                <Text as="span">
+                  Sort by{" "}
+                  <Text as="span" color="gray.600">
+                    {sortValue}
+                  </Text>
+                </Text>
+              </SidebarButton>
             </ListItem>
             <ListItem>
-              <SidebarButton leftIcon={<CopyIcon />}>Group by</SidebarButton>
+              <SidebarButton leftIcon={<CopyIcon />} onClick={toggleGroup}>
+                <Text as="span">
+                  Group by{" "}
+                  <Text as="span" color="gray.600">
+                    {groupValue}
+                  </Text>
+                </Text>
+              </SidebarButton>
             </ListItem>
             <ListItem>
               <SidebarButton leftIcon={<StarIcon />}>Favorites</SidebarButton>

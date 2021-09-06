@@ -2,11 +2,20 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useHistory } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 import pick from "lodash/pick";
+import queryString from "query-string";
 
 import apiFetch from "../utils/apiFetch";
+import { useFilterParams } from "./filters";
+
+const REFETCH_FILTER_PARAMS = ["page", "search", "sort", "favorite", "folder"];
+
+function useForceRefetchFilterParams() {
+  return pick(useFilterParams(), REFETCH_FILTER_PARAMS);
+}
 
 export function useCreateLink() {
   const queryClient = useQueryClient();
+  const filterParams = useForceRefetchFilterParams();
 
   return useMutation(
     (payload) =>
@@ -16,7 +25,14 @@ export function useCreateLink() {
       }),
     {
       onSuccess: (data) => {
-        queryClient.setQueryData(["links"], (old = []) => [data.link, ...old]);
+        queryClient.setQueryData(
+          ["links", "list", filterParams],
+          (old = []) => [data.link, ...old]
+        );
+        queryClient.invalidateQueries({
+          queryKey: ["links", "list"],
+          refetchActive: false,
+        });
       },
     }
   );
@@ -26,6 +42,7 @@ export function useUpdateLink(linkId) {
   const queryClient = useQueryClient();
   const toast = useToast();
   const history = useHistory();
+  const filterParams = useForceRefetchFilterParams();
 
   return useMutation(
     (payload) =>
@@ -35,9 +52,13 @@ export function useUpdateLink(linkId) {
       }),
     {
       onSuccess: (data) => {
-        queryClient.setQueryData(["links"], (old = []) =>
+        queryClient.setQueryData(["links", "list", filterParams], (old = []) =>
           old.map((l) => (l.id === data.id ? data : l))
         );
+        queryClient.invalidateQueries({
+          queryKey: ["links", "list"],
+          refetchActive: false,
+        });
         toast({
           title: "Link updated",
           status: "success",
@@ -53,6 +74,7 @@ export function useUpdateLink(linkId) {
 export function useDeleteLink(linkId) {
   const queryClient = useQueryClient();
   const toast = useToast();
+  const filterParams = useForceRefetchFilterParams();
 
   return useMutation(
     () =>
@@ -61,9 +83,13 @@ export function useDeleteLink(linkId) {
       }),
     {
       onSuccess: () => {
-        queryClient.setQueryData(["links"], (old = []) =>
+        queryClient.setQueryData(["links", "list", filterParams], (old = []) =>
           old.filter((l) => l.id !== linkId)
         );
+        queryClient.invalidateQueries({
+          queryKey: ["links", "list"],
+          refetchActive: false,
+        });
         toast({
           title: "Link deleted",
           status: "success",
@@ -75,27 +101,23 @@ export function useDeleteLink(linkId) {
   );
 }
 
-export function useLinks({ page = 0 }) {
+export function useLinks() {
+  const filterParams = useForceRefetchFilterParams();
+
   return useQuery(
-    ["links"],
+    ["links", "list", filterParams],
     () =>
-      apiFetch(`/api/links?page=${page}`).then((response) => response.links),
+      apiFetch(`/api/links?${queryString.stringify(filterParams)}`).then(
+        (response) => response.links
+      ),
     { keepPreviousData: true, initialData: () => [] }
   );
 }
 
 export function useLink(linkId) {
-  const queryClient = useQueryClient();
-
   return useQuery(
-    ["links", linkId],
+    ["links", "detail", linkId],
     () => apiFetch(`/api/links/${linkId}`).then((response) => response.link),
-    {
-      onSuccess: (data) => {
-        queryClient.setQueryData(["links"], (old = []) =>
-          old.map((l) => (l.id === data.id ? data : l))
-        );
-      },
-    }
+    {}
   );
 }

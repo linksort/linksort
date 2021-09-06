@@ -104,7 +104,7 @@ func (s *config) GetLink(w http.ResponseWriter, r *http.Request) {
 }
 
 type GetLinksRequest struct {
-	Filter     string
+	Sort       string
 	Search     string
 	Pagination *model.Pagination
 }
@@ -120,7 +120,7 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
 	l, err := s.LinkController.GetLinks(ctx, u, &GetLinksRequest{
-		Filter:     q.Get("filter"),
+		Sort:       q.Get("sort"),
 		Search:     q.Get("search"),
 		Pagination: model.GetPagination(r),
 	})
