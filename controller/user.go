@@ -42,6 +42,11 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 		SessionID:      random.Token(),
 		SessionExpiry:  time.Now().Add(time.Hour * time.Duration(24*30)),
 		PasswordDigest: digest,
+		FolderTree: &model.Folder{
+			Name:     "root",
+			ID:       "root",
+			Children: make([]*model.Folder, 0),
+		},
 	})
 	if err != nil {
 		return nil, errors.E(op, err)

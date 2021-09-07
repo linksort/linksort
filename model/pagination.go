@@ -7,7 +7,7 @@ import (
 
 const (
 	_defaultPageNum  = 0
-	_defaultPageSize = 50
+	_defaultPageSize = 20
 )
 
 // Pagination captures all info needed for pagination.
@@ -17,24 +17,20 @@ type Pagination struct {
 	Size int
 }
 
-func (p *Pagination) getSize() int {
+func (p *Pagination) Offset() int {
+	if p.Limit() < 0 {
+		return p.Page
+	}
+
+	return p.Page * p.Limit()
+}
+
+func (p *Pagination) Limit() int {
 	if p.Size == 0 {
 		return _defaultPageSize
 	}
 
 	return p.Size
-}
-
-func (p *Pagination) Offset() int {
-	if p.getSize() < 0 {
-		return p.Page
-	}
-
-	return p.Page * p.getSize()
-}
-
-func (p *Pagination) Limit() int {
-	return p.getSize()
 }
 
 func GetPagination(r *http.Request) *Pagination {

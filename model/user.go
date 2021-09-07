@@ -22,6 +22,7 @@ type User struct {
 	SessionID      string             `json:"-" bson:"sessionId,omitempty"`
 	SessionExpiry  time.Time          `json:"-" bson:"sessionExpiry,omitempty"`
 	PasswordDigest string             `json:"-" bson:"passwordDigest"`
+	FolderTree     *Folder            `json:"folderTree"`
 }
 
 type UserStore interface {

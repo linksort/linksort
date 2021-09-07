@@ -5,7 +5,6 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
-  PopoverCloseButton,
   Button,
   Input,
   Flex,
@@ -26,6 +25,7 @@ export default function SidebarSearchButton() {
 
   function handleClose() {
     setIsOpen(false);
+    setQuery("");
   }
 
   function handleSubmit(e) {
@@ -36,7 +36,8 @@ export default function SidebarSearchButton() {
 
   return (
     <Popover
-      placement="right-end"
+      strategy="fixed"
+      placement="right"
       isOpen={isOpen}
       onClose={handleClose}
       initialFocusRef={focus}
@@ -50,22 +51,21 @@ export default function SidebarSearchButton() {
           paddingLeft="0.5rem"
           marginLeft="-0.5rem"
           color="gray.800"
-          fontWeight="medium"
-          letterSpacing="0.01rem"
+          fontWeight="normal"
+          letterSpacing="0.015rem"
           leftIcon={<Search2Icon />}
           onClick={handleOpen}
         >
           Search
         </Button>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent borderRadius="xl" minWidth="26rem">
         <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverBody>
+        <PopoverBody padding={3}>
           <Flex as="form" onSubmit={handleSubmit}>
             <Input
               type="text"
-              placeholder="Search..."
+              placeholder="Type your query..."
               onChange={(e) => setQuery(e.target.value)}
               value={query}
               ref={focus}
@@ -76,8 +76,9 @@ export default function SidebarSearchButton() {
               type="submit"
               colorScheme="brand"
               borderLeftRadius={["md", "none"]}
+              paddingX={8}
             >
-              Submit
+              Search
             </Button>
           </Flex>
         </PopoverBody>

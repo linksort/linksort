@@ -1,17 +1,17 @@
 import { pick } from "lodash";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 
 import useQueryString from "./queryString";
 
 const DEFAULT_FILTER_PARAMS = {
-  page: 0,
-  search: null,
-  sort: -1,
+  page: "0",
+  search: "",
+  sort: "-1",
   group: "none",
-  favorite: 0,
-  folder: null,
+  favorite: "0",
+  folder: "All",
 };
 const DEFAULT_FILTER_KEYS = Object.keys(DEFAULT_FILTER_PARAMS);
 
@@ -82,4 +82,21 @@ export function useFavorites() {
   const favoriteValue = filterParams.favorite === "1";
 
   return { toggleFavorites, favoriteValue };
+}
+
+export function usePagination() {
+  const history = useHistory();
+  const filterParams = useFilterParams();
+
+  function nextPage() {
+    filterParams.page = parseInt(filterParams.page) + 1;
+    history.push(`?${queryString.stringify(filterParams)}`);
+  }
+
+  function prevPage() {
+    filterParams.page = Math.max(0, parseInt(filterParams.page) - 1);
+    history.push(`?${queryString.stringify(filterParams)}`);
+  }
+
+  return { nextPage, prevPage };
 }

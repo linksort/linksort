@@ -9,6 +9,7 @@ import {
   Box,
   VisuallyHidden,
   Text,
+  Stack,
 } from "@chakra-ui/react";
 import {
   AddIcon,
@@ -21,7 +22,12 @@ import {
 import Logo from "./Logo";
 import MouseType from "./MouseType";
 import SidebarSearchButton from "./SidebarSearchButton";
-import { useSortBy, useGroupBy, useFavorites } from "../hooks/filters";
+import {
+  useSortBy,
+  useGroupBy,
+  useFavorites,
+  useFilterParams,
+} from "../hooks/filters";
 
 function SidebarButton(props) {
   return (
@@ -32,8 +38,8 @@ function SidebarButton(props) {
       paddingLeft="0.5rem"
       marginLeft="-0.5rem"
       color="gray.800"
-      fontWeight="medium"
-      letterSpacing="0.01rem"
+      fontWeight="normal"
+      letterSpacing="0.015rem"
       {...props}
     />
   );
@@ -47,6 +53,7 @@ function SidebarSectionHeader({ children, ...rest }) {
       fontWeight="bold"
       color="gray.600"
       textTransform="uppercase"
+      marginBottom={4}
       {...rest}
     >
       {children}
@@ -55,6 +62,7 @@ function SidebarSectionHeader({ children, ...rest }) {
 }
 
 export default function Sidebar() {
+  const { folder } = useFilterParams();
   const { toggleSort, sortValue } = useSortBy();
   const { toggleGroup, groupValue } = useGroupBy();
   const { toggleFavorites, favoriteValue } = useFavorites();
@@ -66,7 +74,7 @@ export default function Sidebar() {
         height="5rem"
         justifyContent="flex-start"
         alignItems="center"
-        marginBottom={6}
+        marginBottom={4}
       >
         <RouterLink to="/">
           <Logo />
@@ -74,9 +82,8 @@ export default function Sidebar() {
         </RouterLink>
       </Flex>
       <List paddingRight={6}>
-        <ListItem>
-          <SidebarSectionHeader>Filter & Sort</SidebarSectionHeader>
-          <List marginY={5}>
+        <ListItem marginBottom={8}>
+          <Stack as={List} spacing={1}>
             <ListItem>
               <SidebarSearchButton />
             </ListItem>
@@ -109,13 +116,14 @@ export default function Sidebar() {
                 Favorites
               </SidebarButton>
             </ListItem>
-          </List>
+          </Stack>
         </ListItem>
         <ListItem>
           <SidebarSectionHeader>Folders</SidebarSectionHeader>
-          <List marginY={5}>
+          <Stack as={List} spacing={1}>
             <ListItem>
               <SidebarButton
+                variant={folder === "All" ? "solid" : "ghost"}
                 as={RouterLink}
                 to="/"
                 leftIcon={<HamburgerIcon />}
@@ -126,7 +134,7 @@ export default function Sidebar() {
             <ListItem>
               <SidebarButton leftIcon={<AddIcon />}>New folder</SidebarButton>
             </ListItem>
-          </List>
+          </Stack>
         </ListItem>
       </List>
       <Box position="absolute" bottom="0" left="0" paddingY={4}>

@@ -4,6 +4,8 @@ import (
 	crand "crypto/rand"
 	"encoding/base64"
 	mrand "math/rand"
+
+	"github.com/google/uuid"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -31,4 +33,8 @@ func Token() string {
 	}
 
 	return base64.StdEncoding.EncodeToString(randomBytes)[:32]
+}
+
+func UUID() string {
+	return uuid.NewString()
 }

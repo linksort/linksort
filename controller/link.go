@@ -15,7 +15,7 @@ import (
 
 type Link struct {
 	Store     model.LinkStore
-	OpenGraph *opengraph.Client
+	OpenGraph opengraph.Extractor
 }
 
 func (l *Link) CreateLink(ctx context.Context, u *model.User, req *handler.CreateLinkRequest) (*model.Link, error) {

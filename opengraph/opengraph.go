@@ -29,6 +29,10 @@ type LinkData struct {
 	Corpus      string
 }
 
+type Extractor interface {
+	Extract(ctx context.Context, link string) *LinkData
+}
+
 func NewClient() *Client {
 	return &Client{
 		httpClient: &http.Client{Timeout: time.Duration(5) * time.Second},
@@ -277,4 +281,23 @@ func getContentTypeHeader(r *http.Response) *string {
 	h := "text/html"
 
 	return &h
+}
+
+type TestClient struct{}
+
+func NewTestClient() *TestClient {
+	return &TestClient{}
+}
+
+func (c *TestClient) Extract(ctx context.Context, link string) *LinkData {
+	return &LinkData{
+		URL:         link,
+		Image:       "https://via.placeholder.com/150",
+		Favicon:     "https://via.placeholder.com/16",
+		Title:       "Testing",
+		Site:        "testing.com",
+		Description: "It's only a test.",
+		Original:    link,
+		Corpus:      "It's only a test.",
+	}
 }

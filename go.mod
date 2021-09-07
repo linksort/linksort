@@ -13,6 +13,7 @@ require (
 	github.com/getsentry/raven-go v0.2.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
 	github.com/leodido/go-urn v1.2.1 // indirect

@@ -12,10 +12,25 @@ import {
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
 import Sidebar from "./Sidebar";
+import { useFilterParams } from "../hooks/filters";
 
 const HEADER_HEIGHT = "5rem";
 
 export default function AppLayout({ children }) {
+  const { folder, favorite, search } = useFilterParams();
+  const isSearching = search && search.length > 0;
+  const isViewingFavorites = favorite === "1";
+
+  let heading = folder;
+
+  if (isSearching && isViewingFavorites) {
+    heading = `Searching for "${search}" among favorites in ${folder}`;
+  } else if (isSearching) {
+    heading = `Searching for "${search}" in ${folder}`;
+  } else if (isViewingFavorites) {
+    heading = `Favorites in ${heading}`;
+  }
+
   return (
     <Container maxWidth="7xl" px={6} position="relative" overflowX="hidden">
       <Grid
@@ -75,7 +90,7 @@ export default function AppLayout({ children }) {
                 backgroundColor="white"
               >
                 <Heading as="h2" size="md">
-                  All
+                  {heading}
                 </Heading>
                 <Stack direction="row" as="nav" spacing={4}>
                   <TopRightNewLinkPopover />

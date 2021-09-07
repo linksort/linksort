@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/icrowley/fake"
 
@@ -20,10 +21,10 @@ import (
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler"
-	"github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
+	"github.com/linksort/linksort/opengraph"
 )
 
 // nolint
@@ -35,6 +36,7 @@ var (
 	_linkStore model.LinkStore
 	_magic     = magic.New("test-secret")
 	_email     = email.New()
+	_opengraph = opengraph.NewTestClient()
 )
 
 func Handler() http.Handler {
@@ -63,6 +65,7 @@ func Handler() http.Handler {
 			LinkStore: _linkStore,
 			Magic:     _magic,
 			Email:     _email,
+			OpenGraph: _opengraph,
 		})
 	})
 
@@ -97,9 +100,10 @@ func NewUser(t *testing.T, ctx context.Context) (*model.User, string) {
 func NewLink(t *testing.T, ctx context.Context, u *model.User) *model.Link {
 	t.Helper()
 
-	c := controller.Link{Store: _linkStore}
-
-	l, err := c.CreateLink(ctx, u, &link.CreateLinkRequest{
+	l, err := _linkStore.CreateLink(ctx, &model.Link{
+		UserID:      u.ID,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 		URL:         fmt.Sprintf("https://%s", fake.DomainName()),
 		Title:       fake.ProductName(),
 		Favicon:     fmt.Sprintf("https://%s/favicon.ico", fake.DomainName()),

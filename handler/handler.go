@@ -15,6 +15,7 @@ import (
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
+	"github.com/linksort/linksort/handler/folder"
 	"github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/handler/user"
@@ -30,7 +31,7 @@ type Config struct {
 	LinkStore             model.LinkStore
 	Magic                 *magic.Client
 	Email                 *email.Client
-	OpenGraph             *opengraph.Client
+	OpenGraph             opengraph.Extractor
 	FrontendProxyHostname string
 	FrontendProxyPort     string
 }
@@ -55,6 +56,17 @@ func New(c *Config) http.Handler {
 		LinkController: &controller.Link{
 			Store:     c.LinkStore,
 			OpenGraph: c.OpenGraph,
+		},
+		UserController: &controller.User{
+			Store: c.UserStore,
+			Magic: c.Magic,
+			Email: c.Email,
+		},
+		CSRF: c.Magic,
+	})))
+	api.PathPrefix("/folders").Handler(wrap(folder.Handler(&folder.Config{
+		FolderController: &controller.Folder{
+			Store: c.UserStore,
 		},
 		UserController: &controller.User{
 			Store: c.UserStore,
