@@ -14,9 +14,14 @@ import {
   AccordionIcon,
   Text,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon, HamburgerIcon } from "@chakra-ui/icons";
+import {
+  DeleteIcon,
+  EditIcon,
+  HamburgerIcon,
+  StarIcon,
+} from "@chakra-ui/icons";
 
-import { useDeleteLink } from "../hooks/links";
+import { useDeleteLink, useUpdateLink } from "../hooks/links";
 
 function Bullet({ favicon }) {
   return (
@@ -45,11 +50,16 @@ function Bullet({ favicon }) {
 
 export default function LinkItem({ link }) {
   const closeButton = useRef();
-  const mutation = useDeleteLink(link.id);
+  const deleteMutation = useDeleteLink(link.id);
+  const updateMutation = useUpdateLink(link.id);
 
   function handleDeleteLink() {
     closeButton.current?.click();
-    mutation.mutateAsync().catch(() => closeButton.current?.click());
+    deleteMutation.mutateAsync().catch(() => closeButton.current?.click());
+  }
+
+  function handleToggleIsFavorite() {
+    updateMutation.mutateAsync({ isFavorite: !link.isFavorite });
   }
 
   return (
@@ -110,6 +120,12 @@ export default function LinkItem({ link }) {
                     leftIcon={<EditIcon />}
                   >
                     Edit
+                  </Button>
+                  <Button
+                    leftIcon={link.isFavorite ? <StarIcon /> : null}
+                    onClick={handleToggleIsFavorite}
+                  >
+                    Favorite
                   </Button>
                 </HStack>
               </Stack>

@@ -62,7 +62,8 @@ func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLink
 
 	links, err := l.Store.GetLinksByUser(ctx, u, req.Pagination,
 		db.GetLinksSearch(req.Search),
-		db.GetLinksSort(req.Sort))
+		db.GetLinksSort(req.Sort),
+		db.GetLinksFavorites(req.Favorites))
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
@@ -83,8 +84,17 @@ func (l *Link) UpdateLink(ctx context.Context, u *model.User, req *handler.Updat
 	rt := rv.Type()
 
 	for i := 0; i < rv.NumField(); i++ {
-		if ss := rv.Field(i).String(); ss != "" && rv.Type().Field(i).Name != "ID" {
-			uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(ss))
+		switch rv.Type().Field(i).Name {
+		case "ID":
+			// skip
+		case "IsFavorite":
+			if isNil := rv.Field(i).IsNil(); !isNil {
+				uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
+			}
+		default:
+			if ss := rv.Field(i).String(); ss != "" {
+				uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(ss))
+			}
 		}
 	}
 

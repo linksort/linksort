@@ -106,6 +106,7 @@ func (s *config) GetLink(w http.ResponseWriter, r *http.Request) {
 type GetLinksRequest struct {
 	Sort       string
 	Search     string
+	Favorites  string
 	Pagination *model.Pagination
 }
 
@@ -122,6 +123,7 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 	l, err := s.LinkController.GetLinks(ctx, u, &GetLinksRequest{
 		Sort:       q.Get("sort"),
 		Search:     q.Get("search"),
+		Favorites:  q.Get("favorite"),
 		Pagination: model.GetPagination(r),
 	})
 	if err != nil {
@@ -137,6 +139,7 @@ type UpdateLinkRequest struct {
 	ID          string `json:"-"`
 	URL         string `json:"url" validate:"omitempty,url,max=2048"`
 	Title       string `json:"title" validate:"omitempty,max=512"`
+	IsFavorite  *bool  `json:"isFavorite"`
 	Favicon     string `json:"favicon" validate:"omitempty,url,max=512"`
 	Description string `json:"description" validate:"omitempty,max=2048"`
 	Image       string `json:"image" validate:"omitempty,url,max=512"`

@@ -1,8 +1,9 @@
 import { pick } from "lodash";
-import { useMemo } from "react";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import useQueryString from "./queryString";
+import { useCallback, useMemo } from "react";
+import { useHistory } from "react-router-dom";
 import queryString from "query-string";
+
+import useQueryString from "./queryString";
 
 const DEFAULT_FILTER_PARAMS = {
   page: 0,
@@ -25,13 +26,14 @@ export function useFilterParams() {
 
 export function useSortBy() {
   const history = useHistory();
-  const { sort, ...rest } = useFilterParams();
+  const filterParams = useFilterParams();
 
   function toggleSort() {
-    history.push(`?sort=${sort * -1}&${queryString.stringify(rest)}`);
+    filterParams.sort = filterParams.sort * -1;
+    history.push(`?${queryString.stringify(filterParams)}`);
   }
 
-  const sortValue = sort > 0 ? "oldest first" : "newest first";
+  const sortValue = filterParams.sort > 0 ? "oldest first" : "newest first";
 
   return { toggleSort, sortValue };
 }
@@ -40,30 +42,44 @@ const GROUP_BY_OPTIONS = ["none", "day", "site"];
 
 export function useGroupBy() {
   const history = useHistory();
-  const { group, ...rest } = useFilterParams();
+  const filterParams = useFilterParams();
 
   function toggleGroup() {
-    const nextOption =
+    filterParams.group =
       GROUP_BY_OPTIONS[
-        (GROUP_BY_OPTIONS.indexOf(group) + 1) % GROUP_BY_OPTIONS.length
+        (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
+          GROUP_BY_OPTIONS.length
       ];
-    history.push(`?group=${nextOption}&${queryString.stringify(rest)}`);
+    history.push(`?${queryString.stringify(filterParams)}`);
   }
 
-  const groupValue = group;
+  const groupValue = filterParams.group;
 
   return { toggleGroup, groupValue };
 }
 
 export function useSearch() {
   const history = useHistory();
-  const { search, ...rest } = useFilterParams();
+  const filterParams = useFilterParams();
 
   function handleSearch(query) {
-    history.push(
-      `?search=${encodeURIComponent(query)}&${queryString.stringify(rest)}`
-    );
+    filterParams.search = encodeURIComponent(query);
+    history.push(`?${queryString.stringify(filterParams)}`);
   }
 
   return { handleSearch };
+}
+
+export function useFavorites() {
+  const history = useHistory();
+  const filterParams = useFilterParams();
+
+  function toggleFavorites() {
+    filterParams.favorite = filterParams.favorite === "0" ? "1" : "0";
+    history.push(`?${queryString.stringify(filterParams)}`);
+  }
+
+  const favoriteValue = filterParams.favorite === "1";
+
+  return { toggleFavorites, favoriteValue };
 }

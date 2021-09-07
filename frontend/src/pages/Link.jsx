@@ -1,8 +1,9 @@
 import React from "react";
-import { useParams, Link as RouterLink } from "react-router-dom";
+import { useParams, Link as RouterLink, useHistory } from "react-router-dom";
 import {
   Box,
   Button,
+  Checkbox,
   Flex,
   FormControl,
   FormLabel,
@@ -18,6 +19,7 @@ import { useLink, useUpdateLink } from "../hooks/links";
 import { suppressMutationErrors } from "../utils/mutations";
 
 export default function Link() {
+  const history = useHistory();
   const { linkId } = useParams();
   const { data: link, isLoading, isSuccess } = useLink(linkId);
   const mutation = useUpdateLink(linkId);
@@ -30,9 +32,13 @@ export default function Link() {
       favicon: "",
       image: "",
       createdAt: "",
+      isFavorite: false,
     },
     enableReinitialize: true,
-    onSubmit: suppressMutationErrors(mutation.mutateAsync),
+    onSubmit: (params) =>
+      suppressMutationErrors(mutation.mutateAsync)(params).then(() => {
+        history.goBack();
+      }),
   });
 
   if (isLoading) {
@@ -108,6 +114,14 @@ export default function Link() {
             onChange={formik.handleChange}
             value={formik.values.site}
             readOnly
+          />
+        </FormControl>
+        <FormControl id="isFavorite" mb={6}>
+          <FormLabel>Favorite</FormLabel>
+          <Checkbox
+            name="isFavorite"
+            isChecked={formik.values.isFavorite}
+            onChange={formik.handleChange}
           />
         </FormControl>
 

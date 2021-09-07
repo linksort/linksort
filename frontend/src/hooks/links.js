@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useHistory } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 import pick from "lodash/pick";
 import queryString from "query-string";
@@ -41,19 +40,19 @@ export function useCreateLink() {
 export function useUpdateLink(linkId) {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const history = useHistory();
   const filterParams = useForceRefetchFilterParams();
 
   return useMutation(
     (payload) =>
       apiFetch(`/api/links/${linkId}`, {
-        body: pick(payload, ["title", "description"]),
+        body: pick(payload, ["title", "description", "isFavorite"]),
         method: "PATCH",
       }),
     {
       onSuccess: (data) => {
+        queryClient.setQueryData(["links", "detail", linkId], () => data.link);
         queryClient.setQueryData(["links", "list", filterParams], (old = []) =>
-          old.map((l) => (l.id === data.id ? data : l))
+          old.map((l) => (l.id === data.link.id ? data.link : l))
         );
         queryClient.invalidateQueries({
           queryKey: ["links", "list"],
@@ -65,7 +64,6 @@ export function useUpdateLink(linkId) {
           duration: 9000,
           isClosable: true,
         });
-        history.goBack();
       },
     }
   );

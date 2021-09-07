@@ -44,7 +44,7 @@ export default function SidebarSearchButton() {
     >
       <PopoverTrigger>
         <Button
-          variant="ghost"
+          variant={isOpen ? "solid" : "ghost"}
           width="100%"
           justifyContent="flex-start"
           paddingLeft="0.5rem"

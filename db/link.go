@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -169,10 +168,10 @@ func GetLinksSearch(val string) model.GetLinksOption {
 	}
 }
 
-func GetLinksTags(val string) model.GetLinksOption {
+func GetLinksFavorites(val string) model.GetLinksOption {
 	return func(m map[string]interface{}) {
-		if len(val) > 0 {
-			m["tags"] = strings.ToLower(val)
+		if val == "1" {
+			m["isfavorite"] = true
 		}
 	}
 }

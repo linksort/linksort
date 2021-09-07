@@ -75,6 +75,9 @@ func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 				primitive.E{Key: "site", Value: "text"},
 			},
 		},
+		{
+			Keys: bson.D{primitive.E{Key: "isfavorite", Value: 1}},
+		},
 	})
 
 	return errors.Wrap(errors.Op("db.setupIndexes()"), err)

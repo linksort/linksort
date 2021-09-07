@@ -14,6 +14,7 @@ type Link struct {
 	CreatedAt   time.Time          `json:"createdAt"`
 	UpdatedAt   time.Time          `json:"updatedAt"`
 	Keywords    JSONStringArray    `json:"keywords"`
+	IsFavorite  bool               `json:"isFavorite"`
 	Corpus      string             `json:"corpus"`
 	URL         string             `json:"url"`
 	Title       string             `json:"title"`

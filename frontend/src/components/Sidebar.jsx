@@ -21,7 +21,7 @@ import {
 import Logo from "./Logo";
 import MouseType from "./MouseType";
 import SidebarSearchButton from "./SidebarSearchButton";
-import { useSortBy, useGroupBy } from "../hooks/filters";
+import { useSortBy, useGroupBy, useFavorites } from "../hooks/filters";
 
 function SidebarButton(props) {
   return (
@@ -57,6 +57,7 @@ function SidebarSectionHeader({ children, ...rest }) {
 export default function Sidebar() {
   const { toggleSort, sortValue } = useSortBy();
   const { toggleGroup, groupValue } = useGroupBy();
+  const { toggleFavorites, favoriteValue } = useFavorites();
 
   return (
     <Box position="fixed" minHeight="100vh" width="16rem">
@@ -100,7 +101,13 @@ export default function Sidebar() {
               </SidebarButton>
             </ListItem>
             <ListItem>
-              <SidebarButton leftIcon={<StarIcon />}>Favorites</SidebarButton>
+              <SidebarButton
+                leftIcon={<StarIcon />}
+                onClick={toggleFavorites}
+                variant={favoriteValue ? "solid" : "ghost"}
+              >
+                Favorites
+              </SidebarButton>
             </ListItem>
           </List>
         </ListItem>
