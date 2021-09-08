@@ -36,7 +36,6 @@ export default function SidebarSearchButton() {
 
   return (
     <Popover
-      strategy="fixed"
       placement="right"
       isOpen={isOpen}
       onClose={handleClose}

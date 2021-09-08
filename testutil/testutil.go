@@ -21,6 +21,7 @@ import (
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler"
+	"github.com/linksort/linksort/handler/folder"
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
@@ -116,6 +117,28 @@ func NewLink(t *testing.T, ctx context.Context, u *model.User) *model.Link {
 	}
 
 	return l
+}
+
+func NewFolder(
+	t *testing.T,
+	ctx context.Context,
+	u *model.User,
+	parentID string,
+) *model.Folder {
+	t.Helper()
+
+	name := fake.Words()
+	c := controller.Folder{Store: _userStore}
+
+	u, err := c.CreateFolder(ctx, u, &folder.CreateFolderRequest{
+		ParentID: parentID,
+		Name:     name,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	return u.FolderTree.FindByName(name)
 }
 
 func UpdateUser(t *testing.T, ctx context.Context, u *model.User) *model.User {

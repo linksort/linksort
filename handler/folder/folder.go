@@ -75,7 +75,7 @@ func (s *config) CreateFolder(w http.ResponseWriter, r *http.Request) {
 
 type UpdateFolderRequest struct {
 	Name     string `json:"name" validate:"required,max=128"`
-	ParentID string `json:"parentId" validate:"omitempty,uuid"`
+	ParentID string `json:"parentId" validate:"omitempty,uuid|eq=root"`
 	ID       string `json:"-"`
 }
 

@@ -70,7 +70,7 @@ export default function AppLayout({ children }) {
               height={HEADER_HEIGHT}
             />
           </Flex>
-          <Box position="fixed" width="100%" top="0" left="0">
+          <Box position="fixed" width="100%" top="0" left="0" zIndex={1}>
             <Container maxWidth="7xl" px={[0, 0, 6, 6]}>
               <Flex
                 paddingLeft={6}

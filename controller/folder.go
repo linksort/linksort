@@ -25,7 +25,7 @@ func (f *Folder) CreateFolder(
 		parentID = req.ParentID
 	}
 
-	parent := usr.FolderTree.DFS(parentID)
+	parent := usr.FolderTree.BFS(parentID)
 	if parent == nil {
 		return nil, errors.E(op,
 			errors.Strf("folder %q not found", req.ParentID),
@@ -48,7 +48,30 @@ func (f *Folder) UpdateFolder(
 	usr *model.User,
 	req *handler.UpdateFolderRequest,
 ) (*model.User, error) {
-	return nil, nil
+	op := errors.Op("controller.UpdateFolder")
+
+	folder := usr.FolderTree.BFS(req.ID)
+	if folder == nil {
+		return nil, errors.E(op,
+			errors.Strf("folder not found"),
+			errors.M{"message": "The given folder was not found."},
+			http.StatusBadRequest)
+	}
+
+	folder.Name = req.Name
+
+	if req.ParentID != "" {
+		if err := usr.FolderTree.Move(req.ID, req.ParentID, -1); err != nil {
+			return nil, errors.E(op, err)
+		}
+	}
+
+	usr, err := f.Store.UpdateUser(ctx, usr)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return usr, nil
 }
 
 func (f *Folder) DeleteFolder(
@@ -56,5 +79,20 @@ func (f *Folder) DeleteFolder(
 	usr *model.User,
 	folderID string,
 ) (*model.User, error) {
-	return nil, nil
+	op := errors.Op("controller.UpdateFolder")
+
+	found := usr.FolderTree.Remove(folderID)
+	if found == nil {
+		return nil, errors.E(op,
+			errors.Strf("folder not found"),
+			errors.M{"message": "The given folder was not found."},
+			http.StatusBadRequest)
+	}
+
+	usr, err := f.Store.UpdateUser(ctx, usr)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return usr, nil
 }

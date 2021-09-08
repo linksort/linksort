@@ -68,7 +68,7 @@ export default function Sidebar() {
   const { toggleFavorites, favoriteValue } = useFavorites();
 
   return (
-    <Box position="fixed" minHeight="100vh" width="16rem">
+    <Box position="fixed" minHeight="100vh" width="16rem" zIndex={2}>
       <Flex
         as="header"
         height="5rem"
