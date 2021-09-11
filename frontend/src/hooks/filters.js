@@ -5,15 +5,16 @@ import queryString from "query-string";
 
 import useQueryString from "./queryString";
 
-const DEFAULT_FILTER_PARAMS = {
+const DEFAULT_FILTER_PARAMS = Object.freeze({
   page: "0",
   search: "",
   sort: "-1",
   group: "none",
   favorite: "0",
   folder: "All",
-};
+});
 const DEFAULT_FILTER_KEYS = Object.keys(DEFAULT_FILTER_PARAMS);
+const GROUP_BY_OPTIONS = ["none", "day", "site"];
 
 export function useFilterParams() {
   const query = useQueryString();
@@ -24,79 +25,64 @@ export function useFilterParams() {
   }, [query]);
 }
 
-export function useSortBy() {
+export function useFilters() {
   const history = useHistory();
   const filterParams = useFilterParams();
 
-  function toggleSort() {
-    filterParams.sort = filterParams.sort * -1;
-    history.push(`?${queryString.stringify(filterParams)}`);
-  }
+  return useMemo(() => {
+    const sortDirection =
+      filterParams.sort > 0 ? "oldest first" : "newest first";
+    const groupName = filterParams.group;
+    const areFavoritesShowing = filterParams.favorite === "1";
+    const pageNumber = filterParams.page;
+    const searchQuery = filterParams.search;
 
-  const sortValue = filterParams.sort > 0 ? "oldest first" : "newest first";
+    function handleToggleSort() {
+      filterParams.sort = filterParams.sort * -1;
+      history.push(`?${queryString.stringify(filterParams)}`);
+    }
 
-  return { toggleSort, sortValue };
-}
+    function handleToggleGroup() {
+      filterParams.group =
+        GROUP_BY_OPTIONS[
+          (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
+            GROUP_BY_OPTIONS.length
+        ];
+      history.push(`?${queryString.stringify(filterParams)}`);
+    }
 
-const GROUP_BY_OPTIONS = ["none", "day", "site"];
+    function handleToggleFavorites() {
+      filterParams.favorite = filterParams.favorite === "0" ? "1" : "0";
+      history.push(`?${queryString.stringify(filterParams)}`);
+    }
 
-export function useGroupBy() {
-  const history = useHistory();
-  const filterParams = useFilterParams();
+    function handleSearch(query) {
+      filterParams.search = encodeURIComponent(query);
+      history.push(`?${queryString.stringify(filterParams)}`);
+    }
 
-  function toggleGroup() {
-    filterParams.group =
-      GROUP_BY_OPTIONS[
-        (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
-          GROUP_BY_OPTIONS.length
-      ];
-    history.push(`?${queryString.stringify(filterParams)}`);
-  }
+    function handleGoToNextPage() {
+      filterParams.page = parseInt(filterParams.page) + 1;
+      history.push(`?${queryString.stringify(filterParams)}`);
+    }
 
-  const groupValue = filterParams.group;
+    function handleGoToPrevPage() {
+      filterParams.page = Math.max(0, parseInt(filterParams.page) - 1);
+      history.push(`?${queryString.stringify(filterParams)}`);
+    }
 
-  return { toggleGroup, groupValue };
-}
-
-export function useSearch() {
-  const history = useHistory();
-  const filterParams = useFilterParams();
-
-  function handleSearch(query) {
-    filterParams.search = encodeURIComponent(query);
-    history.push(`?${queryString.stringify(filterParams)}`);
-  }
-
-  return { handleSearch };
-}
-
-export function useFavorites() {
-  const history = useHistory();
-  const filterParams = useFilterParams();
-
-  function toggleFavorites() {
-    filterParams.favorite = filterParams.favorite === "0" ? "1" : "0";
-    history.push(`?${queryString.stringify(filterParams)}`);
-  }
-
-  const favoriteValue = filterParams.favorite === "1";
-
-  return { toggleFavorites, favoriteValue };
-}
-
-export function usePagination() {
-  const history = useHistory();
-  const filterParams = useFilterParams();
-
-  function nextPage() {
-    filterParams.page = parseInt(filterParams.page) + 1;
-    history.push(`?${queryString.stringify(filterParams)}`);
-  }
-
-  function prevPage() {
-    filterParams.page = Math.max(0, parseInt(filterParams.page) - 1);
-    history.push(`?${queryString.stringify(filterParams)}`);
-  }
-
-  return { nextPage, prevPage };
+    return {
+      handleToggleSort,
+      handleToggleGroup,
+      handleToggleFavorites,
+      handleSearch,
+      handleGoToNextPage,
+      handleGoToPrevPage,
+      sortDirection,
+      groupName,
+      areFavoritesShowing,
+      searchQuery,
+      pageNumber,
+    };
+  }, [filterParams, history]);
 }

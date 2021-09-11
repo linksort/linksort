@@ -9,12 +9,11 @@ import {
   Skeleton,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { useHistory } from "react-router-dom";
 
 import ErrorScreen from "../components/ErrorScreen";
 import LinkItem from "../components/LinkItem";
 import { useLinks } from "../hooks/links";
-import { useFilterParams, usePagination } from "../hooks/filters";
+import { useFilters } from "../hooks/filters";
 import { isoDateToHeading } from "../utils/time";
 
 function linksBy(grouping, links) {
@@ -44,10 +43,14 @@ function linksBy(grouping, links) {
 }
 
 export default function Home() {
-  const { goBack } = useHistory();
   const { data: links, isError, error, isLoading } = useLinks();
-  const filterParams = useFilterParams();
-  const { nextPage, prevPage } = usePagination();
+  const {
+    handleGoToNextPage,
+    handleGoToPrevPage,
+    handleSearch,
+    groupName,
+    searchQuery,
+  } = useFilters();
 
   if (isError) {
     return <ErrorScreen error={error} />;
@@ -67,34 +70,35 @@ export default function Home() {
   return (
     <Box marginBottom={16}>
       <Accordion borderBottom="unset" allowToggle>
-        {Object.entries(linksBy(filterParams.group, links)).map(
-          ([heading, list]) => {
-            return (
-              <Box as="section" key={heading}>
-                {heading !== "all" && (
-                  <Heading as="h3" size="sm" marginBottom={4}>
-                    {heading}
-                  </Heading>
-                )}
-                <Box marginBottom={4}>
-                  {list.map((link) => (
-                    <LinkItem key={link.id} link={link} />
-                  ))}
-                </Box>
+        {Object.entries(linksBy(groupName, links)).map(([heading, list]) => {
+          return (
+            <Box as="section" key={heading}>
+              {heading !== "all" && (
+                <Heading as="h3" size="sm" marginBottom={4}>
+                  {heading}
+                </Heading>
+              )}
+              <Box marginBottom={4}>
+                {list.map((link) => (
+                  <LinkItem key={link.id} link={link} />
+                ))}
               </Box>
-            );
-          }
-        )}
+            </Box>
+          );
+        })}
       </Accordion>
       <HStack marginTop={8}>
-        {filterParams.search && filterParams.search.length > 0 ? (
-          <Button onClick={goBack}>Go back</Button>
+        {searchQuery && searchQuery.length > 0 ? (
+          <Button onClick={handleSearch("")}>Go back</Button>
         ) : (
           <>
-            <Button onClick={prevPage} leftIcon={<ChevronLeftIcon />}>
+            <Button onClick={handleGoToPrevPage} leftIcon={<ChevronLeftIcon />}>
               Prevous
             </Button>
-            <Button onClick={nextPage} rightIcon={<ChevronRightIcon />}>
+            <Button
+              onClick={handleGoToNextPage}
+              rightIcon={<ChevronRightIcon />}
+            >
               Next
             </Button>
           </>

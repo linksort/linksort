@@ -9,15 +9,17 @@ import {
   Input,
   Flex,
 } from "@chakra-ui/react";
-import { Search2Icon } from "@chakra-ui/icons";
 
-import { useFilters } from "../hooks/filters";
+import SidebarButton from "./SidebarButton";
 
-export default function SidebarSearchButton() {
+export default function SidebarPopover({
+  action,
+  buttonText,
+  buttonIcon: ButtonIcon,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const focus = useRef();
-  const { handleSearch } = useFilters();
 
   function handleOpen() {
     setIsOpen(true);
@@ -30,7 +32,7 @@ export default function SidebarSearchButton() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    handleSearch(query);
+    action(query);
     handleClose();
   }
 
@@ -39,24 +41,17 @@ export default function SidebarSearchButton() {
       placement="right"
       isOpen={isOpen}
       onClose={handleClose}
-      initialFocusRef={focus}
       closeOnBlur={true}
+      initialFocusRef={focus}
     >
       <PopoverTrigger>
-        <Button
+        <SidebarButton
           variant={isOpen ? "solid" : "ghost"}
-          width="100%"
-          justifyContent="flex-start"
-          paddingLeft="0.5rem"
-          marginLeft="-0.5rem"
-          color="gray.800"
-          fontWeight="normal"
-          letterSpacing="0.015rem"
-          leftIcon={<Search2Icon />}
+          leftIcon={<ButtonIcon />}
           onClick={handleOpen}
         >
-          Search
-        </Button>
+          {buttonText}
+        </SidebarButton>
       </PopoverTrigger>
       <PopoverContent borderRadius="xl" minWidth="26rem">
         <PopoverArrow />
@@ -67,8 +62,8 @@ export default function SidebarSearchButton() {
               placeholder="Type your query..."
               onChange={(e) => setQuery(e.target.value)}
               value={query}
-              ref={focus}
               borderRightRadius={["md", "none"]}
+              ref={focus}
               required
             />
             <Button
@@ -77,7 +72,7 @@ export default function SidebarSearchButton() {
               borderLeftRadius={["md", "none"]}
               paddingX={8}
             >
-              Search
+              {buttonText}
             </Button>
           </Flex>
         </PopoverBody>
