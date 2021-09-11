@@ -89,7 +89,7 @@ export default function Home() {
       </Accordion>
       <HStack marginTop={8}>
         {searchQuery && searchQuery.length > 0 ? (
-          <Button onClick={handleSearch("")}>Go back</Button>
+          <Button onClick={() => handleSearch("")}>Go back</Button>
         ) : (
           <>
             <Button onClick={handleGoToPrevPage} leftIcon={<ChevronLeftIcon />}>

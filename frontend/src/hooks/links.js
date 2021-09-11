@@ -37,6 +37,27 @@ export function useCreateLink() {
   );
 }
 
+export function useLinks() {
+  const filterParams = useForceRefetchFilterParams();
+
+  return useQuery(
+    ["links", "list", filterParams],
+    () =>
+      apiFetch(`/api/links?${queryString.stringify(filterParams)}`).then(
+        (response) => response.links
+      ),
+    { keepPreviousData: true, initialData: () => [] }
+  );
+}
+
+export function useLink(linkId) {
+  return useQuery(
+    ["links", "detail", linkId],
+    () => apiFetch(`/api/links/${linkId}`).then((response) => response.link),
+    {}
+  );
+}
+
 export function useUpdateLink(linkId) {
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -96,26 +117,5 @@ export function useDeleteLink(linkId) {
         });
       },
     }
-  );
-}
-
-export function useLinks() {
-  const filterParams = useForceRefetchFilterParams();
-
-  return useQuery(
-    ["links", "list", filterParams],
-    () =>
-      apiFetch(`/api/links?${queryString.stringify(filterParams)}`).then(
-        (response) => response.links
-      ),
-    { keepPreviousData: true, initialData: () => [] }
-  );
-}
-
-export function useLink(linkId) {
-  return useQuery(
-    ["links", "detail", linkId],
-    () => apiFetch(`/api/links/${linkId}`).then((response) => response.link),
-    {}
   );
 }

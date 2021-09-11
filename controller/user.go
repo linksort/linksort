@@ -63,6 +63,14 @@ func (u *User) GetUserBySessionID(ctx context.Context, sessionID string) (*model
 		return nil, errors.E(op, err)
 	}
 
+	if usr.FolderTree == nil {
+		usr.FolderTree = &model.Folder{
+			Name:     "root",
+			ID:       "root",
+			Children: make([]*model.Folder, 0),
+		}
+	}
+
 	return usr, nil
 }
 

@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 
 import useQueryString from "./queryString";
+import { useUser } from "./auth";
 
 const DEFAULT_FILTER_PARAMS = Object.freeze({
   page: "0",
@@ -11,10 +12,33 @@ const DEFAULT_FILTER_PARAMS = Object.freeze({
   sort: "-1",
   group: "none",
   favorite: "0",
-  folder: "All",
+  folder: "root",
 });
 const DEFAULT_FILTER_KEYS = Object.keys(DEFAULT_FILTER_PARAMS);
 const GROUP_BY_OPTIONS = ["none", "day", "site"];
+
+function resolveFolderName(
+  folderTree = { id: "root", name: "root", children: [] },
+  folderId
+) {
+  if (folderId === "root") {
+    return "All";
+  }
+
+  let queue = [folderTree];
+
+  while (queue.length > 0) {
+    let node = queue.shift();
+
+    if (node.id === folderId) {
+      return node.name;
+    }
+
+    queue.push(...node.children);
+  }
+
+  return "Unknown";
+}
 
 export function useFilterParams() {
   const query = useQueryString();
@@ -28,6 +52,7 @@ export function useFilterParams() {
 export function useFilters() {
   const history = useHistory();
   const filterParams = useFilterParams();
+  const { folderTree } = useUser();
 
   return useMemo(() => {
     const sortDirection =
@@ -36,6 +61,7 @@ export function useFilters() {
     const areFavoritesShowing = filterParams.favorite === "1";
     const pageNumber = filterParams.page;
     const searchQuery = filterParams.search;
+    const folderName = resolveFolderName(folderTree, filterParams.folder);
 
     function handleToggleSort() {
       filterParams.sort = filterParams.sort * -1;
@@ -71,6 +97,15 @@ export function useFilters() {
       history.push(`?${queryString.stringify(filterParams)}`);
     }
 
+    function makeFolderLink(folder) {
+      filterParams.folder = encodeURIComponent(folder);
+      return `/?${queryString.stringify(filterParams)}`;
+    }
+
+    function handleGoToFolder(folder) {
+      history.push(makeFolderLink(folder));
+    }
+
     return {
       handleToggleSort,
       handleToggleGroup,
@@ -78,11 +113,14 @@ export function useFilters() {
       handleSearch,
       handleGoToNextPage,
       handleGoToPrevPage,
+      handleGoToFolder,
+      makeFolderLink,
       sortDirection,
       groupName,
       areFavoritesShowing,
       searchQuery,
       pageNumber,
+      folderName,
     };
-  }, [filterParams, history]);
+  }, [filterParams, history, folderTree]);
 }

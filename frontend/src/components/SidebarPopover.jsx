@@ -13,9 +13,10 @@ import {
 import SidebarButton from "./SidebarButton";
 
 export default function SidebarPopover({
-  action,
+  onSubmit,
   buttonText,
   buttonIcon: ButtonIcon,
+  placeholder,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -32,7 +33,7 @@ export default function SidebarPopover({
 
   function handleSubmit(e) {
     e.preventDefault();
-    action(query);
+    onSubmit(query);
     handleClose();
   }
 
@@ -59,7 +60,7 @@ export default function SidebarPopover({
           <Flex as="form" onSubmit={handleSubmit}>
             <Input
               type="text"
-              placeholder="Type your query..."
+              placeholder={placeholder}
               onChange={(e) => setQuery(e.target.value)}
               value={query}
               borderRightRadius={["md", "none"]}

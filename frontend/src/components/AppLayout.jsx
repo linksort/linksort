@@ -12,22 +12,21 @@ import {
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
 import Sidebar from "./Sidebar";
-import { useFilterParams } from "../hooks/filters";
+import { useFilters } from "../hooks/filters";
 
 const HEADER_HEIGHT = "5rem";
 
 export default function AppLayout({ children }) {
-  const { folder, favorite, search } = useFilterParams();
-  const isSearching = search && search.length > 0;
-  const isViewingFavorites = favorite === "1";
+  const { folderName, areFavoritesShowing, searchQuery } = useFilters();
+  const isSearching = searchQuery && searchQuery.length > 0;
 
-  let heading = folder;
+  let heading = folderName;
 
-  if (isSearching && isViewingFavorites) {
-    heading = `Searching for "${search}" among favorites in ${folder}`;
+  if (isSearching && areFavoritesShowing) {
+    heading = `Searching for "${searchQuery}" among favorites in ${folderName}`;
   } else if (isSearching) {
-    heading = `Searching for "${search}" in ${folder}`;
-  } else if (isViewingFavorites) {
+    heading = `Searching for "${searchQuery}" in ${folderName}`;
+  } else if (areFavoritesShowing) {
     heading = `Favorites in ${heading}`;
   }
 
