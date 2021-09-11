@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { useToast } from "@chakra-ui/react";
 
 import apiFetch from "../utils/apiFetch";
+import { useUser } from "./auth";
 
 export function useCreateFolder() {
   const queryClient = useQueryClient();
@@ -72,4 +73,30 @@ export function useDeleteFolder(folder) {
       },
     }
   );
+}
+
+export function useFolders() {
+  const { folderTree } = useUser();
+
+  function resolveFolderName(folderId) {
+    if (folderId === "root") {
+      return "All";
+    }
+
+    let queue = [folderTree];
+
+    while (queue.length > 0) {
+      let node = queue.shift();
+
+      if (node.id === folderId) {
+        return node.name;
+      }
+
+      queue.push(...node.children);
+    }
+
+    return "Unknown";
+  }
+
+  return { folderTree, resolveFolderName };
 }

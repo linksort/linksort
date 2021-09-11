@@ -196,11 +196,12 @@ func TestUpdateLink(t *testing.T) {
 	ctx := context.Background()
 	usr, _ := testutil.NewUser(t, ctx)
 	lnk1 := testutil.NewLink(t, ctx, usr)
+	folder := testutil.NewFolder(t, ctx, usr, "root")
 
 	tests := []struct {
 		Name           string
 		GivenSessionID string
-		GivenBody      map[string]string
+		GivenBody      map[string]interface{}
 		GivenLinkID    string
 		ExpectStatus   int
 		ExpectBody     string
@@ -209,33 +210,58 @@ func TestUpdateLink(t *testing.T) {
 			Name:           "success",
 			GivenSessionID: usr.SessionID,
 			GivenLinkID:    lnk1.ID,
-			GivenBody: map[string]string{
+			GivenBody: map[string]interface{}{
 				"title":       "Buy It All Now",
 				"description": "It's like Walmart but on the internet.",
-				"favicon":     "https://amazon.com/favicon.ico",
 				"site":        "Amazon",
 			},
 			ExpectStatus: http.StatusOK,
 		},
 		{
-			Name:           "change url",
+			Name:           "change title",
 			GivenSessionID: usr.SessionID,
 			GivenLinkID:    lnk1.ID,
-			GivenBody: map[string]string{
-				"url":   "https://www.amazon.com",
+			GivenBody: map[string]interface{}{
 				"title": "Buy It All Now",
 			},
 			ExpectStatus: http.StatusOK,
 		},
 		{
+			Name:           "make favorite",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"isFavorite": true,
+			},
+			ExpectStatus: http.StatusOK,
+		},
+		{
+			Name:           "move to folder",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"folderId": folder.ID,
+			},
+			ExpectStatus: http.StatusOK,
+		},
+		{
+			Name:           "move to non-existent folder",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"folderId": "joe-biden",
+			},
+			ExpectStatus: http.StatusBadRequest,
+		},
+		{
 			Name:           "not a url",
 			GivenSessionID: usr.SessionID,
 			GivenLinkID:    lnk1.ID,
-			GivenBody: map[string]string{
+			GivenBody: map[string]interface{}{
 				"url": "everything is what it is and not what it isn't",
 			},
 			ExpectStatus: http.StatusBadRequest,
-			ExpectBody:   `{"url": "This is not valid."}`,
+			ExpectBody:   `{"message":"The request was invalid"}`,
 		},
 	}
 
@@ -251,7 +277,10 @@ func TestUpdateLink(t *testing.T) {
 
 			if tcase.ExpectStatus < http.StatusBadRequest {
 				tt.Assert(jsonpath.Equal("$.link.id", tcase.GivenLinkID))
-				tt.Assert(jsonpath.Equal("$.link.title", tcase.GivenBody["title"]))
+
+				for k, v := range tcase.GivenBody {
+					tt.Assert(jsonpath.Equal(fmt.Sprintf("$.link.%s", k), v))
+				}
 			} else {
 				tt.Body(tcase.ExpectBody)
 			}

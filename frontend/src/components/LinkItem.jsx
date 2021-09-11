@@ -13,15 +13,22 @@ import {
   HStack,
   AccordionIcon,
   Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import {
   DeleteIcon,
   EditIcon,
   HamburgerIcon,
+  MinusIcon,
   StarIcon,
 } from "@chakra-ui/icons";
 
 import { useDeleteLink, useUpdateLink } from "../hooks/links";
+import { useFolders } from "../hooks/folders";
+import { FolderIcon } from "./CustomIcons";
 
 function Bullet({ favicon }) {
   return (
@@ -52,6 +59,9 @@ export default function LinkItem({ link }) {
   const closeButton = useRef();
   const deleteMutation = useDeleteLink(link.id);
   const updateMutation = useUpdateLink(link.id);
+  const { folderTree, resolveFolderName } = useFolders();
+  const currentFolderName = resolveFolderName(link.folderId);
+  const isLinkInFolder = link.folderId !== "root" && link.folderId.length > 0;
 
   function handleDeleteLink() {
     closeButton.current?.click();
@@ -60,6 +70,10 @@ export default function LinkItem({ link }) {
 
   function handleToggleIsFavorite() {
     updateMutation.mutateAsync({ isFavorite: !link.isFavorite });
+  }
+
+  function handleMoveToFolder(folderId) {
+    updateMutation.mutate({ folderId });
   }
 
   return (
@@ -121,6 +135,29 @@ export default function LinkItem({ link }) {
                   >
                     Edit
                   </Button>
+                  <Menu>
+                    <MenuButton as={Button} leftIcon={<FolderIcon />}>
+                      {isLinkInFolder ? currentFolderName : "Add to folder"}
+                    </MenuButton>
+                    <MenuList>
+                      {folderTree.children.map((folder) => (
+                        <MenuItem
+                          key={folder.id}
+                          onClick={() => handleMoveToFolder(folder.id)}
+                          icon={<FolderIcon />}
+                        >
+                          {folder.name}
+                        </MenuItem>
+                      ))}
+                      <MenuItem
+                        key="none"
+                        onClick={() => handleMoveToFolder("root")}
+                        icon={<MinusIcon />}
+                      >
+                        Remove
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
                   <Button
                     leftIcon={link.isFavorite ? <StarIcon /> : null}
                     onClick={handleToggleIsFavorite}

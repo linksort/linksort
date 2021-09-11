@@ -175,3 +175,11 @@ func GetLinksFavorites(val string) model.GetLinksOption {
 		}
 	}
 }
+
+func GetLinksFolder(val string) model.GetLinksOption {
+	return func(m map[string]interface{}) {
+		if len(val) > 0 && val != "root" {
+			m["folderid"] = val
+		}
+	}
+}

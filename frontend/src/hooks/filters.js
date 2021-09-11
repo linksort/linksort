@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 
 import useQueryString from "./queryString";
-import { useUser } from "./auth";
+import { useFolders } from "./folders";
 
 const DEFAULT_FILTER_PARAMS = Object.freeze({
   page: "0",
@@ -16,29 +16,6 @@ const DEFAULT_FILTER_PARAMS = Object.freeze({
 });
 const DEFAULT_FILTER_KEYS = Object.keys(DEFAULT_FILTER_PARAMS);
 const GROUP_BY_OPTIONS = ["none", "day", "site"];
-
-function resolveFolderName(
-  folderTree = { id: "root", name: "root", children: [] },
-  folderId
-) {
-  if (folderId === "root") {
-    return "All";
-  }
-
-  let queue = [folderTree];
-
-  while (queue.length > 0) {
-    let node = queue.shift();
-
-    if (node.id === folderId) {
-      return node.name;
-    }
-
-    queue.push(...node.children);
-  }
-
-  return "Unknown";
-}
 
 export function useFilterParams() {
   const query = useQueryString();
@@ -52,7 +29,7 @@ export function useFilterParams() {
 export function useFilters() {
   const history = useHistory();
   const filterParams = useFilterParams();
-  const { folderTree } = useUser();
+  const { resolveFolderName } = useFolders();
 
   return useMemo(() => {
     const sortDirection =
@@ -61,25 +38,77 @@ export function useFilters() {
     const areFavoritesShowing = filterParams.favorite === "1";
     const pageNumber = filterParams.page;
     const searchQuery = filterParams.search;
-    const folderName = resolveFolderName(folderTree, filterParams.folder);
+    const folderName = resolveFolderName(filterParams.folder);
+    const folderId = filterParams.folder;
+
+    function makeToggleSortLink() {
+      const newFilterParams = Object.assign({}, filterParams, {
+        sort: filterParams.sort * -1,
+      });
+      return `/?${queryString.stringify(newFilterParams)}`;
+    }
+
+    function makeToggleGroupLink() {
+      const newFilterParams = Object.assign({}, filterParams, {
+        group:
+          GROUP_BY_OPTIONS[
+            (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
+              GROUP_BY_OPTIONS.length
+          ],
+      });
+      return `/?${queryString.stringify(newFilterParams)}`;
+    }
+
+    function makeToggleFavoritesLink() {
+      const newFilterParams = Object.assign({}, filterParams, {
+        favorite: filterParams.favorite === "0" ? "1" : "0",
+      });
+      return `/?${queryString.stringify(newFilterParams)}`;
+    }
+
+    function makeNextPageLink() {
+      const newFilterParams = Object.assign({}, filterParams, {
+        page: parseInt(filterParams.page) + 1,
+      });
+      return `/?${queryString.stringify(newFilterParams)}`;
+    }
+
+    function makePrevPageLink() {
+      const newFilterParams = Object.assign({}, filterParams, {
+        page: Math.max(0, parseInt(filterParams.page) - 1),
+      });
+      return `/?${queryString.stringify(newFilterParams)}`;
+    }
+
+    function makeFolderLink(folder) {
+      const newFilterParams = Object.assign({}, filterParams, {
+        folder: encodeURIComponent(folder),
+      });
+      return `/?${queryString.stringify(newFilterParams)}`;
+    }
 
     function handleToggleSort() {
-      filterParams.sort = filterParams.sort * -1;
-      history.push(`?${queryString.stringify(filterParams)}`);
+      history.push(makeToggleSortLink());
     }
 
     function handleToggleGroup() {
-      filterParams.group =
-        GROUP_BY_OPTIONS[
-          (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
-            GROUP_BY_OPTIONS.length
-        ];
-      history.push(`?${queryString.stringify(filterParams)}`);
+      history.push(makeToggleGroupLink());
     }
 
     function handleToggleFavorites() {
-      filterParams.favorite = filterParams.favorite === "0" ? "1" : "0";
-      history.push(`?${queryString.stringify(filterParams)}`);
+      history.push(makeToggleFavoritesLink());
+    }
+
+    function handleGoToNextPage() {
+      history.push(makeNextPageLink());
+    }
+
+    function handleGoToPrevPage() {
+      history.push(makePrevPageLink());
+    }
+
+    function handleGoToFolder(folder) {
+      history.push(makeFolderLink(folder));
     }
 
     function handleSearch(query) {
@@ -87,26 +116,13 @@ export function useFilters() {
       history.push(`?${queryString.stringify(filterParams)}`);
     }
 
-    function handleGoToNextPage() {
-      filterParams.page = parseInt(filterParams.page) + 1;
-      history.push(`?${queryString.stringify(filterParams)}`);
-    }
-
-    function handleGoToPrevPage() {
-      filterParams.page = Math.max(0, parseInt(filterParams.page) - 1);
-      history.push(`?${queryString.stringify(filterParams)}`);
-    }
-
-    function makeFolderLink(folder) {
-      filterParams.folder = encodeURIComponent(folder);
-      return `/?${queryString.stringify(filterParams)}`;
-    }
-
-    function handleGoToFolder(folder) {
-      history.push(makeFolderLink(folder));
-    }
-
     return {
+      makeToggleSortLink,
+      makeToggleGroupLink,
+      makeToggleFavoritesLink,
+      makeNextPageLink,
+      makePrevPageLink,
+      makeFolderLink,
       handleToggleSort,
       handleToggleGroup,
       handleToggleFavorites,
@@ -114,13 +130,13 @@ export function useFilters() {
       handleGoToNextPage,
       handleGoToPrevPage,
       handleGoToFolder,
-      makeFolderLink,
       sortDirection,
       groupName,
       areFavoritesShowing,
       searchQuery,
       pageNumber,
       folderName,
+      folderId,
     };
-  }, [filterParams, history, folderTree]);
+  }, [filterParams, history, resolveFolderName]);
 }

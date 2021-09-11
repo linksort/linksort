@@ -66,7 +66,7 @@ export function useUpdateLink(linkId) {
   return useMutation(
     (payload) =>
       apiFetch(`/api/links/${linkId}`, {
-        body: pick(payload, ["title", "description", "isFavorite"]),
+        body: pick(payload, ["title", "description", "isFavorite", "folderId"]),
         method: "PATCH",
       }),
     {

@@ -23,15 +23,22 @@ import { useFilters } from "../hooks/filters";
 import { useUser } from "../hooks/auth";
 import { useCreateFolder, useDeleteFolder } from "../hooks/folders";
 
-function SidebarFolderItem({ folder, selectedFolderName, makeFolderLink }) {
+function SidebarFolderItem({ folder, selectedFolderId, makeFolderLink }) {
   const deleteMutation = useDeleteFolder(folder);
+  const { handleGoToFolder } = useFilters();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  function handleDelete(e) {
+    e.preventDefault();
+    deleteMutation.mutate();
+    handleGoToFolder("root");
+  }
 
   return (
     <ListItem key={folder.id}>
       <SidebarButton
         as={RouterLink}
-        variant={selectedFolderName === folder.name ? "solid" : "ghost"}
+        variant={selectedFolderId === folder.id ? "solid" : "ghost"}
         to={makeFolderLink(folder.id)}
         leftIcon={<FolderIcon />}
       >
@@ -39,31 +46,33 @@ function SidebarFolderItem({ folder, selectedFolderName, makeFolderLink }) {
           <Text as="span" overflow="hidden" textOverflow="ellipsis">
             {folder.name}
           </Text>
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              variant="unstyled"
-              height="auto"
-              width="auto"
-              minWidth="1rem"
-              padding={0}
-              aria-label="Folder options"
-              icon={<DotDotDotVert />}
-            />
-            <MenuList>
-              <MenuItem icon={<EditIcon />} onClick={onOpen}>
-                Rename
-              </MenuItem>
-              <MenuItem icon={<DeleteIcon />} onClick={deleteMutation.mutate}>
-                Delete
-              </MenuItem>
-            </MenuList>
-            <RenameFolderModal
-              isOpen={isOpen}
-              onClose={onClose}
-              folder={folder}
-            />
-          </Menu>
+          {selectedFolderId === folder.id && (
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                variant="unstyled"
+                height="auto"
+                width="auto"
+                minWidth="1rem"
+                padding={0}
+                aria-label="Folder options"
+                icon={<DotDotDotVert />}
+              />
+              <MenuList>
+                <MenuItem icon={<EditIcon />} onClick={onOpen}>
+                  Rename
+                </MenuItem>
+                <MenuItem icon={<DeleteIcon />} onClick={handleDelete}>
+                  Delete
+                </MenuItem>
+              </MenuList>
+              <RenameFolderModal
+                isOpen={isOpen}
+                onClose={onClose}
+                folder={folder}
+              />
+            </Menu>
+          )}
         </Flex>
       </SidebarButton>
     </ListItem>
@@ -72,7 +81,7 @@ function SidebarFolderItem({ folder, selectedFolderName, makeFolderLink }) {
 
 export default function SidebarFolderTree() {
   const { folderTree } = useUser();
-  const { folderName, handleGoToFolder, makeFolderLink } = useFilters();
+  const { folderName, folderId, makeFolderLink } = useFilters();
   const mutation = useCreateFolder();
 
   return (
@@ -80,9 +89,10 @@ export default function SidebarFolderTree() {
       {[
         <ListItem key="all">
           <SidebarButton
-            variant={folderName === "root" ? "solid" : "ghost"}
-            onClick={() => handleGoToFolder("root")}
             leftIcon={<HamburgerIcon />}
+            as={RouterLink}
+            variant={folderId === "root" ? "solid" : "ghost"}
+            to={makeFolderLink("root")}
           >
             All
           </SidebarButton>
@@ -92,6 +102,7 @@ export default function SidebarFolderTree() {
             key={folder.id}
             folder={folder}
             selectedFolderName={folderName}
+            selectedFolderId={folderId}
             makeFolderLink={makeFolderLink}
           />
         )),

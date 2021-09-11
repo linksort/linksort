@@ -63,6 +63,7 @@ func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLink
 	links, err := l.Store.GetLinksByUser(ctx, u, req.Pagination,
 		db.GetLinksSearch(req.Search),
 		db.GetLinksSort(req.Sort),
+		db.GetLinksFolder(req.FolderID),
 		db.GetLinksFavorites(req.Favorites))
 	if err != nil {
 		return nil, errors.E(op, err)
@@ -89,11 +90,27 @@ func (l *Link) UpdateLink(ctx context.Context, u *model.User, req *handler.Updat
 			// skip
 		case "IsFavorite":
 			if isNil := rv.Field(i).IsNil(); !isNil {
-				uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
+				uv.FieldByName(rt.Field(i).Name).
+					Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
+			}
+		case "FolderID":
+			if isNil := rv.Field(i).IsNil(); !isNil {
+				folderID := rv.Field(i).Elem().String()
+
+				if !doesFolderExist(u, folderID) {
+					return nil, errors.E(op,
+						errors.Str("folder does not exist"),
+						errors.M{"folderId": "This folder does not exist."},
+						http.StatusBadRequest)
+				}
+
+				uv.FieldByName(rt.Field(i).Name).
+					Set(reflect.ValueOf(folderID))
 			}
 		default:
 			if ss := rv.Field(i).String(); ss != "" {
-				uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(ss))
+				uv.FieldByName(rt.Field(i).Name).
+					Set(reflect.ValueOf(ss))
 			}
 		}
 	}
@@ -115,4 +132,14 @@ func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) error {
 	}
 
 	return errors.Wrap(op, l.Store.DeleteLink(ctx, link))
+}
+
+func doesFolderExist(u *model.User, folderID string) bool {
+	if folderID == "root" {
+		return true
+	}
+
+	found := u.FolderTree.BFS(folderID)
+
+	return found != nil
 }

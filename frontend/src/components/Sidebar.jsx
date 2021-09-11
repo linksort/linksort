@@ -37,9 +37,9 @@ function SidebarSectionHeader({ children, ...rest }) {
 
 export default function Sidebar() {
   const {
-    handleToggleSort,
-    handleToggleGroup,
-    handleToggleFavorites,
+    makeToggleSortLink,
+    makeToggleGroupLink,
+    makeToggleFavoritesLink,
     sortDirection,
     groupName,
     areFavoritesShowing,
@@ -68,7 +68,8 @@ export default function Sidebar() {
             <ListItem>
               <SidebarButton
                 leftIcon={<UpDownIcon />}
-                onClick={handleToggleSort}
+                as={RouterLink}
+                to={makeToggleSortLink()}
               >
                 <Text as="span">
                   Sort by{" "}
@@ -81,7 +82,8 @@ export default function Sidebar() {
             <ListItem>
               <SidebarButton
                 leftIcon={<CopyIcon />}
-                onClick={handleToggleGroup}
+                as={RouterLink}
+                to={makeToggleGroupLink()}
               >
                 <Text as="span">
                   Group by{" "}
@@ -94,7 +96,8 @@ export default function Sidebar() {
             <ListItem>
               <SidebarButton
                 leftIcon={<StarIcon />}
-                onClick={handleToggleFavorites}
+                as={RouterLink}
+                to={makeToggleFavoritesLink()}
                 variant={areFavoritesShowing ? "solid" : "ghost"}
               >
                 Favorites

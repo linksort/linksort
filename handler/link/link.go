@@ -107,6 +107,7 @@ type GetLinksRequest struct {
 	Sort       string
 	Search     string
 	Favorites  string
+	FolderID   string
 	Pagination *model.Pagination
 }
 
@@ -124,6 +125,7 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 		Sort:       q.Get("sort"),
 		Search:     q.Get("search"),
 		Favorites:  q.Get("favorite"),
+		FolderID:   q.Get("folder"),
 		Pagination: model.GetPagination(r),
 	})
 	if err != nil {
@@ -136,15 +138,12 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdateLinkRequest struct {
-	ID          string `json:"-"`
-	URL         string `json:"url" validate:"omitempty,url,max=2048"`
-	Title       string `json:"title" validate:"omitempty,max=512"`
-	IsFavorite  *bool  `json:"isFavorite"`
-	Favicon     string `json:"favicon" validate:"omitempty,url,max=512"`
-	Description string `json:"description" validate:"omitempty,max=2048"`
-	Image       string `json:"image" validate:"omitempty,url,max=512"`
-	Site        string `json:"site" validate:"omitempty,max=512"`
-	Corpus      string `json:"corpus" validate:"omitempty,max=100000"`
+	ID          string  `json:"-"`
+	Title       string  `json:"title" validate:"omitempty,max=512"`
+	IsFavorite  *bool   `json:"isFavorite"`
+	FolderID    *string `json:"folderId" validate:"omitempty,uuid|eq=root"`
+	Description string  `json:"description" validate:"omitempty,max=2048"`
+	Site        string  `json:"site" validate:"omitempty,max=512"`
 }
 
 type UpdateLinkResponse struct {
