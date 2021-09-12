@@ -78,7 +78,7 @@ export function useDeleteFolder(folder) {
 export function useFolders() {
   const { folderTree } = useUser();
 
-  function resolveFolderName(folderId) {
+  function resolveFolderName(folderId, fallback = "All") {
     if (folderId === "root") {
       return "All";
     }
@@ -95,7 +95,7 @@ export function useFolders() {
       queue.push(...node.children);
     }
 
-    return "Unknown";
+    return fallback;
   }
 
   return { folderTree, resolveFolderName };

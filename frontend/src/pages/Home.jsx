@@ -1,12 +1,12 @@
 import React from "react";
 import {
-  Accordion,
   Box,
   Heading,
   HStack,
   Button,
   Stack,
   Skeleton,
+  List,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
@@ -50,7 +50,10 @@ export default function Home() {
     handleSearch,
     groupName,
     searchQuery,
+    pageNumber,
   } = useFilters();
+  const linksCount = links.length;
+  const isSearching = searchQuery && searchQuery.length > 0;
 
   if (isError) {
     return <ErrorScreen error={error} />;
@@ -68,8 +71,13 @@ export default function Home() {
   }
 
   return (
-    <Box marginBottom={16}>
-      <Accordion borderBottom="unset" allowToggle>
+    <Box
+      minHeight="calc(100vh - 7.5rem)"
+      position="relative"
+      paddingBottom="4rem"
+      marginBottom="1.5rem"
+    >
+      <Box marginBottom={8}>
         {Object.entries(linksBy(groupName, links)).map(([heading, list]) => {
           return (
             <Box as="section" key={heading}>
@@ -78,32 +86,37 @@ export default function Home() {
                   {heading}
                 </Heading>
               )}
-              <Box marginBottom={4}>
+              <List marginBottom={4}>
                 {list.map((link) => (
                   <LinkItem key={link.id} link={link} />
                 ))}
-              </Box>
+              </List>
             </Box>
           );
         })}
-      </Accordion>
-      <HStack marginTop={8}>
-        {searchQuery && searchQuery.length > 0 ? (
-          <Button onClick={() => handleSearch("")}>Go back</Button>
-        ) : (
-          <>
-            <Button onClick={handleGoToPrevPage} leftIcon={<ChevronLeftIcon />}>
-              Prevous
-            </Button>
-            <Button
-              onClick={handleGoToNextPage}
-              rightIcon={<ChevronRightIcon />}
-            >
-              Next
-            </Button>
-          </>
-        )}
-      </HStack>
+      </Box>
+      {isSearching ? (
+        <Box marginTop={6}>
+          <Button onClick={() => handleSearch("")}>Clear search</Button>
+        </Box>
+      ) : (
+        <HStack position="absolute" bottom={0} left={0}>
+          <Button
+            isDisabled={pageNumber === "0"}
+            onClick={handleGoToPrevPage}
+            leftIcon={<ChevronLeftIcon />}
+          >
+            Prevous
+          </Button>
+          <Button
+            isDisabled={linksCount < 20}
+            onClick={handleGoToNextPage}
+            rightIcon={<ChevronRightIcon />}
+          >
+            Next
+          </Button>
+        </HStack>
+      )}
     </Box>
   );
 }

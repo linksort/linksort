@@ -14,6 +14,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { pick } from "lodash";
 
 import { useLink, useUpdateLink } from "../hooks/links";
 import { suppressMutationErrors } from "../utils/mutations";
@@ -33,12 +34,16 @@ export default function Link() {
       image: "",
       createdAt: "",
       isFavorite: false,
+      folderId: "",
     },
     enableReinitialize: true,
-    onSubmit: (params) =>
-      suppressMutationErrors(mutation.mutateAsync)(params).then(() => {
-        history.goBack();
-      }),
+    onSubmit: suppressMutationErrors((params) =>
+      mutation
+        .mutateAsync(pick(params, ["title", "description", "isFavorite"]))
+        .then(() => {
+          history.goBack();
+        })
+    ),
   });
 
   if (isLoading) {
