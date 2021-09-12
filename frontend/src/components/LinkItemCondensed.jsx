@@ -8,10 +8,7 @@ import {
   Stack,
   HStack,
   Text,
-  Menu,
   MenuButton,
-  MenuList,
-  MenuItem,
   useDisclosure,
   Collapse,
   IconButton,
@@ -25,6 +22,7 @@ import {
 } from "@chakra-ui/icons";
 
 import LinkItemFavicon from "./LinkItemFavicon";
+import LinkItemFolderMenu from "./LinkItemFolderMenu";
 import { FolderIcon } from "./CustomIcons";
 
 export default function LinkItemCondensed({
@@ -86,29 +84,15 @@ export default function LinkItemCondensed({
               >
                 Edit
               </Button>
-              <Menu>
-                <MenuButton as={Button} leftIcon={<FolderIcon />}>
-                  {isLinkInFolder ? currentFolderName : "Add to folder"}
-                </MenuButton>
-                <MenuList>
-                  {folderTree.children.map((folder) => (
-                    <MenuItem
-                      key={folder.id}
-                      onClick={() => onMoveToFolder(folder.id)}
-                      icon={<FolderIcon />}
-                    >
-                      {folder.name}
-                    </MenuItem>
-                  ))}
-                  <MenuItem
-                    key="none"
-                    onClick={() => onMoveToFolder("root")}
-                    icon={<CloseIcon />}
-                  >
-                    Remove
-                  </MenuItem>
-                </MenuList>
-              </Menu>
+              <LinkItemFolderMenu
+                buttonSlot={
+                  <MenuButton as={Button} leftIcon={<FolderIcon />}>
+                    {isLinkInFolder ? currentFolderName : "Add to folder"}
+                  </MenuButton>
+                }
+                folderTree={folderTree}
+                onMoveToFolder={onMoveToFolder}
+              />
               <Button
                 leftIcon={link.isFavorite ? <StarIcon /> : null}
                 onClick={onToggleIsFavorite}

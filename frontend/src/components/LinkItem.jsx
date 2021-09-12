@@ -3,9 +3,17 @@ import { ListItem } from "@chakra-ui/react";
 
 import { useDeleteLink, useUpdateLink } from "../hooks/links";
 import { useFolders } from "../hooks/folders";
+import {
+  useViewSetting,
+  VIEW_SETTING_CONDENSED,
+  VIEW_SETTING_TALL,
+  VIEW_SETTING_TILES,
+} from "../hooks/views";
 import LinkItemCondensed from "./LinkItemCondensed";
+import LinkItemTall from "./LinkItemTall";
 
 export default function LinkItem({ link }) {
+  const { setting: viewSetting } = useViewSetting();
   const deleteMutation = useDeleteLink(link.id);
   const updateMutation = useUpdateLink(link.id);
   const { folderTree, resolveFolderName } = useFolders();
@@ -26,15 +34,33 @@ export default function LinkItem({ link }) {
 
   return (
     <ListItem>
-      <LinkItemCondensed
-        link={link}
-        folderTree={folderTree}
-        isLinkInFolder={isLinkInFolder}
-        currentFolderName={currentFolderName}
-        onDeleteLink={handleDeleteLink}
-        onToggleIsFavorite={handleToggleIsFavorite}
-        onMoveToFolder={handleMoveToFolder}
-      />
+      {
+        {
+          [VIEW_SETTING_CONDENSED]: (
+            <LinkItemCondensed
+              link={link}
+              folderTree={folderTree}
+              isLinkInFolder={isLinkInFolder}
+              currentFolderName={currentFolderName}
+              onDeleteLink={handleDeleteLink}
+              onToggleIsFavorite={handleToggleIsFavorite}
+              onMoveToFolder={handleMoveToFolder}
+            />
+          ),
+          [VIEW_SETTING_TALL]: (
+            <LinkItemTall
+              link={link}
+              folderTree={folderTree}
+              isLinkInFolder={isLinkInFolder}
+              currentFolderName={currentFolderName}
+              onDeleteLink={handleDeleteLink}
+              onToggleIsFavorite={handleToggleIsFavorite}
+              onMoveToFolder={handleMoveToFolder}
+            />
+          ),
+          [VIEW_SETTING_TILES]: <div />,
+        }[viewSetting]
+      }
     </ListItem>
   );
 }

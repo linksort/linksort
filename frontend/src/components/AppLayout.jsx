@@ -11,6 +11,7 @@ import {
 
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
+import TopRightViewPicker from "./TopRightViewPicker";
 import Sidebar from "./Sidebar";
 import { useFilters } from "../hooks/filters";
 
@@ -93,6 +94,7 @@ export default function AppLayout({ children }) {
                 </Heading>
                 <Stack direction="row" as="nav" spacing={4}>
                   <TopRightNewLinkPopover />
+                  <TopRightViewPicker />
                   <TopRightUserMenu />
                 </Stack>
               </Flex>

@@ -40,6 +40,7 @@ const theme = {
     accent: "#80a9ff", // brand.200
 
     brand: {
+      25: "#f6f9ff",
       50: "#d5e2ff",
       100: "#aac5ff",
       200: "#80a9ff",

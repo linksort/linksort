@@ -16,6 +16,7 @@ import ForgotPasswordSentEmail from "../pages/ForgotPasswordSentEmail";
 import ChangePassword from "../pages/ChangePassword";
 import Home from "../pages/Home";
 import Link from "../pages/Link";
+import { ViewSettingProvider } from "../hooks/views";
 
 const chakraTheme = extendTheme({
   ...theme,
@@ -28,52 +29,54 @@ export default function App() {
   return (
     <ChakraProvider theme={chakraTheme}>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Switch>
-            <AuthRoute
-              isAuthRequired={false}
-              redirectTo="/"
-              path="/sign-in"
-              component={SignIn}
-            />
-            <AuthRoute
-              isAuthRequired={false}
-              redirectTo="/"
-              path="/sign-up"
-              component={SignUp}
-            />
-            <AuthRoute
-              isAuthRequired={false}
-              redirectTo="/"
-              path="/forgot-password"
-              component={ForgotPassword}
-            />
-            <AuthRoute
-              isAuthRequired={false}
-              redirectTo="/"
-              path="/forgot-password-sent-email"
-              component={ForgotPasswordSentEmail}
-            />
-            <AuthRoute
-              isAuthRequired={false}
-              redirectTo="/"
-              path="/change-password"
-              component={ChangePassword}
-            />
-            <AuthRoute
-              isAuthRequired={true}
-              redirectTo="/sign-in"
-              path="/links/:linkId"
-              component={Link}
-            />
-            <AuthRoute
-              isAuthRequired={true}
-              redirectTo="/sign-in"
-              path="/"
-              component={Home}
-            />
-          </Switch>
-        </BrowserRouter>
+        <ViewSettingProvider>
+          <BrowserRouter>
+            <Switch>
+              <AuthRoute
+                isAuthRequired={false}
+                redirectTo="/"
+                path="/sign-in"
+                component={SignIn}
+              />
+              <AuthRoute
+                isAuthRequired={false}
+                redirectTo="/"
+                path="/sign-up"
+                component={SignUp}
+              />
+              <AuthRoute
+                isAuthRequired={false}
+                redirectTo="/"
+                path="/forgot-password"
+                component={ForgotPassword}
+              />
+              <AuthRoute
+                isAuthRequired={false}
+                redirectTo="/"
+                path="/forgot-password-sent-email"
+                component={ForgotPasswordSentEmail}
+              />
+              <AuthRoute
+                isAuthRequired={false}
+                redirectTo="/"
+                path="/change-password"
+                component={ChangePassword}
+              />
+              <AuthRoute
+                isAuthRequired={true}
+                redirectTo="/sign-in"
+                path="/links/:linkId"
+                component={Link}
+              />
+              <AuthRoute
+                isAuthRequired={true}
+                redirectTo="/sign-in"
+                path="/"
+                component={Home}
+              />
+            </Switch>
+          </BrowserRouter>
+        </ViewSettingProvider>
       </QueryClientProvider>
     </ChakraProvider>
   );
