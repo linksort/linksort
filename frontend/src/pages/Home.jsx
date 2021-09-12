@@ -7,6 +7,7 @@ import {
   Stack,
   Skeleton,
   List,
+  Grid,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
@@ -15,6 +16,12 @@ import LinkItem from "../components/LinkItem";
 import { useLinks } from "../hooks/links";
 import { useFilters } from "../hooks/filters";
 import { isoDateToHeading } from "../utils/time";
+import {
+  useViewSetting,
+  VIEW_SETTING_CONDENSED,
+  VIEW_SETTING_TALL,
+  VIEW_SETTING_TILES,
+} from "../hooks/views";
 
 function linksBy(grouping, links) {
   switch (grouping) {
@@ -42,7 +49,25 @@ function linksBy(grouping, links) {
   }
 }
 
+function LinkList({ viewSetting, children }) {
+  switch (viewSetting) {
+    case VIEW_SETTING_TILES:
+      return (
+        <List as={Grid} gap={6} templateColumns="repeat(3, 1fr)">
+          {children}
+        </List>
+      );
+    case VIEW_SETTING_CONDENSED:
+      return <List marginBottom={6}>{children}</List>;
+    case VIEW_SETTING_TALL:
+      return <List marginBottom={10}>{children}</List>;
+    default:
+      return <List>{children}</List>;
+  }
+}
+
 export default function Home() {
+  const { setting: viewSetting } = useViewSetting();
   const { data: links, isError, error, isLoading } = useLinks();
   const {
     handleGoToNextPage,
@@ -82,15 +107,19 @@ export default function Home() {
           return (
             <Box as="section" key={heading}>
               {heading !== "all" && (
-                <Heading as="h3" size="sm" marginBottom={4}>
+                <Heading
+                  as="h3"
+                  size={viewSetting === VIEW_SETTING_CONDENSED ? "sm" : "md"}
+                  marginBottom={viewSetting === VIEW_SETTING_CONDENSED ? 2 : 4}
+                >
                   {heading}
                 </Heading>
               )}
-              <List marginBottom={4}>
+              <LinkList viewSetting={viewSetting}>
                 {list.map((link) => (
                   <LinkItem key={link.id} link={link} />
                 ))}
-              </List>
+              </LinkList>
             </Box>
           );
         })}

@@ -11,6 +11,7 @@ import {
 } from "../hooks/views";
 import LinkItemCondensed from "./LinkItemCondensed";
 import LinkItemTall from "./LinkItemTall";
+import LinkItemTile from "./LinkItemTile";
 
 export default function LinkItem({ link }) {
   const { setting: viewSetting } = useViewSetting();
@@ -33,7 +34,7 @@ export default function LinkItem({ link }) {
   }
 
   return (
-    <ListItem>
+    <ListItem minWidth={0}>
       {
         {
           [VIEW_SETTING_CONDENSED]: (
@@ -58,7 +59,17 @@ export default function LinkItem({ link }) {
               onMoveToFolder={handleMoveToFolder}
             />
           ),
-          [VIEW_SETTING_TILES]: <div />,
+          [VIEW_SETTING_TILES]: (
+            <LinkItemTile
+              link={link}
+              folderTree={folderTree}
+              isLinkInFolder={isLinkInFolder}
+              currentFolderName={currentFolderName}
+              onDeleteLink={handleDeleteLink}
+              onToggleIsFavorite={handleToggleIsFavorite}
+              onMoveToFolder={handleMoveToFolder}
+            />
+          ),
         }[viewSetting]
       }
     </ListItem>

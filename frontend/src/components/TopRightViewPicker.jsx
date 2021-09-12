@@ -16,6 +16,7 @@ export default function TopRightViewPicker() {
     <Flex>
       <Tooltip label="Condensed view">
         <IconButton
+          zIndex={1}
           colorScheme={setting === VIEW_SETTING_CONDENSED ? "brand" : "gray"}
           icon={<CondensedListIcon />}
           borderRightRadius="none"
@@ -24,6 +25,7 @@ export default function TopRightViewPicker() {
       </Tooltip>
       <Tooltip label="Comfy view">
         <IconButton
+          zIndex={0}
           colorScheme={setting === VIEW_SETTING_TALL ? "brand" : "gray"}
           icon={<MenuIcon />}
           borderRadius="none"
@@ -37,6 +39,7 @@ export default function TopRightViewPicker() {
       </Tooltip>
       <Tooltip label="Tiled view">
         <IconButton
+          zIndex={1}
           colorScheme={setting === VIEW_SETTING_TILES ? "brand" : "gray"}
           icon={<TilesIcon />}
           borderLeftRadius="none"
