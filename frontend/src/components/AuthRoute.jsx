@@ -20,7 +20,7 @@ export default function AuthRoute({
   ...rest
 }) {
   const user = useUser();
-  const shouldRedirect = isAuthRequired ? !user : !!user;
+  const shouldRedirect = isAuthRequired ? !user.id : !!user.id;
 
   return (
     <SmartLayout isAuthRequired={isAuthRequired}>

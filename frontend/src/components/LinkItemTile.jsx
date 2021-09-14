@@ -15,9 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon, StarIcon } from "@chakra-ui/icons";
 
-import FloatingPill from "./FloatingPill";
 import { FolderIcon, StarBorderIcon } from "./CustomIcons";
-import LinkItemFavicon from "./LinkItemFavicon";
 import LinkItemFolderMenu from "./LinkItemFolderMenu";
 
 const COLORS = [
@@ -33,7 +31,7 @@ const COLORS = [
 ];
 
 function Color({ id }) {
-  const idx = parseInt(id, 16) % 10;
+  const idx = parseInt(id, 16) % 9;
   const color = COLORS[idx];
 
   return <Box width="100%" height="100%" backgroundColor={`${color}.100`} />;
@@ -53,11 +51,12 @@ export default function LinkItemTile({
       height="18rem"
       borderRadius="xl"
       boxShadow="lg"
-      overflow="hidden"
       border="thin"
       borderStyle="solid"
       borderColor="gray.100"
       overflow="hidden"
+      transition="background-color ease 0.2s"
+      _hover={{ backgroundColor: "blackAlpha.25" }}
     >
       <Box>
         <Box height="10rem">
@@ -83,18 +82,32 @@ export default function LinkItemTile({
         >
           <Box overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
             <Link href={link.url} isExternal>
-              <Text as="span" fontWeight="semibold">
+              <Text as="span" fontWeight="semibold" title={link.title}>
                 {link.title}
               </Text>
             </Link>
-            <Text fontSize="sm">{link.site}</Text>
+            <Text fontSize="sm" title={link.site}>
+              {link.site}
+            </Text>
           </Box>
           <HStack>
             <LinkItemFolderMenu
               buttonSlot={
                 isLinkInFolder ? (
-                  <MenuButton as={Button} size="sm" leftIcon={<FolderIcon />}>
-                    {currentFolderName}
+                  <MenuButton
+                    as={Button}
+                    size="sm"
+                    leftIcon={<FolderIcon />}
+                    overflow="hidden"
+                  >
+                    <Text
+                      as="span"
+                      overflow="hidden"
+                      whiteSpace="nowrap"
+                      textOverflow="ellipsis"
+                    >
+                      {currentFolderName}
+                    </Text>
                   </MenuButton>
                 ) : (
                   <Tooltip label="Add to folder">

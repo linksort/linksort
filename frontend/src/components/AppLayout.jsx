@@ -14,10 +14,12 @@ import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
 import TopRightViewPicker from "./TopRightViewPicker";
 import Sidebar from "./Sidebar";
 import { useFilters } from "../hooks/filters";
+import { useViewSetting, VIEW_SETTING_CONDENSED } from "../hooks/views";
 
 const HEADER_HEIGHT = "5rem";
 
 export default function AppLayout({ children }) {
+  const { setting: viewSetting } = useViewSetting();
   const { folderName, areFavoritesShowing, searchQuery } = useFilters();
   const isSearching = searchQuery && searchQuery.length > 0;
 
@@ -103,7 +105,7 @@ export default function AppLayout({ children }) {
           <Box
             as="main"
             marginTop={HEADER_HEIGHT}
-            paddingTop={4}
+            paddingTop={viewSetting === VIEW_SETTING_CONDENSED ? 4 : 6}
             paddingLeft={[0, 0, 6, 6]}
           >
             {children}

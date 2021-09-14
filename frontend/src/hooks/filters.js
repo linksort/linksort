@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import { pick } from "lodash";
 import { useMemo } from "react";
 import { useHistory } from "react-router-dom";
@@ -5,31 +6,90 @@ import queryString from "query-string";
 
 import useQueryString from "./queryString";
 import { useFolders } from "./folders";
+import { useLocalStorage } from "./localStorage";
+
+export const FILTER_KEY_PAGE = "page";
+export const FILTER_KEY_SEARCH = "search";
+export const FILTER_KEY_SORT = "sort";
+export const FILTER_KEY_GROUP = "group";
+export const FILTER_KEY_FAVORITE = "favorite";
+export const FILTER_KEY_FOLDER = "folder";
+
+const LOCALSTORAGE_FILTER_KEYS = [FILTER_KEY_SORT, FILTER_KEY_GROUP];
+const QUERY_FILTER_KEYS = [
+  FILTER_KEY_PAGE,
+  FILTER_KEY_FOLDER,
+  FILTER_KEY_FAVORITE,
+  FILTER_KEY_SEARCH,
+];
 
 const DEFAULT_FILTER_PARAMS = Object.freeze({
-  page: "0",
-  search: "",
-  sort: "-1",
-  group: "none",
-  favorite: "0",
-  folder: "root",
+  [FILTER_KEY_PAGE]: "0",
+  [FILTER_KEY_SEARCH]: "",
+  [FILTER_KEY_SORT]: "-1",
+  [FILTER_KEY_GROUP]: "none",
+  [FILTER_KEY_FAVORITE]: "0",
+  [FILTER_KEY_FOLDER]: "root",
 });
-const DEFAULT_FILTER_KEYS = Object.keys(DEFAULT_FILTER_PARAMS);
-const GROUP_BY_OPTIONS = ["none", "day", "site"];
+
+export const GROUP_BY_OPTION_NONE = "none";
+export const GROUP_BY_OPTION_DAY = "day";
+export const GROUP_BY_OPTION_SITE = "site";
+export const GROUP_BY_OPTIONS = [
+  GROUP_BY_OPTION_NONE,
+  GROUP_BY_OPTION_DAY,
+  GROUP_BY_OPTION_SITE,
+];
+
+const LOCALSTORAGE_KEY = "filters";
+const DEFAULT_LOCALSTORAGE_VALUE = {
+  [FILTER_KEY_SORT]: DEFAULT_FILTER_PARAMS[FILTER_KEY_SORT],
+  [FILTER_KEY_GROUP]: DEFAULT_FILTER_PARAMS[FILTER_KEY_GROUP],
+};
+
+const Context = createContext([DEFAULT_LOCALSTORAGE_VALUE, () => {}]);
+
+export function GlobalFiltersProvider({ children }) {
+  const [localStore, setLocalStore] = useLocalStorage(
+    LOCALSTORAGE_KEY,
+    DEFAULT_LOCALSTORAGE_VALUE
+  );
+
+  return (
+    <Context.Provider value={[localStore, setLocalStore]}>
+      {children}
+    </Context.Provider>
+  );
+}
+
+function useLocalStorageParams() {
+  const [localStore, setLocalStore] = useContext(Context);
+  const values = pick(localStore, LOCALSTORAGE_FILTER_KEYS);
+
+  function setValues(valuesObj) {
+    setLocalStore(Object.assign({}, localStore, valuesObj));
+  }
+
+  return [values, setValues];
+}
 
 export function useFilterParams() {
   const query = useQueryString();
-
-  return useMemo(() => {
-    const cleanedQuery = pick(query, DEFAULT_FILTER_KEYS);
-    return Object.assign({}, DEFAULT_FILTER_PARAMS, cleanedQuery);
-  }, [query]);
+  const queryParams = pick(query, QUERY_FILTER_KEYS);
+  const [localStorageParams] = useLocalStorageParams();
+  return Object.assign(
+    {},
+    DEFAULT_FILTER_PARAMS,
+    queryParams,
+    localStorageParams
+  );
 }
 
 export function useFilters() {
   const history = useHistory();
-  const filterParams = useFilterParams();
   const { resolveFolderName } = useFolders();
+  const [, setLocalStorageParam] = useLocalStorageParams();
+  const filterParams = useFilterParams();
 
   return useMemo(() => {
     const sortDirection =
@@ -41,58 +101,50 @@ export function useFilters() {
     const folderName = resolveFolderName(filterParams.folder);
     const folderId = filterParams.folder;
 
-    function makeToggleSortLink() {
-      const newFilterParams = Object.assign({}, filterParams, {
-        sort: filterParams.sort * -1,
-      });
-      return `/?${queryString.stringify(newFilterParams)}`;
+    function mergeParamAndStringify(param = {}) {
+      return `/?${queryString.stringify(
+        Object.assign({}, pick(filterParams, QUERY_FILTER_KEYS), param)
+      )}`;
     }
 
-    function makeToggleGroupLink() {
-      const newFilterParams = Object.assign({}, filterParams, {
+    function makeToggleFavoritesLink() {
+      return mergeParamAndStringify({
+        favorite: filterParams.favorite === "0" ? "1" : "0",
+      });
+    }
+
+    function makeNextPageLink() {
+      return mergeParamAndStringify({
+        page: parseInt(filterParams.page) + 1,
+      });
+    }
+
+    function makePrevPageLink() {
+      return mergeParamAndStringify({
+        page: Math.max(0, parseInt(filterParams.page) - 1),
+      });
+    }
+
+    function makeFolderLink(folder) {
+      return mergeParamAndStringify({
+        folder: encodeURIComponent(folder),
+      });
+    }
+
+    function handleToggleSort() {
+      setLocalStorageParam({
+        [FILTER_KEY_SORT]: filterParams.sort * -1,
+      });
+    }
+
+    function handleToggleGroup() {
+      setLocalStorageParam({
         group:
           GROUP_BY_OPTIONS[
             (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
               GROUP_BY_OPTIONS.length
           ],
       });
-      return `/?${queryString.stringify(newFilterParams)}`;
-    }
-
-    function makeToggleFavoritesLink() {
-      const newFilterParams = Object.assign({}, filterParams, {
-        favorite: filterParams.favorite === "0" ? "1" : "0",
-      });
-      return `/?${queryString.stringify(newFilterParams)}`;
-    }
-
-    function makeNextPageLink() {
-      const newFilterParams = Object.assign({}, filterParams, {
-        page: parseInt(filterParams.page) + 1,
-      });
-      return `/?${queryString.stringify(newFilterParams)}`;
-    }
-
-    function makePrevPageLink() {
-      const newFilterParams = Object.assign({}, filterParams, {
-        page: Math.max(0, parseInt(filterParams.page) - 1),
-      });
-      return `/?${queryString.stringify(newFilterParams)}`;
-    }
-
-    function makeFolderLink(folder) {
-      const newFilterParams = Object.assign({}, filterParams, {
-        folder: encodeURIComponent(folder),
-      });
-      return `/?${queryString.stringify(newFilterParams)}`;
-    }
-
-    function handleToggleSort() {
-      history.push(makeToggleSortLink());
-    }
-
-    function handleToggleGroup() {
-      history.push(makeToggleGroupLink());
     }
 
     function handleToggleFavorites() {
@@ -112,13 +164,14 @@ export function useFilters() {
     }
 
     function handleSearch(query) {
-      filterParams.search = encodeURIComponent(query);
-      history.push(`?${queryString.stringify(filterParams)}`);
+      history.push(
+        mergeParamAndStringify({
+          search: encodeURIComponent(query),
+        })
+      );
     }
 
     return {
-      makeToggleSortLink,
-      makeToggleGroupLink,
       makeToggleFavoritesLink,
       makeNextPageLink,
       makePrevPageLink,
@@ -138,5 +191,5 @@ export function useFilters() {
       folderName,
       folderId,
     };
-  }, [filterParams, history, resolveFolderName]);
+  }, [filterParams, history, resolveFolderName, setLocalStorageParam]);
 }

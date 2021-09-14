@@ -14,7 +14,11 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import ErrorScreen from "../components/ErrorScreen";
 import LinkItem from "../components/LinkItem";
 import { useLinks } from "../hooks/links";
-import { useFilters } from "../hooks/filters";
+import {
+  useFilters,
+  GROUP_BY_OPTION_DAY,
+  GROUP_BY_OPTION_SITE,
+} from "../hooks/filters";
 import { isoDateToHeading } from "../utils/time";
 import {
   useViewSetting,
@@ -25,7 +29,7 @@ import {
 
 function linksBy(grouping, links) {
   switch (grouping) {
-    case "day":
+    case GROUP_BY_OPTION_DAY:
       return links.reduce((acc, cur) => {
         const date = isoDateToHeading(cur.createdAt);
         if (acc[date]) {
@@ -35,7 +39,7 @@ function linksBy(grouping, links) {
         }
         return acc;
       }, {});
-    case "site":
+    case GROUP_BY_OPTION_SITE:
       return links.reduce((acc, cur) => {
         if (acc[cur.site]) {
           acc[cur.site].push(cur);
@@ -53,7 +57,18 @@ function LinkList({ viewSetting, children }) {
   switch (viewSetting) {
     case VIEW_SETTING_TILES:
       return (
-        <List as={Grid} gap={6} templateColumns="repeat(3, 1fr)">
+        <List
+          as={Grid}
+          gap={6}
+          templateColumns={[
+            "repeat(1, 1fr)",
+            "repeat(2, 1fr)",
+            "repeat(2, 1fr)",
+            "repeat(2, 1fr)",
+            "repeat(3, 1fr)",
+          ]}
+          marginBottom={14}
+        >
           {children}
         </List>
       );
@@ -110,7 +125,7 @@ export default function Home() {
                 <Heading
                   as="h3"
                   size={viewSetting === VIEW_SETTING_CONDENSED ? "sm" : "md"}
-                  marginBottom={viewSetting === VIEW_SETTING_CONDENSED ? 2 : 4}
+                  marginBottom={viewSetting === VIEW_SETTING_CONDENSED ? 2 : 6}
                 >
                   {heading}
                 </Heading>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, Box } from "@chakra-ui/react";
 
-export default function LinkItemFavicon({ favicon }) {
+export default function LinkItemFavicon({ favicon, ...rest }) {
   return (
     <Box
       height="1.3rem"
@@ -11,6 +11,7 @@ export default function LinkItemFavicon({ favicon }) {
       alignItems="center"
       flexShrink="0"
       marginRight={2}
+      {...rest}
     >
       <Image
         height="100%"

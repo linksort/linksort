@@ -3,10 +3,15 @@ import { useHistory } from "react-router-dom";
 
 import apiFetch from "../utils/apiFetch";
 
+const USER_SHAPE = {
+  folderTree: { id: "root", name: "root", children: [] },
+  id: false,
+};
+
 export function useUser() {
   const { data } = useQuery("user", () => apiFetch("/api/users"), {
     initialData: () => {
-      return window.__SERVER_DATA__.user;
+      return Object.assign({}, USER_SHAPE, window.__SERVER_DATA__.user);
     },
     enabled: false,
   });
@@ -50,7 +55,7 @@ export function useSignOut() {
     {
       onSuccess: () => {
         window.__SERVER_DATA__ = {};
-        queryClient.setQueryData("user", undefined);
+        queryClient.setQueryData("user", USER_SHAPE);
         history.push("/sign-in");
       },
     }

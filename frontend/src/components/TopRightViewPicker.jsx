@@ -25,7 +25,7 @@ export default function TopRightViewPicker() {
       </Tooltip>
       <Tooltip label="Comfy view">
         <IconButton
-          zIndex={0}
+          zIndex={setting === VIEW_SETTING_TALL ? 2 : 0}
           colorScheme={setting === VIEW_SETTING_TALL ? "brand" : "gray"}
           icon={<MenuIcon />}
           borderRadius="none"

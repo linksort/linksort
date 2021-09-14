@@ -4,12 +4,25 @@ import pick from "lodash/pick";
 import queryString from "query-string";
 
 import apiFetch from "../utils/apiFetch";
-import { useFilterParams } from "./filters";
+import {
+  useFilterParams,
+  FILTER_KEY_SORT,
+  FILTER_KEY_FAVORITE,
+  FILTER_KEY_SEARCH,
+  FILTER_KEY_PAGE,
+  FILTER_KEY_FOLDER,
+} from "./filters";
 
-const REFETCH_FILTER_PARAMS = ["page", "search", "sort", "favorite", "folder"];
+const REFETCH_FILTERS = [
+  FILTER_KEY_SORT,
+  FILTER_KEY_FAVORITE,
+  FILTER_KEY_SEARCH,
+  FILTER_KEY_PAGE,
+  FILTER_KEY_FOLDER,
+];
 
 function useForceRefetchFilterParams() {
-  return pick(useFilterParams(), REFETCH_FILTER_PARAMS);
+  return pick(useFilterParams(), REFETCH_FILTERS);
 }
 
 export function useCreateLink() {
