@@ -64,12 +64,14 @@ export default function AppLayout({ children }) {
             top="0"
             left="0"
             justifyContent="flex-end"
+            zIndex={1}
           >
             <Box
               width="50%"
               borderBottom="1px"
               borderBottomColor="gray.100"
               height={HEADER_HEIGHT}
+              backgroundColor="white"
             />
           </Flex>
           <Box position="fixed" width="100%" top="0" left="0" zIndex={1}>
