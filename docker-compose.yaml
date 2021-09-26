@@ -31,6 +31,8 @@ services:
       - "PORT=8000"
       - "FRONTEND_HOSTNAME=frontend"
       - "FRONTEND_PORT=3000"
+      - "ANALYZER_KEY=${ANALYZER_KEY}"
+      - "GOPRIVATE=github.com/linksort/analyze"
     links:
       - "mongo"
       - "frontend"

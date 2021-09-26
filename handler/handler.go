@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/linksort/analyze"
 
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/email"
@@ -22,16 +23,17 @@ import (
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
-	"github.com/linksort/linksort/opengraph"
 	"github.com/linksort/linksort/payload"
 )
 
 type Config struct {
-	UserStore             model.UserStore
-	LinkStore             model.LinkStore
-	Magic                 *magic.Client
-	Email                 *email.Client
-	OpenGraph             opengraph.Extractor
+	UserStore model.UserStore
+	LinkStore model.LinkStore
+	Magic     *magic.Client
+	Email     *email.Client
+	Analyzer  interface {
+		Do(context.Context, *analyze.Request) (*analyze.Response, error)
+	}
 	FrontendProxyHostname string
 	FrontendProxyPort     string
 }
@@ -54,8 +56,8 @@ func New(c *Config) http.Handler {
 	})))
 	api.PathPrefix("/links").Handler(wrap(link.Handler(&link.Config{
 		LinkController: &controller.Link{
-			Store:     c.LinkStore,
-			OpenGraph: c.OpenGraph,
+			Store:    c.LinkStore,
+			Analyzer: c.Analyzer,
 		},
 		UserController: &controller.User{
 			Store: c.UserStore,

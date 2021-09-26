@@ -8,13 +8,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/linksort/analyze"
+
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler"
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/magic"
-	"github.com/linksort/linksort/opengraph"
 )
 
 func main() {
@@ -30,12 +31,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	analyzer, err := analyze.New(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	h := handler.New(&handler.Config{
 		UserStore:             db.NewUserStore(mongo),
 		LinkStore:             db.NewLinkStore(mongo),
 		Magic:                 magic.New(getenv("APP_SECRET", "")),
 		Email:                 email.New(),
-		OpenGraph:             opengraph.NewClient(),
+		Analyzer:              analyzer,
 		FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
 		FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
 	})
@@ -65,6 +71,12 @@ func main() {
 			log.Printf("MongoDB shutdown error: %v", err)
 		} else {
 			log.Print("MongoDB connection closed")
+		}
+
+		if err := analyzer.Close(); err != nil {
+			log.Printf("Analyzer shutdown error: %v", err)
+		} else {
+			log.Print("Analyzer connections closed")
 		}
 
 		close(idleConnsClosed)

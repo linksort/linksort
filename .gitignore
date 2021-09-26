@@ -1,5 +1,6 @@
 # Secrets
 .env
+.netrc
 
 # Testing artifacts
 coverage.txt

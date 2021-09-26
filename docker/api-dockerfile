@@ -2,9 +2,13 @@ FROM golang:1.16
 
 WORKDIR /opt/linksort/
 
-COPY . .
+COPY ./.netrc /root/.netrc
+RUN chmod 600 /root/.netrc
 
-RUN go get ./...
+COPY ./go.mod ./go.sum ./
+RUN go mod download
+
+COPY . .
 
 RUN go get -u github.com/cosmtrek/air
 

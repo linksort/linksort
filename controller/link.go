@@ -6,34 +6,42 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/linksort/analyze"
+
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/errors"
 	handler "github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/model"
-	"github.com/linksort/linksort/opengraph"
 )
 
 type Link struct {
-	Store     model.LinkStore
-	OpenGraph opengraph.Extractor
+	Store    model.LinkStore
+	Analyzer interface {
+		Do(context.Context, *analyze.Request) (*analyze.Response, error)
+	}
 }
 
 func (l *Link) CreateLink(ctx context.Context, u *model.User, req *handler.CreateLinkRequest) (*model.Link, error) {
 	op := errors.Op("controller.CreateLink")
 
-	og := l.OpenGraph.Extract(ctx, req.URL)
+	dat, err := l.Analyzer.Do(ctx, &analyze.Request{
+		URL: req.URL,
+	})
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
 
 	link, err := l.Store.CreateLink(ctx, &model.Link{
 		UserID:      u.ID,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
-		Corpus:      og.Corpus,
-		URL:         og.URL,
-		Title:       og.Title,
-		Description: og.Description,
-		Favicon:     og.Favicon,
-		Image:       og.Image,
-		Site:        og.Site,
+		URL:         dat.URL,
+		Image:       dat.Image,
+		Favicon:     dat.Favicon,
+		Title:       dat.Title,
+		Site:        dat.Site,
+		Description: dat.Description,
+		Corpus:      dat.Corpus,
 	})
 	if err != nil {
 		return nil, errors.E(op, err)
