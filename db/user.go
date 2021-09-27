@@ -46,6 +46,8 @@ func (s *UserStore) CreateUser(ctx context.Context, usr *model.User) (*model.Use
 	usr.Key = res.InsertedID.(primitive.ObjectID)
 	usr.ID = usr.Key.Hex()
 
+	handleNullValues(usr)
+
 	return usr, nil
 }
 
@@ -65,6 +67,8 @@ func (s *UserStore) GetUserBySessionID(ctx context.Context, sessionID string) (*
 
 	usr.ID = usr.Key.Hex()
 
+	handleNullValues(usr)
+
 	return usr, nil
 }
 
@@ -83,6 +87,8 @@ func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*model.Us
 	}
 
 	usr.ID = usr.Key.Hex()
+
+	handleNullValues(usr)
 
 	return usr, nil
 }
@@ -114,6 +120,8 @@ func (s *UserStore) UpdateUser(ctx context.Context, u *model.User) (*model.User,
 		return nil, errors.E(op, errors.Str("no document match"))
 	}
 
+	handleNullValues(u)
+
 	return u, nil
 }
 
@@ -130,4 +138,23 @@ func (s *UserStore) DeleteUser(ctx context.Context, u *model.User) error {
 	}
 
 	return nil
+}
+
+func handleNullValues(usr *model.User) {
+	if usr.FolderTree == nil {
+		usr.FolderTree = &model.Folder{
+			Name:     "root",
+			ID:       "root",
+			Children: make([]*model.Folder, 0),
+		}
+	}
+
+	if usr.TagTree == nil {
+		usr.TagTree = &model.TagNode{
+			Name:     "root",
+			Path:     "root",
+			Count:    0,
+			Children: make([]*model.TagNode, 0),
+		}
+	}
 }

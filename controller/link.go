@@ -15,20 +15,25 @@ import (
 )
 
 type Link struct {
-	Store    model.LinkStore
-	Analyzer interface {
+	Store     model.LinkStore
+	UserStore model.UserStore
+	Analyzer  interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
 	}
 }
 
-func (l *Link) CreateLink(ctx context.Context, u *model.User, req *handler.CreateLinkRequest) (*model.Link, error) {
+func (l *Link) CreateLink(
+	ctx context.Context,
+	u *model.User,
+	req *handler.CreateLinkRequest,
+) (*model.Link, *model.User, error) {
 	op := errors.Op("controller.CreateLink")
 
 	dat, err := l.Analyzer.Do(ctx, &analyze.Request{
 		URL: req.URL,
 	})
 	if err != nil {
-		return nil, errors.E(op, err)
+		return nil, nil, errors.E(op, err)
 	}
 
 	link, err := l.Store.CreateLink(ctx, &model.Link{
@@ -42,12 +47,23 @@ func (l *Link) CreateLink(ctx context.Context, u *model.User, req *handler.Creat
 		Site:        dat.Site,
 		Description: dat.Description,
 		Corpus:      dat.Corpus,
+		TagDetails:  model.ParseTagDetails(dat.Tags),
+		TagPaths:    model.ParseTagDetailsToPathList(dat.Tags),
 	})
 	if err != nil {
-		return nil, errors.E(op, err)
+		return nil, nil, errors.E(op, err)
 	}
 
-	return link, nil
+	if err := u.TagTree.UpdateWithNewTagDetails(link.TagDetails); err != nil {
+		return nil, nil, errors.E(op, err)
+	}
+
+	_, err = l.UserStore.UpdateUser(ctx, u)
+	if err != nil {
+		return nil, nil, errors.E(op, err)
+	}
+
+	return link, u, nil
 }
 
 func (l *Link) GetLink(ctx context.Context, u *model.User, id string) (*model.Link, error) {

@@ -15,7 +15,7 @@ import (
 
 type Config struct {
 	LinkController interface {
-		CreateLink(context.Context, *model.User, *CreateLinkRequest) (*model.Link, error)
+		CreateLink(context.Context, *model.User, *CreateLinkRequest) (*model.Link, *model.User, error)
 		GetLink(context.Context, *model.User, string) (*model.Link, error)
 		GetLinks(context.Context, *model.User, *GetLinksRequest) ([]*model.Link, error)
 		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, error)
@@ -58,6 +58,7 @@ type CreateLinkRequest struct {
 
 type CreateLinkResponse struct {
 	Link *model.Link `json:"link"`
+	User *model.User `json:"user"`
 }
 
 func (s *config) CreateLink(w http.ResponseWriter, r *http.Request) {
@@ -72,14 +73,14 @@ func (s *config) CreateLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	l, err := s.LinkController.CreateLink(ctx, u, req)
+	l, u, err := s.LinkController.CreateLink(ctx, u, req)
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
-	payload.Write(w, r, &CreateLinkResponse{l}, http.StatusCreated)
+	payload.Write(w, r, &CreateLinkResponse{l, u}, http.StatusCreated)
 }
 
 type GetLinkResponse struct {

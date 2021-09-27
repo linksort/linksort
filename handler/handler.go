@@ -56,8 +56,9 @@ func New(c *Config) http.Handler {
 	})))
 	api.PathPrefix("/links").Handler(wrap(link.Handler(&link.Config{
 		LinkController: &controller.Link{
-			Store:    c.LinkStore,
-			Analyzer: c.Analyzer,
+			Store:     c.LinkStore,
+			Analyzer:  c.Analyzer,
+			UserStore: c.UserStore,
 		},
 		UserController: &controller.User{
 			Store: c.UserStore,

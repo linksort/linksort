@@ -47,6 +47,12 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 			ID:       "root",
 			Children: make([]*model.Folder, 0),
 		},
+		TagTree: &model.TagNode{
+			Name:     "root",
+			Path:     "root",
+			Count:    0,
+			Children: make([]*model.TagNode, 0),
+		},
 	})
 	if err != nil {
 		return nil, errors.E(op, err)
@@ -61,14 +67,6 @@ func (u *User) GetUserBySessionID(ctx context.Context, sessionID string) (*model
 	usr, err := u.Store.GetUserBySessionID(ctx, sessionID)
 	if err != nil {
 		return nil, errors.E(op, err)
-	}
-
-	if usr.FolderTree == nil {
-		usr.FolderTree = &model.Folder{
-			Name:     "root",
-			ID:       "root",
-			Children: make([]*model.Folder, 0),
-		}
 	}
 
 	return usr, nil
