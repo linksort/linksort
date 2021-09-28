@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/linksort/analyze"
@@ -47,8 +46,6 @@ func ParseTagDetailsToPathList(tt []*analyze.Tag) []string {
 	for k := range book {
 		out = append(out, k)
 	}
-
-	fmt.Printf("%#v\n", out)
 
 	return out
 }
@@ -111,7 +108,10 @@ func (n *TagNode) incrementOrCreateByTagDetail(t *TagDetail) {
 			parentPath = paths[depth-1]
 		}
 
-		for _, child := range n.FindByPathname(parentPath).Children {
+		found = nil
+		currentNode := n.FindByPathname(parentPath)
+
+		for _, child := range currentNode.Children {
 			if child.Path == path {
 				found = child
 
@@ -120,7 +120,7 @@ func (n *TagNode) incrementOrCreateByTagDetail(t *TagDetail) {
 		}
 
 		if found == nil {
-			n.Children = append(n.Children, &TagNode{
+			currentNode.Children = append(currentNode.Children, &TagNode{
 				Name:     getNameFromPath(path),
 				Path:     path,
 				Count:    1,
@@ -147,7 +147,10 @@ func (n *TagNode) decrementOrDeleteByTagDetail(t *TagDetail) {
 			parentPath = paths[depth-1]
 		}
 
-		for _, child := range n.FindByPathname(parentPath).Children {
+		found = nil
+		currentNode := n.FindByPathname(parentPath)
+
+		for _, child := range currentNode.Children {
 			if child.Path == path {
 				found = child
 
@@ -159,7 +162,7 @@ func (n *TagNode) decrementOrDeleteByTagDetail(t *TagDetail) {
 			found.Count--
 
 			if found.Count <= 0 {
-				n.FindByPathname(parentPath).RemoveChildByPathname(found.Path)
+				currentNode.RemoveChildByPathname(found.Path)
 			}
 		}
 	}
