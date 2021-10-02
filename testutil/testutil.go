@@ -16,6 +16,7 @@ import (
 
 	"github.com/icrowley/fake"
 
+	"github.com/linksort/analyze"
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/email"
@@ -66,7 +67,7 @@ func Handler() http.Handler {
 			LinkStore: _linkStore,
 			Magic:     _magic,
 			Email:     _email,
-			OpenGraph: _opengraph,
+			Analyzer:  analyze.NewTestClient(),
 		})
 	})
 
