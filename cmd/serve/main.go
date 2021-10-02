@@ -37,6 +37,7 @@ func main() {
 	}
 
 	h := handler.New(&handler.Config{
+		Transactor:            db.NewTxnClient(mongo),
 		UserStore:             db.NewUserStore(mongo),
 		LinkStore:             db.NewLinkStore(mongo),
 		Magic:                 magic.New(getenv("APP_SECRET", "")),

@@ -39,6 +39,7 @@ var (
 	_magic     = magic.New("test-secret")
 	_email     = email.New()
 	_opengraph = opengraph.NewTestClient()
+	_txnClient db.Transactor
 )
 
 func Handler() http.Handler {
@@ -60,14 +61,16 @@ func Handler() http.Handler {
 		}
 
 		_closer = closer
+		_txnClient = db.NewTxnClient(mongo)
 		_userStore = db.NewUserStore(mongo)
 		_linkStore = db.NewLinkStore(mongo)
 		_h = handler.New(&handler.Config{
-			UserStore: _userStore,
-			LinkStore: _linkStore,
-			Magic:     _magic,
-			Email:     _email,
-			Analyzer:  analyze.NewTestClient(),
+			Transactor: _txnClient,
+			UserStore:  _userStore,
+			LinkStore:  _linkStore,
+			Magic:      _magic,
+			Email:      _email,
+			Analyzer:   analyze.NewTestClient(),
 		})
 	})
 

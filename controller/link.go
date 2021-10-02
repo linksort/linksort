@@ -20,6 +20,7 @@ type Link struct {
 	Analyzer  interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
 	}
+	Transactor db.Transactor
 }
 
 func (l *Link) CreateLink(
@@ -36,34 +37,50 @@ func (l *Link) CreateLink(
 		return nil, nil, errors.E(op, err)
 	}
 
-	link, err := l.Store.CreateLink(ctx, &model.Link{
-		UserID:      u.ID,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		URL:         dat.URL,
-		Image:       dat.Image,
-		Favicon:     dat.Favicon,
-		Title:       dat.Title,
-		Site:        dat.Site,
-		Description: dat.Description,
-		Corpus:      dat.Corpus,
-		TagDetails:  model.ParseTagDetails(dat.Tags),
-		TagPaths:    model.ParseTagDetailsToPathList(dat.Tags),
+	var link *model.Link
+	var user *model.User
+
+	err = l.Transactor.DoInTransaction(ctx, func(sessCtx context.Context) error {
+		innerOp := errors.Opf("%s.innerTxn", op)
+
+		user, err = l.UserStore.GetUserByEmail(sessCtx, u.Email)
+		if err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		link, err = l.Store.CreateLink(sessCtx, &model.Link{
+			UserID:      u.ID,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			URL:         dat.URL,
+			Image:       dat.Image,
+			Favicon:     dat.Favicon,
+			Title:       dat.Title,
+			Site:        dat.Site,
+			Description: dat.Description,
+			Corpus:      dat.Corpus,
+			TagDetails:  model.ParseTagDetails(dat.Tags),
+			TagPaths:    model.ParseTagDetailsToPathList(dat.Tags),
+		})
+		if err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		if err := user.TagTree.UpdateWithNewTagDetails(link.TagDetails); err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		if _, err = l.UserStore.UpdateUser(sessCtx, user); err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		return nil
 	})
 	if err != nil {
 		return nil, nil, errors.E(op, err)
 	}
 
-	if err := u.TagTree.UpdateWithNewTagDetails(link.TagDetails); err != nil {
-		return nil, nil, errors.E(op, err)
-	}
-
-	_, err = l.UserStore.UpdateUser(ctx, u)
-	if err != nil {
-		return nil, nil, errors.E(op, err)
-	}
-
-	return link, u, nil
+	return link, user, nil
 }
 
 func (l *Link) GetLink(ctx context.Context, u *model.User, id string) (*model.Link, error) {
@@ -96,50 +113,66 @@ func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLink
 	return links, nil
 }
 
-func (l *Link) UpdateLink(ctx context.Context, u *model.User, req *handler.UpdateLinkRequest) (*model.Link, error) {
+func (l *Link) UpdateLink(
+	ctx context.Context,
+	u *model.User,
+	req *handler.UpdateLinkRequest,
+) (*model.Link, error) {
 	op := errors.Opf("controller.UpdateLink(%q)", req.ID)
 
-	link, err := l.GetLink(ctx, u, req.ID)
-	if err != nil {
-		return nil, errors.E(op, err)
-	}
+	var link *model.Link
+	var err error
 
-	uv := reflect.ValueOf(link).Elem()
-	rv := reflect.ValueOf(req).Elem()
-	rt := rv.Type()
+	err = l.Transactor.DoInTransaction(ctx, func(sessCtx context.Context) error {
+		innerOp := errors.Opf("%s.innerTxn", op)
 
-	for i := 0; i < rv.NumField(); i++ {
-		switch rv.Type().Field(i).Name {
-		case "ID":
-			// skip
-		case "IsFavorite":
-			if isNil := rv.Field(i).IsNil(); !isNil {
-				uv.FieldByName(rt.Field(i).Name).
-					Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
-			}
-		case "FolderID":
-			if isNil := rv.Field(i).IsNil(); !isNil {
-				folderID := rv.Field(i).Elem().String()
+		link, err = l.GetLink(sessCtx, u, req.ID)
+		if err != nil {
+			return errors.E(innerOp, err)
+		}
 
-				if !doesFolderExist(u, folderID) {
-					return nil, errors.E(op,
-						errors.Str("folder does not exist"),
-						errors.M{"folderId": "This folder does not exist."},
-						http.StatusBadRequest)
+		uv := reflect.ValueOf(link).Elem()
+		rv := reflect.ValueOf(req).Elem()
+		rt := rv.Type()
+
+		for i := 0; i < rv.NumField(); i++ {
+			switch rv.Type().Field(i).Name {
+			case "ID":
+				// skip
+			case "IsFavorite":
+				if isNil := rv.Field(i).IsNil(); !isNil {
+					uv.FieldByName(rt.Field(i).Name).
+						Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
 				}
+			case "FolderID":
+				if isNil := rv.Field(i).IsNil(); !isNil {
+					folderID := rv.Field(i).Elem().String()
 
-				uv.FieldByName(rt.Field(i).Name).
-					Set(reflect.ValueOf(folderID))
-			}
-		default:
-			if ss := rv.Field(i).String(); ss != "" {
-				uv.FieldByName(rt.Field(i).Name).
-					Set(reflect.ValueOf(ss))
+					if !doesFolderExist(u, folderID) {
+						return errors.E(innerOp,
+							errors.Str("folder does not exist"),
+							errors.M{"folderId": "This folder does not exist."},
+							http.StatusBadRequest)
+					}
+
+					uv.FieldByName(rt.Field(i).Name).
+						Set(reflect.ValueOf(folderID))
+				}
+			default:
+				if ss := rv.Field(i).String(); ss != "" {
+					uv.FieldByName(rt.Field(i).Name).
+						Set(reflect.ValueOf(ss))
+				}
 			}
 		}
-	}
 
-	link, err = l.Store.UpdateLink(ctx, link)
+		link, err = l.Store.UpdateLink(sessCtx, link)
+		if err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		return nil
+	})
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
@@ -147,15 +180,46 @@ func (l *Link) UpdateLink(ctx context.Context, u *model.User, req *handler.Updat
 	return link, nil
 }
 
-func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) error {
+func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) (*model.User, error) {
 	op := errors.Opf("controller.DeleteLink(%q)", id)
 
-	link, err := l.GetLink(ctx, u, id)
+	var link *model.Link
+	var user *model.User
+	var err error
+
+	err = l.Transactor.DoInTransaction(ctx, func(sessCtx context.Context) error {
+		innerOp := errors.Opf("%s.innerTxn", op)
+
+		user, err = l.UserStore.GetUserByEmail(sessCtx, u.Email)
+		if err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		link, err = l.GetLink(sessCtx, u, id)
+		if err != nil {
+			return errors.E(op, err)
+		}
+
+		if err = user.TagTree.UpdateWithDeletedTagDetails(link.TagDetails); err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		err = l.Store.DeleteLink(sessCtx, link)
+		if err != nil {
+			return errors.E(op, err)
+		}
+
+		if _, err = l.UserStore.UpdateUser(sessCtx, user); err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		return nil
+	})
 	if err != nil {
-		return errors.E(op, err)
+		return nil, errors.E(op, err)
 	}
 
-	return errors.Wrap(op, l.Store.DeleteLink(ctx, link))
+	return user, nil
 }
 
 func doesFolderExist(u *model.User, folderID string) bool {

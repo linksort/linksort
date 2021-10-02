@@ -14,6 +14,7 @@ import (
 	"github.com/linksort/analyze"
 
 	"github.com/linksort/linksort/controller"
+	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler/folder"
@@ -27,11 +28,12 @@ import (
 )
 
 type Config struct {
-	UserStore model.UserStore
-	LinkStore model.LinkStore
-	Magic     *magic.Client
-	Email     *email.Client
-	Analyzer  interface {
+	Transactor db.Transactor
+	UserStore  model.UserStore
+	LinkStore  model.LinkStore
+	Magic      *magic.Client
+	Email      *email.Client
+	Analyzer   interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
 	}
 	FrontendProxyHostname string
@@ -56,9 +58,10 @@ func New(c *Config) http.Handler {
 	})))
 	api.PathPrefix("/links").Handler(wrap(link.Handler(&link.Config{
 		LinkController: &controller.Link{
-			Store:     c.LinkStore,
-			Analyzer:  c.Analyzer,
-			UserStore: c.UserStore,
+			Store:      c.LinkStore,
+			Analyzer:   c.Analyzer,
+			UserStore:  c.UserStore,
+			Transactor: c.Transactor,
 		},
 		UserController: &controller.User{
 			Store: c.UserStore,

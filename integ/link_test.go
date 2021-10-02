@@ -313,7 +313,7 @@ func TestDeleteLink(t *testing.T) {
 			Name:           "success",
 			GivenSessionID: usr1.SessionID,
 			GivenLinkID:    lnk1.ID,
-			ExpectStatus:   http.StatusNoContent,
+			ExpectStatus:   http.StatusOK,
 		},
 		{
 			Name:           "not found",
