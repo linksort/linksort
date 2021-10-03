@@ -3,7 +3,6 @@ import { useParams, Link as RouterLink, useHistory } from "react-router-dom";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
@@ -11,7 +10,10 @@ import {
   Input,
   Skeleton,
   Stack,
+  Switch,
+  Tag,
   Textarea,
+  Wrap,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { pick } from "lodash";
@@ -123,11 +125,21 @@ export default function Link() {
         </FormControl>
         <FormControl id="isFavorite" mb={6}>
           <FormLabel>Favorite</FormLabel>
-          <Checkbox
+          <Switch
             name="isFavorite"
             isChecked={formik.values.isFavorite}
             onChange={formik.handleChange}
           />
+        </FormControl>
+        <FormControl id="tags" mb={6}>
+          <FormLabel>Auto tags</FormLabel>
+          <Wrap>
+            {link.tagDetails.map((detail) => (
+              <Tag key={detail.path} marginRight={2}>
+                {detail.name}
+              </Tag>
+            ))}
+          </Wrap>
         </FormControl>
 
         <Flex justifyContent="flex-end">

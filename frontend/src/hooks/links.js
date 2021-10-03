@@ -11,6 +11,7 @@ import {
   FILTER_KEY_SEARCH,
   FILTER_KEY_PAGE,
   FILTER_KEY_FOLDER,
+  FILTER_KEY_TAG,
 } from "./filters";
 
 const REFETCH_FILTERS = [
@@ -19,6 +20,7 @@ const REFETCH_FILTERS = [
   FILTER_KEY_SEARCH,
   FILTER_KEY_PAGE,
   FILTER_KEY_FOLDER,
+  FILTER_KEY_TAG,
 ];
 
 function useForceRefetchFilterParams() {
@@ -41,6 +43,9 @@ export function useCreateLink() {
           ["links", "list", filterParams],
           (old = []) => [data.link, ...old]
         );
+
+        queryClient.setQueryData("user", data?.user);
+
         queryClient.invalidateQueries({
           queryKey: ["links", "list"],
           refetchActive: false,

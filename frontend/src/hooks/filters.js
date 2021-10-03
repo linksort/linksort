@@ -14,6 +14,7 @@ export const FILTER_KEY_SORT = "sort";
 export const FILTER_KEY_GROUP = "group";
 export const FILTER_KEY_FAVORITE = "favorite";
 export const FILTER_KEY_FOLDER = "folder";
+export const FILTER_KEY_TAG = "tag";
 
 const LOCALSTORAGE_FILTER_KEYS = [FILTER_KEY_SORT, FILTER_KEY_GROUP];
 const QUERY_FILTER_KEYS = [
@@ -21,6 +22,7 @@ const QUERY_FILTER_KEYS = [
   FILTER_KEY_FOLDER,
   FILTER_KEY_FAVORITE,
   FILTER_KEY_SEARCH,
+  FILTER_KEY_TAG,
 ];
 
 const DEFAULT_FILTER_PARAMS = Object.freeze({
@@ -30,6 +32,7 @@ const DEFAULT_FILTER_PARAMS = Object.freeze({
   [FILTER_KEY_GROUP]: "none",
   [FILTER_KEY_FAVORITE]: "0",
   [FILTER_KEY_FOLDER]: "root",
+  [FILTER_KEY_TAG]: "",
 });
 
 export const GROUP_BY_OPTION_NONE = "none";
@@ -85,6 +88,16 @@ export function useFilterParams() {
   );
 }
 
+function filterNonDefaultValues(params) {
+  Object.entries(DEFAULT_FILTER_PARAMS).forEach(([key, value]) => {
+    if (params[key] === value) {
+      delete params[key];
+    }
+  });
+
+  return params;
+}
+
 export function useFilters() {
   const history = useHistory();
   const { resolveFolderName } = useFolders();
@@ -100,10 +113,13 @@ export function useFilters() {
     const searchQuery = filterParams.search;
     const folderName = resolveFolderName(filterParams.folder);
     const folderId = filterParams.folder;
+    const tagPath = unescape(filterParams.tag);
 
     function mergeParamAndStringify(param = {}) {
       return `/?${queryString.stringify(
-        Object.assign({}, pick(filterParams, QUERY_FILTER_KEYS), param)
+        filterNonDefaultValues(
+          Object.assign({}, pick(filterParams, QUERY_FILTER_KEYS), param)
+        )
       )}`;
     }
 
@@ -128,6 +144,14 @@ export function useFilters() {
     function makeFolderLink(folder) {
       return mergeParamAndStringify({
         folder: encodeURIComponent(folder),
+        tag: "",
+      });
+    }
+
+    function makeTagLink(tagPath) {
+      return mergeParamAndStringify({
+        tag: encodeURIComponent(tagPath),
+        folder: "root",
       });
     }
 
@@ -163,6 +187,10 @@ export function useFilters() {
       history.push(makeFolderLink(folder));
     }
 
+    function handleGoToTag(tagPath) {
+      history.push(makeTagLink(tagPath));
+    }
+
     function handleSearch(query) {
       history.push(
         mergeParamAndStringify({
@@ -176,6 +204,7 @@ export function useFilters() {
       makeNextPageLink,
       makePrevPageLink,
       makeFolderLink,
+      makeTagLink,
       handleToggleSort,
       handleToggleGroup,
       handleToggleFavorites,
@@ -183,6 +212,7 @@ export function useFilters() {
       handleGoToNextPage,
       handleGoToPrevPage,
       handleGoToFolder,
+      handleGoToTag,
       sortDirection,
       groupName,
       areFavoritesShowing,
@@ -190,6 +220,7 @@ export function useFilters() {
       pageNumber,
       folderName,
       folderId,
+      tagPath,
     };
   }, [filterParams, history, resolveFolderName, setLocalStorageParam]);
 }

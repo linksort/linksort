@@ -17,6 +17,7 @@ import MouseType from "./MouseType";
 import SidebarButton from "./SidebarButton";
 import SidebarSearchButton from "./SidebarSearchButton";
 import SidebarFolderTree from "./SidebarFolderTree";
+import SidebarTagTree from "./SidebarTagTree";
 import { useFilters } from "../hooks/filters";
 
 function SidebarSectionHeader({ children, ...rest }) {
@@ -103,9 +104,13 @@ export default function Sidebar() {
             </ListItem>
           </Stack>
         </ListItem>
-        <ListItem>
+        <ListItem marginBottom={8}>
           <SidebarSectionHeader>Folders</SidebarSectionHeader>
           <SidebarFolderTree />
+        </ListItem>
+        <ListItem>
+          <SidebarSectionHeader>Auto Tags</SidebarSectionHeader>
+          <SidebarTagTree />
         </ListItem>
       </List>
       <Box position="absolute" bottom="0" left="0" paddingY={4}>

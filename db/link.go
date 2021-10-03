@@ -183,3 +183,11 @@ func GetLinksFolder(val string) model.GetLinksOption {
 		}
 	}
 }
+
+func GetLinksTag(val string) model.GetLinksOption {
+	return func(m map[string]interface{}) {
+		if len(val) > 0 && val != "root" {
+			m["tagpaths"] = val
+		}
+	}
+}

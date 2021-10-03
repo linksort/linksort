@@ -105,6 +105,7 @@ func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLink
 		db.GetLinksSearch(req.Search),
 		db.GetLinksSort(req.Sort),
 		db.GetLinksFolder(req.FolderID),
+		db.GetLinksTag(req.TagPath),
 		db.GetLinksFavorites(req.Favorites))
 	if err != nil {
 		return nil, errors.E(op, err)
@@ -120,59 +121,47 @@ func (l *Link) UpdateLink(
 ) (*model.Link, error) {
 	op := errors.Opf("controller.UpdateLink(%q)", req.ID)
 
-	var link *model.Link
-	var err error
+	link, err := l.GetLink(ctx, u, req.ID)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
 
-	err = l.Transactor.DoInTransaction(ctx, func(sessCtx context.Context) error {
-		innerOp := errors.Opf("%s.innerTxn", op)
+	uv := reflect.ValueOf(link).Elem()
+	rv := reflect.ValueOf(req).Elem()
+	rt := rv.Type()
 
-		link, err = l.GetLink(sessCtx, u, req.ID)
-		if err != nil {
-			return errors.E(innerOp, err)
-		}
+	for i := 0; i < rv.NumField(); i++ {
+		switch rv.Type().Field(i).Name {
+		case "ID":
+			// skip
+		case "IsFavorite":
+			if isNil := rv.Field(i).IsNil(); !isNil {
+				uv.FieldByName(rt.Field(i).Name).
+					Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
+			}
+		case "FolderID":
+			if isNil := rv.Field(i).IsNil(); !isNil {
+				folderID := rv.Field(i).Elem().String()
 
-		uv := reflect.ValueOf(link).Elem()
-		rv := reflect.ValueOf(req).Elem()
-		rt := rv.Type()
-
-		for i := 0; i < rv.NumField(); i++ {
-			switch rv.Type().Field(i).Name {
-			case "ID":
-				// skip
-			case "IsFavorite":
-				if isNil := rv.Field(i).IsNil(); !isNil {
-					uv.FieldByName(rt.Field(i).Name).
-						Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
+				if !doesFolderExist(u, folderID) {
+					return nil, errors.E(op,
+						errors.Str("folder does not exist"),
+						errors.M{"folderId": "This folder does not exist."},
+						http.StatusBadRequest)
 				}
-			case "FolderID":
-				if isNil := rv.Field(i).IsNil(); !isNil {
-					folderID := rv.Field(i).Elem().String()
 
-					if !doesFolderExist(u, folderID) {
-						return errors.E(innerOp,
-							errors.Str("folder does not exist"),
-							errors.M{"folderId": "This folder does not exist."},
-							http.StatusBadRequest)
-					}
-
-					uv.FieldByName(rt.Field(i).Name).
-						Set(reflect.ValueOf(folderID))
-				}
-			default:
-				if ss := rv.Field(i).String(); ss != "" {
-					uv.FieldByName(rt.Field(i).Name).
-						Set(reflect.ValueOf(ss))
-				}
+				uv.FieldByName(rt.Field(i).Name).
+					Set(reflect.ValueOf(folderID))
+			}
+		default:
+			if ss := rv.Field(i).String(); ss != "" {
+				uv.FieldByName(rt.Field(i).Name).
+					Set(reflect.ValueOf(ss))
 			}
 		}
+	}
 
-		link, err = l.Store.UpdateLink(sessCtx, link)
-		if err != nil {
-			return errors.E(innerOp, err)
-		}
-
-		return nil
-	})
+	link, err = l.Store.UpdateLink(ctx, link)
 	if err != nil {
 		return nil, errors.E(op, err)
 	}

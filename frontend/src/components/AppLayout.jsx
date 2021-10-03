@@ -20,10 +20,16 @@ const HEADER_HEIGHT = "5rem";
 
 export default function AppLayout({ children }) {
   const { setting: viewSetting } = useViewSetting();
-  const { folderName, areFavoritesShowing, searchQuery } = useFilters();
+  const {
+    folderName,
+    areFavoritesShowing,
+    searchQuery,
+    tagPath,
+  } = useFilters();
   const isSearching = searchQuery && searchQuery.length > 0;
+  const isViewingTag = tagPath.length > 0;
 
-  let heading = folderName;
+  let heading = isViewingTag ? tagPath : folderName;
 
   if (isSearching && areFavoritesShowing) {
     heading = `Searching for "${searchQuery}" among favorites in ${folderName}`;

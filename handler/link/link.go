@@ -3,6 +3,7 @@ package link
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -109,6 +110,7 @@ type GetLinksRequest struct {
 	Search     string
 	Favorites  string
 	FolderID   string
+	TagPath    string
 	Pagination *model.Pagination
 }
 
@@ -122,11 +124,21 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 	u := middleware.UserFromContext(ctx)
 	q := r.URL.Query()
 
+	tagPath, err := url.PathUnescape(q.Get("tag"))
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err, http.StatusBadRequest, errors.M{
+			"message": "Malformed tagPath",
+		}))
+
+		return
+	}
+
 	l, err := s.LinkController.GetLinks(ctx, u, &GetLinksRequest{
 		Sort:       q.Get("sort"),
 		Search:     q.Get("search"),
 		Favorites:  q.Get("favorite"),
 		FolderID:   q.Get("folder"),
+		TagPath:    tagPath,
 		Pagination: model.GetPagination(r),
 	})
 	if err != nil {
