@@ -122,7 +122,7 @@ func New(c *Config) http.Handler {
 		},
 	})
 
-	return middleware.WithPanicHandling(log.WithAccessLogging(router))
+	return log.WithAccessLogging(middleware.WithPanicHandling(router))
 }
 
 type getUserDataResponse struct {

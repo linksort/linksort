@@ -119,17 +119,29 @@ export function useDeleteLink(linkId) {
         method: "DELETE",
       }),
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
         queryClient.setQueryData(["links", "list", filterParams], (old = []) =>
           old.filter((l) => l.id !== linkId)
         );
+
         queryClient.invalidateQueries({
           queryKey: ["links", "list"],
           refetchActive: false,
         });
+
+        queryClient.setQueryData("user", data?.user);
+
         toast({
           title: "Link deleted",
           status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: error.toString(),
+          status: "error",
           duration: 9000,
           isClosable: true,
         });
