@@ -1,14 +1,8 @@
 package handler
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
-	"net/http/httputil"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/linksort/analyze"
@@ -16,8 +10,8 @@ import (
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/email"
-	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler/folder"
+	"github.com/linksort/linksort/handler/frontend"
 	"github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/handler/middleware"
 	"github.com/linksort/linksort/handler/user"
@@ -38,6 +32,7 @@ type Config struct {
 	}
 	FrontendProxyHostname string
 	FrontendProxyPort     string
+	IsProd                string
 }
 
 func New(c *Config) http.Handler {
@@ -82,98 +77,29 @@ func New(c *Config) http.Handler {
 		CSRF: c.Magic,
 	})))
 
-	// ReverseProxy to Frontend
-	router.PathPrefix("/").Handler(&httputil.ReverseProxy{
-		Director: func(r *http.Request) {
-			r.URL.Scheme = "http"
-			r.URL.Host = fmt.Sprintf("%s:%s", c.FrontendProxyHostname, c.FrontendProxyPort)
-			delete(r.Header, "Accept-Encoding")
-		},
-		ModifyResponse: func(r *http.Response) error {
-			if r.Request.URL.Path != "/sockjs-node" &&
-				strings.HasPrefix(r.Header.Get("Content-Type"), "text/html") {
-				op := errors.Op("ReverseProxy.ModifyResponse")
-
-				b, err := io.ReadAll(r.Body)
-				if err != nil {
-					return errors.E(op, err)
-				}
-
-				if err := r.Body.Close(); err != nil {
-					return errors.E(op, err)
-				}
-
-				d, err := getUserData(r.Request.Context(), c.UserStore, c.Magic, r.Request)
-				if err != nil {
-					return errors.E(op, err)
-				}
-
-				b = bytes.Replace(b, []byte("//SERVER_DATA//"), d.userData, 1)
-				b = bytes.Replace(b, []byte("//CSRF//"), d.csrf, 1)
-				r.Body = io.NopCloser(bytes.NewReader(b))
-				r.ContentLength = int64(len(b))
-				r.StatusCode = http.StatusOK
-				r.Header.Add("Cache-Control", "no-cache")
-				r.Header.Del("ETag")
-				r.Header.Del("X-Powered-By")
-			}
-
-			return nil
-		},
-	})
+	// Frontend Routes
+	if c.IsProd == "1" {
+		router.PathPrefix("/").Handler(frontend.Server(&frontend.Config{
+			UserStore: c.UserStore,
+			Magic:     c.Magic,
+		}))
+	} else {
+		router.PathPrefix("/").Handler(frontend.ReverseProxy(&frontend.Config{
+			FrontendProxyHostname: c.FrontendProxyHostname,
+			FrontendProxyPort:     c.FrontendProxyPort,
+			UserStore:             c.UserStore,
+			Magic:                 c.Magic,
+		}))
+	}
 
 	return log.WithAccessLogging(middleware.WithPanicHandling(router))
 }
 
-type getUserDataResponse struct {
-	userData json.RawMessage
-	csrf     []byte
-}
+func wrap(h *mux.Router) *mux.Router {
+	h.NotFoundHandler = http.HandlerFunc(notFound)
+	h.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowed)
 
-func getUserData(
-	ctx context.Context,
-	store model.UserStore,
-	magic *magic.Client,
-	r *http.Request,
-) (*getUserDataResponse, error) {
-	op := errors.Op("getUserData")
-
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		if errors.As(err, &http.ErrNoCookie) {
-			return &getUserDataResponse{
-				userData: json.RawMessage("{}"),
-				csrf:     magic.CSRF(),
-			}, nil
-		}
-
-		return nil, errors.E(op, err)
-	}
-
-	usr, err := store.GetUserBySessionID(ctx, cookie.Value)
-	if err != nil {
-		lserr := new(errors.Error)
-		if errors.As(err, &lserr) && lserr.Status() == http.StatusNotFound {
-			return &getUserDataResponse{
-				userData: json.RawMessage("{}"),
-				csrf:     magic.CSRF(),
-			}, nil
-		}
-
-		return nil, errors.E(op, err)
-	}
-
-	encodedUser, err := json.Marshal(struct {
-		User *model.User `json:"user"`
-	}{usr})
-	if err != nil {
-		return nil, errors.E(op, err)
-	}
-
-	return &getUserDataResponse{
-		userData: encodedUser,
-		csrf:     magic.UserCSRF(usr.SessionID),
-	}, nil
+	return h
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
@@ -182,11 +108,4 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 
 func methodNotAllowed(w http.ResponseWriter, r *http.Request) {
 	payload.Write(w, r, map[string]string{"message": "Method not allowed"}, http.StatusMethodNotAllowed)
-}
-
-func wrap(h *mux.Router) *mux.Router {
-	h.NotFoundHandler = http.HandlerFunc(notFound)
-	h.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowed)
-
-	return h
 }

@@ -45,6 +45,7 @@ func main() {
 		Analyzer:              analyzer,
 		FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
 		FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
+		IsProd:                getenv("PRODUCTION", ""),
 	})
 
 	port := getenv("PORT", "8080")

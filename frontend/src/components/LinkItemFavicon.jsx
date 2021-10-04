@@ -17,7 +17,7 @@ export default function LinkItemFavicon({ favicon, ...rest }) {
         height="100%"
         width="100%"
         src={favicon}
-        fallbackSrc="/globe-favicon.png"
+        fallbackSrc="/globe.png"
       />
     </Box>
   );
