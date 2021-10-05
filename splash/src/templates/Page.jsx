@@ -1,0 +1,38 @@
+import React from "react"
+import { graphql } from "gatsby"
+import { Box, Heading } from "@chakra-ui/react"
+
+import Layout from "../components/Layout"
+import Metadata from "../components/Metadata"
+
+export const pageQuery = graphql`
+  query PageByTitle($title: String!) {
+    markdownRemark(frontmatter: { title: { eq: $title } }) {
+      html
+      frontmatter {
+        title
+      }
+    }
+  }
+`
+
+export default function PageTemplate({ data }) {
+  const title = data.markdownRemark.frontmatter.title
+
+  return (
+    <Layout>
+      <Metadata title={title} />
+      <Box as="article">
+        <Box mb={8}>
+          <Heading as="h1" mb={2}>
+            {title}
+          </Heading>
+        </Box>
+        <Box
+          className="prose"
+          dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }}
+        />
+      </Box>
+    </Layout>
+  )
+}

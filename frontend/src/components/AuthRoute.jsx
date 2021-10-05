@@ -23,17 +23,19 @@ export default function AuthRoute({
   const shouldRedirect = isAuthRequired ? !user.id : !!user.id;
 
   return (
-    <SmartLayout isAuthRequired={isAuthRequired}>
-      <Route
-        {...rest}
-        render={() => {
-          if (shouldRedirect) {
-            return <Redirect to={redirectTo} />;
-          } else {
-            return <Component />;
-          }
-        }}
-      />
-    </SmartLayout>
+    <Route
+      {...rest}
+      render={() => {
+        if (shouldRedirect) {
+          return <Redirect to={redirectTo} />;
+        } else {
+          return (
+            <SmartLayout isAuthRequired={isAuthRequired}>
+              <Component />;
+            </SmartLayout>
+          );
+        }
+      }}
+    />
   );
 }

@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"os"
 	"strings"
 
 	"github.com/linksort/linksort/errors"
@@ -23,7 +24,7 @@ type Config struct {
 }
 
 func Server(c *Config) http.Handler {
-	return nil
+	return withIndexHandler(c.UserStore, c.Magic, http.FileServer(http.Dir("./frontend/build")))
 }
 
 func ReverseProxy(c *Config) http.Handler {
@@ -116,4 +117,58 @@ func getUserData(
 		userData: encodedUser,
 		csrf:     magic.UserCSRF(usr.SessionID),
 	}, nil
+}
+
+func withIndexHandler(
+	store model.UserStore,
+	magic *magic.Client,
+	next http.Handler,
+) http.Handler {
+	dat, err := os.ReadFile("./frontend/build/index.html")
+	if err != nil {
+		panic(err)
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if isApplicationRoute(r.URL.Path) {
+			d, err := getUserData(r.Context(), store, magic, r)
+			if err != nil {
+				panic(err)
+			}
+
+			b := make([]byte, len(dat))
+			_ = copy(b, dat)
+			b = bytes.Replace(b, []byte("//SERVER_DATA//"), d.userData, 1)
+			b = bytes.Replace(b, []byte("//CSRF//"), d.csrf, 1)
+
+			w.Header().Add("Cache-Control", "no-cache")
+			w.WriteHeader(http.StatusOK)
+
+			_, err = w.Write(b)
+			if err != nil {
+				panic(err)
+			}
+
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+var applicationRoutes = map[string]bool{
+	"":                           true,
+	"/":                          true,
+	"index.html":                 true,
+	"sign-in":                    true,
+	"sign-up":                    true,
+	"forgot-password":            true,
+	"forgot-password-sent-email": true,
+	"change-password":            true,
+	"links":                      true,
+}
+
+func isApplicationRoute(path string) bool {
+	_, ok := applicationRoutes[strings.Trim(path, "/")]
+	return ok
 }

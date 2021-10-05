@@ -8,6 +8,8 @@ coverage.txt
 # Common build locations
 tmp
 build
+splash/public
+splash/.cache
 
 # Logs and databases
 *.log

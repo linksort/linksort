@@ -1,0 +1,31 @@
+FROM node AS frontend-builder
+WORKDIR /opt/linksort
+COPY ./frontend .
+RUN yarn
+RUN yarn build
+
+FROM node AS splash-builder
+WORKDIR /opt/linksort
+COPY ./splash .
+RUN yarn
+RUN yarn build
+
+FROM golang:1.16 AS api-builder
+WORKDIR /opt/linksort/
+RUN mkdir build
+COPY ./.netrc /root/.netrc
+RUN chmod 600 /root/.netrc
+COPY ./go.mod ./go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build  -o ./build/serve ./cmd/serve/main.go
+
+FROM scratch
+WORKDIR /opt/linksort/
+RUN mkdir bin
+RUN mkdir frontend
+RUN mkdir splash
+COPY --from=frontend-builder /opt/linksort/build ./frontend
+COPY --from=splash-builder /opt/linksort/public ./splash
+COPY --from=api-builder /opt/linksort/build/serve ./bin
+CMD ["./bin/serve"]
