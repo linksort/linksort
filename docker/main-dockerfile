@@ -4,7 +4,9 @@ COPY ./frontend .
 RUN yarn
 RUN yarn build
 
-FROM node AS splash-builder
+FROM node:16-bullseye AS splash-builder
+RUN apt-get update -y
+RUN apt-get install -y libvips libvips-tools
 WORKDIR /opt/linksort
 COPY ./splash .
 RUN yarn
@@ -20,7 +22,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build  -o ./build/serve ./cmd/serve/main.go
 
-FROM scratch
+FROM alpine
 WORKDIR /opt/linksort/
 RUN mkdir bin
 RUN mkdir assets
