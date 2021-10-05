@@ -23,9 +23,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build  -o ./build/serve ./cmd/serve/main.go
 FROM scratch
 WORKDIR /opt/linksort/
 RUN mkdir bin
-RUN mkdir frontend
-RUN mkdir splash
-COPY --from=frontend-builder /opt/linksort/build ./frontend
-COPY --from=splash-builder /opt/linksort/public ./splash
+RUN mkdir assets
+COPY --from=frontend-builder /opt/linksort/build ./assets
+RUN mv ./assets/index.html ./assets/app.html
+COPY --from=splash-builder /opt/linksort/public ./assets
 COPY --from=api-builder /opt/linksort/build/serve ./bin
 CMD ["./bin/serve"]

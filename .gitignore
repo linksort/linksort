@@ -10,6 +10,7 @@ tmp
 build
 splash/public
 splash/.cache
+assets
 
 # Logs and databases
 *.log
