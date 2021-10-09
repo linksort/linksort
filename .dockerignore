@@ -1,3 +1,22 @@
-node_modules
+# Testing artifacts
+coverage.txt
+
+# Common build locations
 tmp
 build
+splash/public
+splash/.cache
+assets
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# OS generated files
+.DS_Store
+.DS_Store?
+.Trashes
+
+# Local libraries
+node_modules

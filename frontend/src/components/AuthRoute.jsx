@@ -31,7 +31,7 @@ export default function AuthRoute({
         } else {
           return (
             <SmartLayout isAuthRequired={isAuthRequired}>
-              <Component />;
+              <Component />
             </SmartLayout>
           );
         }

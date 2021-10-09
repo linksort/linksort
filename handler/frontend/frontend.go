@@ -9,12 +9,24 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"path/filepath"
 	"strings"
+
+	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
 )
+
+var applicationRoutes = map[string]bool{
+	"sign-in":                    true,
+	"sign-up":                    true,
+	"forgot-password":            true,
+	"forgot-password-sent-email": true,
+	"change-password":            true,
+	"links":                      true,
+}
 
 type Config struct {
 	FrontendProxyHostname string
@@ -24,7 +36,12 @@ type Config struct {
 }
 
 func Server(c *Config) http.Handler {
-	return withIndexHandler(c.UserStore, c.Magic, http.FileServer(http.Dir("./assets")))
+	r := mux.NewRouter()
+
+	r.Use(withIndexHandler(c.UserStore, c.Magic), with404Handler("./assets", "404.html"))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./assets")))
+
+	return r
 }
 
 func ReverseProxy(c *Config) http.Handler {
@@ -71,55 +88,94 @@ func ReverseProxy(c *Config) http.Handler {
 func withIndexHandler(
 	store model.UserStore,
 	magic *magic.Client,
-	next http.Handler,
-) http.Handler {
+) mux.MiddlewareFunc {
 	dat, err := os.ReadFile("./assets/app.html")
 	if err != nil {
 		panic(err)
 	}
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if isAppRoute := isApplicationRoute(r.URL.Path); isIndexRoute(r.URL.Path) || isAppRoute {
-			d, found, err := getUserData(r.Context(), store, magic, r)
-			if err != nil {
-				panic(err)
-			}
-
-			if found || isAppRoute {
-				b := make([]byte, len(dat))
-				_ = copy(b, dat)
-				b = bytes.Replace(b, []byte("//SERVER_DATA//"), d.userData, 1)
-				b = bytes.Replace(b, []byte("//CSRF//"), d.csrf, 1)
-
-				w.Header().Add("Cache-Control", "no-cache")
-				w.WriteHeader(http.StatusOK)
-
-				_, err = w.Write(b)
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if isAppRoute := isApplicationRoute(r.URL.Path); isIndexRoute(r.URL.Path) || isAppRoute {
+				d, found, err := getUserData(r.Context(), store, magic, r)
 				if err != nil {
 					panic(err)
 				}
 
-				return
-			}
-		}
+				if found || isAppRoute {
+					b := make([]byte, len(dat))
+					_ = copy(b, dat)
+					b = bytes.Replace(b, []byte("//SERVER_DATA//"), d.userData, 1)
+					b = bytes.Replace(b, []byte("//CSRF//"), d.csrf, 1)
 
-		next.ServeHTTP(w, r)
-	})
+					w.Header().Add("Cache-Control", "no-cache")
+					w.WriteHeader(http.StatusOK)
+
+					_, err = w.Write(b)
+					if err != nil {
+						panic(err)
+					}
+
+					return
+				}
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
-var applicationRoutes = map[string]bool{
-	"sign-in":                    true,
-	"sign-up":                    true,
-	"forgot-password":            true,
-	"forgot-password-sent-email": true,
-	"change-password":            true,
-	"links":                      true,
+func with404Handler(assetsPath, notFoundPath string) mux.MiddlewareFunc {
+	notFoundFile := filepath.Join(assetsPath, notFoundPath)
+
+	if _, err := os.Stat(notFoundFile); os.IsNotExist(err) {
+		panic(err)
+	}
+
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// get the absolute path to prevent directory traversal
+			path, err := filepath.Abs(r.URL.Path)
+			if err != nil {
+				// if we failed to get the absolute path respond with a 400 bad request
+				// and stop
+				http.Error(w, err.Error(), http.StatusBadRequest)
+
+				return
+			}
+
+			// prepend the path with the path to the static directory
+			path = filepath.Join(assetsPath, path)
+
+			// check whether a file exists at the given path
+			_, err = os.Stat(path)
+			if os.IsNotExist(err) {
+				// file does not exist, serve index.html
+				http.ServeFile(w, r, notFoundFile)
+
+				return
+			} else if err != nil {
+				// if we got an error (that wasn't that the file doesn't exist) stating the
+				// file, return a 500 internal server error and stop
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
 func isApplicationRoute(path string) bool {
-	_, ok := applicationRoutes[strings.Trim(path, "/")]
+	split := strings.Split(path, "/")
+	if len(split) > 1 {
+		_, ok := applicationRoutes[split[1]]
 
-	return ok
+		return ok
+	}
+
+	return false
 }
 
 func isIndexRoute(path string) bool {
