@@ -26,3 +26,10 @@ yarn start
 ```
 
 Go to [http://localhost:8080](http://localhost:8080).
+
+## Running in Prod Mode
+
+```
+docker build -f ./docker/main-dockerfile -t ls .
+docker run -e ANALYZER_KEY="$ANALYZER_KEY" -e DB_CONNECTION="mongodb://172.17.0.2:27017/?connect=direct" -p 8080:8080 ls
+```

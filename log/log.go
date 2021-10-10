@@ -15,7 +15,7 @@ import (
 )
 
 // nolint
-var _logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).
+var _logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr, NoColor: true}).
 	With().
 	Timestamp().
 	Logger()
