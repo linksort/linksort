@@ -14,7 +14,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/linksort/analyze v0.0.0-20210926190425-b03a87380807
+	github.com/linksort/analyze v0.0.0-20211010051416-ece18bef78df
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/rs/zerolog v1.21.0
 	github.com/steinfletcher/apitest v1.5.5
