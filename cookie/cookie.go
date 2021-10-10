@@ -5,9 +5,10 @@ import (
 	"time"
 )
 
-func SetSession(w http.ResponseWriter, sessionID string) {
+func SetSession(r *http.Request, w http.ResponseWriter, sessionID string) {
+
 	http.SetCookie(w, &http.Cookie{
-		Domain:   "localhost",
+		Domain:   r.Host,
 		Path:     "/",
 		Name:     "session_id",
 		Value:    sessionID,
@@ -19,9 +20,9 @@ func SetSession(w http.ResponseWriter, sessionID string) {
 	})
 }
 
-func UnsetSession(w http.ResponseWriter) {
+func UnsetSession(r *http.Request, w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
-		Domain:   "localhost",
+		Domain:   r.Host,
 		Path:     "/",
 		Name:     "session_id",
 		Value:    "",

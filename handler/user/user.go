@@ -91,7 +91,7 @@ func (s *config) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie.SetSession(w, u.SessionID)
+	cookie.SetSession(r, w, u.SessionID)
 	w.Header().Add("X-Csrf-Token", string(s.CSRF.UserCSRF(u.SessionID)))
 	payload.Write(w, r, &CreateUserResponse{u}, http.StatusCreated)
 }
@@ -150,7 +150,7 @@ func (s *config) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie.SetSession(w, u.SessionID)
+	cookie.SetSession(r, w, u.SessionID)
 	w.Header().Add("X-Csrf-Token", string(s.CSRF.UserCSRF(u.SessionID)))
 	payload.Write(w, r, &ChangePasswordResponse{u}, http.StatusOK)
 }
@@ -182,7 +182,7 @@ func (s *config) CreateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie.SetSession(w, u.SessionID)
+	cookie.SetSession(r, w, u.SessionID)
 	w.Header().Add("X-Csrf-Token", string(s.CSRF.UserCSRF(u.SessionID)))
 	payload.Write(w, r, &CreateSessionResponse{u}, http.StatusCreated)
 }
@@ -239,7 +239,7 @@ func (s *config) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie.UnsetSession(w)
+	cookie.UnsetSession(r, w)
 	w.Header().Add("X-Csrf-Token", string(s.CSRF.CSRF()))
 	payload.Write(w, r, nil, http.StatusNoContent)
 }
@@ -281,7 +281,7 @@ func (s *config) DeleteSession(w http.ResponseWriter, r *http.Request) {
 		logger.Print(errors.E(op, err))
 	}
 
-	cookie.UnsetSession(w)
+	cookie.UnsetSession(r, w)
 	w.Header().Add("X-Csrf-Token", string(s.CSRF.CSRF()))
 	payload.Write(w, r, nil, http.StatusNoContent)
 }
