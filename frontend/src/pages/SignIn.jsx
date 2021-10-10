@@ -74,9 +74,9 @@ export default function SignIn() {
         Submit
       </Button>
 
-      <Button as={Link} variant="ghost" to="/sign-up" mb={2} w="100%">
-        Don't have an account? Sign up.
-      </Button>
+      {/* <Button as={Link} variant="ghost" to="/sign-up" mb={2} w="100%"> */}
+      {/*   Don't have an account? Sign up. */}
+      {/* </Button> */}
 
       <Button as={Link} variant="ghost" to="/forgot-password" w="100%">
         I forgot my password.

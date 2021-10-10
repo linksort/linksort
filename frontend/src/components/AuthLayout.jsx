@@ -1,7 +1,17 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Flex, Box, Stack, Link, Container } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Stack,
+  Link,
+  Container,
+  Heading,
+  List,
+  ListItem,
+} from "@chakra-ui/react";
 
+import { HEADER_HEIGHT, FOOTER_HEIGHT } from "../theme/theme";
 import Logo from "./Logo";
 import MouseType from "./MouseType";
 
@@ -33,31 +43,49 @@ export default function AuthLayout({ children }) {
     <Container maxWidth="7xl" px={6} position="relative">
       <Flex
         as="header"
-        height={[24, 32]}
+        height={HEADER_HEIGHT}
         width="full"
         alignItems="center"
         justifyContent="space-between"
       >
-        <RouterLink to="/">
-          <Logo htmlWidth="100rem" />
-        </RouterLink>
-        <Stack direction="row" as="nav" spacing={4}>
-          <UnderlineLink to="https://linksort.com/blog" isExternal>
-            Blog
-          </UnderlineLink>
-          <UnderlineLink to="/sign-in">Sign in</UnderlineLink>
-          <UnderlineLink to="/sign-up">Sign up</UnderlineLink>
-        </Stack>
+        <Heading as="h1">
+          <RouterLink to="/">
+            <Logo />
+          </RouterLink>
+        </Heading>
+        <Box as="nav">
+          <Stack as={List} direction="row" spacing={4}>
+            <ListItem>
+              <UnderlineLink to="https://linksort.com/blog/idea" isExternal>
+                About
+              </UnderlineLink>
+            </ListItem>
+            <ListItem>
+              <UnderlineLink to="https://linksort.com/blog" isExternal>
+                Blog
+              </UnderlineLink>
+            </ListItem>
+            <ListItem>
+              <UnderlineLink to="/sign-in">Sign in</UnderlineLink>
+            </ListItem>
+            {/* <UnderlineLink to="/sign-up">Sign up</UnderlineLink> */}
+          </Stack>
+        </Box>
       </Flex>
       <Box
         as="main"
         width="100%"
         maxWidth="100%"
-        minHeight={["calc(100vh - 14rem)", "calc(100vh - 16rem)"]}
+        minHeight={["calc(100vh - 13rem)", "calc(100vh - 13rem)"]}
       >
         {children}
       </Box>
-      <Flex as="footer" height={32} justifyContent="center" alignItems="center">
+      <Flex
+        as="footer"
+        height={FOOTER_HEIGHT}
+        justifyContent="center"
+        alignItems="center"
+      >
         <MouseType />
       </Flex>
     </Container>

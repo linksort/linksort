@@ -1,6 +1,9 @@
 const sans = `"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif`;
-const serif = `"Source Serif Pro", Georgia, serif`;
+const serif = `Georgia, "Source Serif Pro", serif`;
 const mono = `SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace`;
+
+export const HEADER_HEIGHT = "5rem";
+export const FOOTER_HEIGHT = "8rem";
 
 const theme = {
   breakpoints: {
@@ -19,7 +22,7 @@ const theme = {
   },
 
   shadows: {
-    outline: "0 0 0 3px #8080f7",
+    outline: "0 0 0 3px #80a9ff",
   },
 
   components: {

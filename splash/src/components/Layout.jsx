@@ -9,8 +9,11 @@ import {
   List,
   ListItem,
   Link,
+  Stack,
+  Tag,
 } from "@chakra-ui/react"
 
+import { HEADER_HEIGHT, FOOTER_HEIGHT } from "../theme/theme"
 import Logo from "./Logo"
 
 function UnderlineLink({ to, href, children }) {
@@ -38,7 +41,7 @@ export default function Layout({ children }) {
     <Container maxWidth="7xl" centerContent px={6}>
       <Flex
         as="header"
-        height={24}
+        height={HEADER_HEIGHT}
         width="full"
         alignItems="center"
         justifyContent="space-between"
@@ -54,23 +57,48 @@ export default function Layout({ children }) {
           </RouterLink>
         </Heading>
         <Box as="nav">
-          <List>
+          <Stack as={List} direction="row" spacing={4}>
+            <ListItem>
+              <Link as={RouterLink} fontWeight="medium" to="/blog/idea">
+                About
+              </Link>
+            </ListItem>
             <ListItem>
               <Link as={RouterLink} fontWeight="medium" to="/blog">
                 Blog
               </Link>
             </ListItem>
-          </List>
+            <ListItem display="flex" alignItems="center">
+              <Link fontWeight="medium" href="/sign-in">
+                Sign in
+              </Link>
+              <Tag
+                size="sm"
+                minHeight="unset"
+                minWidth="unset"
+                fontSize="0.6rem"
+                fontWeight="bold"
+                padding="0.2rem"
+                variant="solid"
+                colorScheme="brand"
+                top="-0.4rem"
+                right="-2.0rem"
+                ml={1}
+              >
+                BETA
+              </Tag>
+            </ListItem>
+          </Stack>
         </Box>
       </Flex>
       <Box
         as="main"
         maxWidth="3xl"
-        minHeight={["calc(100vh - 14rem)", "calc(100vh - 16rem)"]}
+        minHeight={["calc(100vh - 13rem)", "calc(100vh - 13rem)"]}
       >
         {children}
       </Box>
-      <Flex as="footer" height={32} alignItems="center">
+      <Flex as="footer" height={FOOTER_HEIGHT} alignItems="center">
         <Text align="center">
           Copyright &copy; {new Date().getFullYear()} Linksort LLC &middot;{" "}
           <UnderlineLink to="/terms">Terms of service</UnderlineLink> &middot;{" "}

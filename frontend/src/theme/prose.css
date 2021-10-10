@@ -1,28 +1,28 @@
 .prose {
-  --color-primary: #00bfa2;
-  --color-accent: #45dfc8;
+  --color-primary: #558cff;
+  --color-accent: #80a9ff;
   --color-text: #333333;
   --color-text-accent: #111111;
   --color-border: #dddddd;
   --color-code-background: #eeeeee;
 
   --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --font-serif: "Source Serif Pro", Georgia, serif;
+  --font-serif: Georgia, Source Serif Pro, serif;
   --font-mono: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 
 .prose {
   color: var(--color-text);
-  max-width: 100%;
+  max-width: calc(100vw - 3rem);
   font-size: 1rem;
   line-height: 1.5;
   font-family: var(--font-serif);
 }
 
 .prose .message {
-  background-color: rgba(69, 223, 200, 0.2);
+  background-color: var(--color-code-background);
   padding: 1rem;
-  border-radius: 0.2rem;
+  border-radius: 0.4rem;
   font-family: var(--font-sans);
 }
 
@@ -416,4 +416,3 @@
 .prose > :last-child {
   margin-bottom: 0;
 }
-
