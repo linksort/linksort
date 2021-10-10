@@ -13,6 +13,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 import ErrorScreen from "../components/ErrorScreen";
 import LinkItem from "../components/LinkItem";
+import ScrollToTop from "../components/ScrollToTop";
 import { useLinks } from "../hooks/links";
 import {
   useFilters,
@@ -117,6 +118,7 @@ export default function Home() {
       paddingBottom="4rem"
       marginBottom="1.5rem"
     >
+      <ScrollToTop />
       <Box marginBottom={8}>
         {Object.entries(linksBy(groupName, links)).map(([heading, list]) => {
           return (
