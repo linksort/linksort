@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/steinfletcher/apitest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
@@ -144,7 +145,9 @@ func TestGetLinks(t *testing.T) {
 	ctx := context.Background()
 	usr, _ := testutil.NewUser(t, ctx)
 	lnk1 := testutil.NewLink(t, ctx, usr)
+	time.Sleep(time.Millisecond * 5)
 	lnk2 := testutil.NewLink(t, ctx, usr)
+	time.Sleep(time.Millisecond * 5)
 	lnk3 := testutil.NewLink(t, ctx, usr)
 
 	tests := []struct {
