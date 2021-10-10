@@ -1,7 +1,6 @@
 FROM node AS frontend-builder
 WORKDIR /opt/linksort
-COPY ./frontend/package.json .
-COPY ./frontend/yarn.lock .
+COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn
 COPY ./frontend .
 RUN yarn
@@ -11,13 +10,12 @@ FROM node:16-bullseye AS splash-builder
 RUN apt-get update -y
 RUN apt-get install -y libvips libvips-tools
 WORKDIR /opt/linksort
-COPY ./splash/package.json .
-COPY ./splash/yarn.lock .
+COPY ./splash/package.json ./splash/yarn.lock ./
 RUN yarn
 COPY ./splash .
 RUN yarn build
 
-FROM golang:1.16 AS api-builder
+FROM golang:1.17 AS api-builder
 WORKDIR /opt/linksort/
 RUN mkdir build
 COPY ./.netrc /root/.netrc

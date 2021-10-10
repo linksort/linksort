@@ -52,7 +52,7 @@ func (u *User) CheckPassword(passwd string) bool {
 }
 
 func (u *User) IsSessionExpired() bool {
-	return u.SessionExpiry.After(time.Now())
+	return u.SessionExpiry.Before(time.Now())
 }
 
 func (u *User) RefreshSession() {
