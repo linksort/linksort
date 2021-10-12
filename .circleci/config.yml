@@ -63,7 +63,7 @@ jobs:
       - run:
           name: Generate .netrc
           command: |
-            echo "machine github.com\n login LinksortMachine\n password $PRIVATE_DEP_KEY\n\nmachine api.github.com\n login LinksortMachine\n password $PRIVATE_DEP_KEY\n" >> ./.netrc
+            echo "machine github.com login LinksortMachine password $PRIVATE_DEP_KEY" > ./.netrc
       - run:
           name: Build Image
           command: docker build -t ls -f docker/main-dockerfile .
