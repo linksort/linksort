@@ -31,6 +31,41 @@ jobs:
           command: |
             go test -v ./...
 
+  build_and_upload:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/base
+    steps:
+      - run:
+          name: Install AWSCLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            aws --version
+            rm -rf ./aws awscliv2.zip
+      - run:
+          name: Configure AWSCLI
+          command: |
+            aws configure set default.aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set default.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region us-east-1
+            aws configure set default.output text
+      - run:
+          name: Install lightsailctl
+          command: |
+            sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+            sudo chmod +x /usr/local/bin/lightsailctl
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: Build Image
+          command: docker build -t ls -f docker/main-dockerfile
+      - run:
+          name: Upload Image
+          command: aws lightsail push-container-image --service-name ls-prod --image ls --label ls-full-$(echo $CIRCLE_SHA1 | head -c 8)
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -38,3 +73,10 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - test
+      - build_and_upload:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - main
