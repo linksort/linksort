@@ -56,10 +56,11 @@ jobs:
           command: |
             sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
             sudo chmod +x /usr/local/bin/lightsailctl
+            lightsailctl --version
       - run:
           name: Generate .netrc
           command: |
-            echo "machine github.com\n login AlexanderRichey\n password $PRIVATE_DEP_KEY\n\nmachine api.github.com\n login AlexanderRichey\n password $PRIVATE_DEP_KEY\n" >> ~/.netrc
+            echo "machine github.com\n login AlexanderRichey\n password $PRIVATE_DEP_KEY\n\nmachine api.github.com\n login AlexanderRichey\n password $PRIVATE_DEP_KEY\n" >> ./.netrc
       - setup_remote_docker:
           version: 20.10.7
           docker_layer_caching: true
