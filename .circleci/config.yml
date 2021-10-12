@@ -61,6 +61,7 @@ jobs:
           command: |
             echo "machine github.com\n login AlexanderRichey\n password $PRIVATE_DEP_KEY\n\nmachine api.github.com\n login AlexanderRichey\n password $PRIVATE_DEP_KEY\n" >> ~/.netrc
       - setup_remote_docker:
+          version: 19.03.15
           docker_layer_caching: true
       - checkout
       - run:
