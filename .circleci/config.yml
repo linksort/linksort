@@ -65,7 +65,7 @@ jobs:
       - checkout
       - run:
           name: Build Image
-          command: docker build -t ls -f docker/main-dockerfile
+          command: docker build -t ls -f docker/main-dockerfile .
       - run:
           name: Upload Image
           command: aws lightsail push-container-image --service-name ls-prod --image ls --label ls-full-$(echo $CIRCLE_SHA1 | head -c 8)
