@@ -34,7 +34,7 @@ jobs:
   build_and_upload:
     working_directory: ~/repo
     docker:
-      - image: cimg/base
+      - image: cimg/base:stable
     steps:
       - run:
           name: Install AWSCLI
