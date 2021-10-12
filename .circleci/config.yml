@@ -56,7 +56,6 @@ jobs:
           command: |
             sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
             sudo chmod +x /usr/local/bin/lightsailctl
-            lightsailctl --version
       - run:
           name: Generate .netrc
           command: |
