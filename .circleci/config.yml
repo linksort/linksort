@@ -91,6 +91,11 @@ jobs:
             aws configure set default.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             aws configure set default.region us-east-1
             aws configure set default.output json
+      - run:
+          name: Install envsubst
+          command: |
+            apt-get update
+            apt-get -y install gettext-base
       - checkout
       - run:
           name: Initiate deployment
