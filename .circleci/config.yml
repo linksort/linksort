@@ -71,6 +71,57 @@ jobs:
           name: Upload Image
           command: aws lightsail push-container-image --service-name ls-prod --image ls --label ls-full-$(echo $CIRCLE_SHA1 | head -c 8)
 
+  deploy:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run:
+          name: Install AWSCLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            aws --version
+            rm -rf ./aws awscliv2.zip
+      - run:
+          name: Configure AWSCLI
+          command: |
+            aws configure set default.aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set default.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region us-east-1
+            aws configure set default.output json
+      - checkout
+      - run:
+          name: Initiate deployment
+          command: |
+            echo "export LATEST_IMAGE=$(aws lightsail get-container-images --service-name ls-prod | jq '.containerImages[0].image')" >> $BASH_ENV
+            echo "export ENV_DETAILS=$(aws lightsail get-container-service-deployments --service-name ls-prod | jq '.deployments[0].containers.main.environment')" >> $BASH_ENV
+            cat .circleci/deployment.json.tpl | envsubst > deployment.json
+            aws lightsail create-container-service-deployment --cli-input-json file://deployment.json
+      - run:
+          name: Poll deployment
+          command: |
+            for i in {1..60}
+            do
+              sleep 10
+              case $(aws lightsail get-container-service-deployments --service-name ls-prod | jq '.deployments[0].state') in
+              '"ACTIVE"')
+                echo "Deployment succeeded"
+                exit 0
+                ;;
+              '"FAILED"')
+                echo "Deployment failed"
+                exit 1
+                ;;
+              *)
+                echo "Poll $i"
+                ;;
+              esac
+            done
+            echo "Polling timed out"
+            exit 1
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -83,6 +134,16 @@ workflows:
             - AWS
           requires:
             - test
+          filters:
+            branches:
+              only:
+                - main
+      - deploy:
+          context:
+            - AWS
+          requires:
+            - test
+            - build_and_upload
           filters:
             branches:
               only:
