@@ -80,13 +80,10 @@ export default function Home() {
   const {
     handleGoToNextPage,
     handleGoToPrevPage,
-    handleSearch,
     groupName,
-    searchQuery,
     pageNumber,
   } = useFilters();
   const linksCount = links.length;
-  const isSearching = searchQuery && searchQuery.length > 0;
   const isViewSettingCondensed = viewSetting === VIEW_SETTING_CONDENSED;
 
   if (isError) {
@@ -97,7 +94,7 @@ export default function Home() {
     return <LoadingScreen />;
   }
 
-  if (linksCount === 0 && !isSearching) {
+  if (linksCount === 0) {
     return <NullScreen />;
   }
 
@@ -133,28 +130,22 @@ export default function Home() {
           );
         })}
       </Box>
-      {isSearching ? (
-        <Box marginTop={6}>
-          <Button onClick={() => handleSearch("")}>Clear search</Button>
-        </Box>
-      ) : (
-        <HStack position="absolute" bottom={0} left={[0, 0, 6, 6]}>
-          <Button
-            isDisabled={pageNumber === "0"}
-            onClick={handleGoToPrevPage}
-            leftIcon={<ChevronLeftIcon />}
-          >
-            Prevous
-          </Button>
-          <Button
-            isDisabled={linksCount < 20}
-            onClick={handleGoToNextPage}
-            rightIcon={<ChevronRightIcon />}
-          >
-            Next
-          </Button>
-        </HStack>
-      )}
+      <HStack position="absolute" bottom={0} left={[0, 0, 6, 6]}>
+        <Button
+          isDisabled={pageNumber === "0"}
+          onClick={handleGoToPrevPage}
+          leftIcon={<ChevronLeftIcon />}
+        >
+          Prevous
+        </Button>
+        <Button
+          isDisabled={linksCount < 20}
+          onClick={handleGoToNextPage}
+          rightIcon={<ChevronRightIcon />}
+        >
+          Next
+        </Button>
+      </HStack>
     </Box>
   );
 }

@@ -58,7 +58,7 @@ export default function LinkItemCondensed({
           {link.title}
         </Link>
       </Flex>
-      <Menu>
+      <Menu isLazy>
         <MenuButton>
           <DotDotDotVert />
         </MenuButton>
