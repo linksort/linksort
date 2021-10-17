@@ -74,6 +74,7 @@ function LinkList({ viewSetting, children }) {
         </List>
       );
     case VIEW_SETTING_CONDENSED:
+      return <List marginBottom={6}>{children}</List>;
     case VIEW_SETTING_TALL:
     default:
       return <List marginBottom={14}>{children}</List>;
@@ -115,7 +116,7 @@ export default function Home() {
       minHeight="calc(100vh - 6.5rem)"
       position="relative"
       paddingTop={isViewSettingCondensed ? 4 : 6}
-      paddingLeft={6}
+      paddingLeft={[0, 0, 6, 6]}
       paddingBottom={6}
       marginBottom="1.5rem"
     >
