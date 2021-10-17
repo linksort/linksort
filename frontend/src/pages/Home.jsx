@@ -100,7 +100,7 @@ export default function Home() {
     <Box
       minHeight="calc(100vh - 6.5rem)"
       position="relative"
-      paddingTop={isViewSettingCondensed ? 4 : 6}
+      paddingTop={6}
       paddingLeft={[0, 0, 6, 6]}
       paddingBottom={6}
       marginBottom="1.5rem"
