@@ -1,42 +1,11 @@
 import React from "react";
-import {
-  Stack,
-  Grid,
-  GridItem,
-  Heading,
-  Flex,
-  Container,
-  Box,
-} from "@chakra-ui/react";
+import { Grid, GridItem, Flex, Container, Box } from "@chakra-ui/react";
 
-import TopRightUserMenu from "./TopRightUserMenu";
-import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
-import TopRightViewPicker from "./TopRightViewPicker";
 import Sidebar from "./Sidebar";
-import { useFilters } from "../hooks/filters";
-
-const HEADER_HEIGHT = "5rem";
+import Header from "./Header";
+import { HEADER_HEIGHT } from "../theme/theme";
 
 export default function AppLayout({ children }) {
-  const {
-    folderName,
-    areFavoritesShowing,
-    searchQuery,
-    tagPath,
-  } = useFilters();
-  const isSearching = searchQuery && searchQuery.length > 0;
-  const isViewingTag = tagPath.length > 0;
-
-  let heading = isViewingTag ? tagPath : folderName;
-
-  if (isSearching && areFavoritesShowing) {
-    heading = `Searching for "${searchQuery}" among favorites in ${folderName}`;
-  } else if (isSearching) {
-    heading = `Searching for "${searchQuery}" in ${folderName}`;
-  } else if (areFavoritesShowing) {
-    heading = `Favorites in ${heading}`;
-  }
-
   return (
     <Container maxWidth="7xl" px={6} position="relative" overflowX="hidden">
       <Grid
@@ -79,34 +48,7 @@ export default function AppLayout({ children }) {
             />
           </Flex>
           <Box position="fixed" width="100%" top="0" left="0" zIndex={1}>
-            <Container maxWidth="7xl" px={[0, 0, 6, 6]}>
-              <Flex
-                paddingLeft={6}
-                paddingRight={[6, 6, 0, 0]}
-                marginLeft={["0rem", "0rem", "18rem", "18rem"]}
-                width={[
-                  "100%",
-                  "100%",
-                  "calc(100% - 18rem)",
-                  "calc(100% - 18rem)",
-                ]}
-                height={HEADER_HEIGHT}
-                borderBottom="1px"
-                borderBottomColor="gray.100"
-                justifyContent="space-between"
-                alignItems="center"
-                backgroundColor="white"
-              >
-                <Heading as="h2" size="md">
-                  {heading}
-                </Heading>
-                <Stack direction="row" as="nav" spacing={4}>
-                  <TopRightNewLinkPopover />
-                  <TopRightViewPicker />
-                  <TopRightUserMenu />
-                </Stack>
-              </Flex>
-            </Container>
+            <Header />
           </Box>
           <Box as="main" marginTop={HEADER_HEIGHT}>
             {children}

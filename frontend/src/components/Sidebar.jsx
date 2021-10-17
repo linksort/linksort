@@ -19,6 +19,7 @@ import SidebarSearchButton from "./SidebarSearchButton";
 import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
 import { useFilters } from "../hooks/filters";
+import TopRightViewPicker from "./TopRightViewPicker";
 
 function SidebarSectionHeader({ children, ...rest }) {
   return (
@@ -63,13 +64,16 @@ export default function Sidebar() {
             height="5rem"
             justifyContent="flex-start"
             alignItems="center"
-            marginBottom={4}
+            marginBottom={[2, 2, 4, 4]}
           >
             <RouterLink to="/">
               <Logo />
               <VisuallyHidden>Linksort</VisuallyHidden>
             </RouterLink>
           </Flex>
+          <Box display={["block", "block", "none", "none"]} marginBottom={6}>
+            <TopRightViewPicker />
+          </Box>
           <List paddingRight={2}>
             <ListItem marginBottom={8}>
               <Stack as={List} spacing={1}>

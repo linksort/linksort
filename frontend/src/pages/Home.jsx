@@ -148,7 +148,7 @@ export default function Home() {
           <Button onClick={() => handleSearch("")}>Clear search</Button>
         </Box>
       ) : (
-        <HStack position="absolute" bottom={0} left={6}>
+        <HStack position="absolute" bottom={0} left={[0, 0, 6, 6]}>
           <Button
             isDisabled={pageNumber === "0"}
             onClick={handleGoToPrevPage}

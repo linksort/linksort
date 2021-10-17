@@ -14,6 +14,7 @@ import {
   Input,
   FormErrorMessage,
   Box,
+  IconButton,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useFormik } from "formik";
@@ -54,9 +55,22 @@ export default function TopRightNewLinkPopover() {
       closeOnBlur={true}
     >
       <PopoverTrigger>
-        <Button colorScheme="brand" leftIcon={<AddIcon />} onClick={handleOpen}>
-          New Link
-        </Button>
+        <Box>
+          <Button
+            colorScheme="brand"
+            leftIcon={<AddIcon />}
+            onClick={handleOpen}
+            display={["none", "none", "block", "block"]}
+          >
+            New Link
+          </Button>
+          <IconButton
+            colorScheme="brand"
+            icon={<AddIcon />}
+            onClick={handleOpen}
+            display={["block", "block", "none", "none"]}
+          />
+        </Box>
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />

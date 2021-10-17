@@ -47,21 +47,21 @@ export default function SidebarPopover({
 
       <Modal isOpen={isOpen} onClose={handleClose} initialFocusRef={focus}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent marginX={4}>
           <Flex as="form" onSubmit={handleSubmit} padding={4}>
             <Input
               type="text"
               placeholder={placeholder}
               onChange={(e) => setQuery(e.target.value)}
               value={query}
-              borderRightRadius={["md", "none"]}
+              borderRightRadius={["none"]}
               ref={focus}
               required
             />
             <Button
               type="submit"
               colorScheme="brand"
-              borderLeftRadius={["md", "none"]}
+              borderLeftRadius={["none"]}
               paddingX={8}
             >
               {buttonText}
