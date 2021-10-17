@@ -27,7 +27,7 @@ export default function LinkItemFolderMenu({
           onClick={() => onMoveToFolder("root")}
           icon={<CloseIcon />}
         >
-          Remove
+          Remove from folder
         </MenuItem>
       </MenuList>
     </Menu>
