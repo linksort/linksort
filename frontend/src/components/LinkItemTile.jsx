@@ -1,22 +1,7 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Flex,
-  IconButton,
-  Tooltip,
-  Text,
-  HStack,
-  Link,
-  Button,
-  MenuButton,
-  GridItem,
-  Image,
-} from "@chakra-ui/react";
-import { DeleteIcon, EditIcon, StarIcon } from "@chakra-ui/icons";
+import { Box, Flex, Text, Link, GridItem, Image } from "@chakra-ui/react";
 
-import { FolderIcon, StarBorderIcon } from "./CustomIcons";
-import LinkItemFolderMenu from "./LinkItemFolderMenu";
+import LinkItemControls from "./LinkItemControls";
 
 const COLORS = [
   "red",
@@ -90,61 +75,15 @@ export default function LinkItemTile({
               {link.site}
             </Text>
           </Box>
-          <HStack>
-            <LinkItemFolderMenu
-              buttonSlot={
-                isLinkInFolder ? (
-                  <MenuButton
-                    as={Button}
-                    size="sm"
-                    leftIcon={<FolderIcon />}
-                    overflow="hidden"
-                  >
-                    <Text
-                      as="span"
-                      overflow="hidden"
-                      whiteSpace="nowrap"
-                      textOverflow="ellipsis"
-                    >
-                      {currentFolderName}
-                    </Text>
-                  </MenuButton>
-                ) : (
-                  <Tooltip label="Add to folder">
-                    <MenuButton
-                      as={IconButton}
-                      size="sm"
-                      icon={<FolderIcon />}
-                    />
-                  </Tooltip>
-                )
-              }
-              folderTree={folderTree}
-              onMoveToFolder={onMoveToFolder}
-            />
-            <Tooltip label="Favorite link">
-              <IconButton
-                icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
-                size="sm"
-                onClick={onToggleIsFavorite}
-              />
-            </Tooltip>
-            <Tooltip label="Edit link">
-              <IconButton
-                as={RouterLink}
-                icon={<EditIcon />}
-                to={`/links/${link.id}`}
-                size="sm"
-              />
-            </Tooltip>
-            <Tooltip label="Delete link">
-              <IconButton
-                icon={<DeleteIcon />}
-                size="sm"
-                onClick={onDeleteLink}
-              />
-            </Tooltip>
-          </HStack>
+          <LinkItemControls
+            link={link}
+            folderTree={folderTree}
+            isLinkInFolder={isLinkInFolder}
+            currentFolderName={currentFolderName}
+            onDeleteLink={onDeleteLink}
+            onToggleIsFavorite={onToggleIsFavorite}
+            onMoveToFolder={onMoveToFolder}
+          />
         </Flex>
       </Box>
     </GridItem>
