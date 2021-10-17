@@ -44,7 +44,7 @@ export default function LinkItemTall({
       />
       <Flex
         justifyContent="space-between"
-        alignItems="center"
+        alignItems={["flex-start", "flex-start", "center", "center"]}
         width="full"
         direction={["column", "column", "row", "row"]}
       >

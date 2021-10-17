@@ -1,17 +1,9 @@
 import React from "react";
-import {
-  Box,
-  Heading,
-  HStack,
-  Button,
-  Stack,
-  Skeleton,
-  List,
-  Grid,
-} from "@chakra-ui/react";
+import { Box, Heading, HStack, Button, List, Grid } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 import ErrorScreen from "../components/ErrorScreen";
+import LoadingScreen from "../components/LoadingScreen";
 import LinkItem from "../components/LinkItem";
 import ScrollToTop from "../components/ScrollToTop";
 import { useLinks } from "../hooks/links";
@@ -101,14 +93,7 @@ export default function Home() {
   }
 
   if (isLoading) {
-    return (
-      <Stack>
-        <Skeleton height={8} />
-        <Skeleton height={8} />
-        <Skeleton height={8} />
-        <Skeleton height={8} />
-      </Stack>
-    );
+    return <LoadingScreen />;
   }
 
   return (
