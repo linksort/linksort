@@ -1,13 +1,11 @@
 import React, { useRef, useState } from "react";
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
   Button,
   Input,
   Flex,
+  Modal,
+  ModalOverlay,
+  ModalContent,
 } from "@chakra-ui/react";
 
 import SidebarButton from "./SidebarButton";
@@ -38,26 +36,19 @@ export default function SidebarPopover({
   }
 
   return (
-    <Popover
-      placement="right"
-      isOpen={isOpen}
-      onClose={handleClose}
-      closeOnBlur={true}
-      initialFocusRef={focus}
-    >
-      <PopoverTrigger>
-        <SidebarButton
-          variant={isOpen ? "solid" : "ghost"}
-          leftIcon={<ButtonIcon />}
-          onClick={handleOpen}
-        >
-          {buttonText}
-        </SidebarButton>
-      </PopoverTrigger>
-      <PopoverContent borderRadius="xl" minWidth="26rem">
-        <PopoverArrow />
-        <PopoverBody padding={3}>
-          <Flex as="form" onSubmit={handleSubmit}>
+    <>
+      <SidebarButton
+        variant={isOpen ? "solid" : "ghost"}
+        leftIcon={<ButtonIcon />}
+        onClick={handleOpen}
+      >
+        {buttonText}
+      </SidebarButton>
+
+      <Modal isOpen={isOpen} onClose={handleClose} initialFocusRef={focus}>
+        <ModalOverlay />
+        <ModalContent>
+          <Flex as="form" onSubmit={handleSubmit} padding={4}>
             <Input
               type="text"
               placeholder={placeholder}
@@ -76,8 +67,8 @@ export default function SidebarPopover({
               {buttonText}
             </Button>
           </Flex>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }

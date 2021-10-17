@@ -68,17 +68,15 @@ function LinkList({ viewSetting, children }) {
             "repeat(2, 1fr)",
             "repeat(3, 1fr)",
           ]}
-          marginBottom={14}
+          marginBottom={16}
         >
           {children}
         </List>
       );
     case VIEW_SETTING_CONDENSED:
-      return <List marginBottom={6}>{children}</List>;
     case VIEW_SETTING_TALL:
-      return <List marginBottom={10}>{children}</List>;
     default:
-      return <List>{children}</List>;
+      return <List marginBottom={14}>{children}</List>;
   }
 }
 
@@ -95,6 +93,7 @@ export default function Home() {
   } = useFilters();
   const linksCount = links.length;
   const isSearching = searchQuery && searchQuery.length > 0;
+  const isViewSettingCondensed = viewSetting === VIEW_SETTING_CONDENSED;
 
   if (isError) {
     return <ErrorScreen error={error} />;
@@ -113,9 +112,11 @@ export default function Home() {
 
   return (
     <Box
-      minHeight="calc(100vh - 7.5rem)"
+      minHeight="calc(100vh - 6.5rem)"
       position="relative"
-      paddingBottom="4rem"
+      paddingTop={isViewSettingCondensed ? 4 : 6}
+      paddingLeft={6}
+      paddingBottom={6}
       marginBottom="1.5rem"
     >
       <ScrollToTop />
@@ -126,8 +127,8 @@ export default function Home() {
               {heading !== "all" && (
                 <Heading
                   as="h3"
-                  size={viewSetting === VIEW_SETTING_CONDENSED ? "sm" : "md"}
-                  marginBottom={viewSetting === VIEW_SETTING_CONDENSED ? 2 : 6}
+                  size={isViewSettingCondensed ? "sm" : "md"}
+                  marginBottom={isViewSettingCondensed ? 2 : 6}
                 >
                   {heading}
                 </Heading>
@@ -146,7 +147,7 @@ export default function Home() {
           <Button onClick={() => handleSearch("")}>Clear search</Button>
         </Box>
       ) : (
-        <HStack position="absolute" bottom={0} left={0}>
+        <HStack position="absolute" bottom={0} left={6}>
           <Button
             isDisabled={pageNumber === "0"}
             onClick={handleGoToPrevPage}

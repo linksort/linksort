@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -126,11 +127,12 @@ func withIndexHandler(
 }
 
 func with404Handler(assetsPath, notFoundPath string) mux.MiddlewareFunc {
-	notFoundFile := filepath.Join(assetsPath, notFoundPath)
-
-	if _, err := os.Stat(notFoundFile); os.IsNotExist(err) {
+	notFoundFile, err := os.OpenFile(filepath.Join(assetsPath, notFoundPath), os.O_RDONLY, 0700)
+	if err != nil {
 		panic(err)
 	}
+
+	lastModified := time.Now()
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -150,8 +152,8 @@ func with404Handler(assetsPath, notFoundPath string) mux.MiddlewareFunc {
 			// check whether a file exists at the given path
 			_, err = os.Stat(path)
 			if os.IsNotExist(err) {
-				// file does not exist, serve index.html
-				http.ServeFile(w, r, notFoundFile)
+				w.WriteHeader(http.StatusNotFound)
+				http.ServeContent(w, r, "404.html", lastModified, notFoundFile)
 
 				return
 			} else if err != nil {

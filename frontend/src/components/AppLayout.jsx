@@ -14,12 +14,10 @@ import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
 import TopRightViewPicker from "./TopRightViewPicker";
 import Sidebar from "./Sidebar";
 import { useFilters } from "../hooks/filters";
-import { useViewSetting, VIEW_SETTING_CONDENSED } from "../hooks/views";
 
 const HEADER_HEIGHT = "5rem";
 
 export default function AppLayout({ children }) {
-  const { setting: viewSetting } = useViewSetting();
   const {
     folderName,
     areFavoritesShowing,
@@ -45,7 +43,7 @@ export default function AppLayout({ children }) {
         maxWidth="100%"
         width="100%"
         minHeight="100vh"
-        templateColumns={["1fr", "1fr", "16rem 1fr", "16rem 1fr"]}
+        templateColumns={["1fr", "1fr", "18rem 1fr", "18rem 1fr"]}
       >
         <GridItem
           height="100%"
@@ -85,12 +83,12 @@ export default function AppLayout({ children }) {
               <Flex
                 paddingLeft={6}
                 paddingRight={[6, 6, 0, 0]}
-                marginLeft={["0rem", "0rem", "16rem", "16rem"]}
+                marginLeft={["0rem", "0rem", "18rem", "18rem"]}
                 width={[
                   "100%",
                   "100%",
-                  "calc(100% - 16rem)",
-                  "calc(100% - 16rem)",
+                  "calc(100% - 18rem)",
+                  "calc(100% - 18rem)",
                 ]}
                 height={HEADER_HEIGHT}
                 borderBottom="1px"
@@ -110,12 +108,7 @@ export default function AppLayout({ children }) {
               </Flex>
             </Container>
           </Box>
-          <Box
-            as="main"
-            marginTop={HEADER_HEIGHT}
-            paddingTop={viewSetting === VIEW_SETTING_CONDENSED ? 4 : 6}
-            paddingLeft={[0, 0, 6, 6]}
-          >
+          <Box as="main" marginTop={HEADER_HEIGHT}>
             {children}
           </Box>
         </GridItem>
