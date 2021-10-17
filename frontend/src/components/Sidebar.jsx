@@ -10,7 +10,12 @@ import {
   Text,
   Stack,
 } from "@chakra-ui/react";
-import { CopyIcon, StarIcon, UpDownIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  CopyIcon,
+  StarIcon,
+  UpDownIcon,
+} from "@chakra-ui/icons";
 
 import Logo from "./Logo";
 import MouseType from "./MouseType";
@@ -18,8 +23,9 @@ import SidebarButton from "./SidebarButton";
 import SidebarSearchButton from "./SidebarSearchButton";
 import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
-import { useFilters } from "../hooks/filters";
 import TopRightViewPicker from "./TopRightViewPicker";
+import { useFilters } from "../hooks/filters";
+import { useSignOut } from "../hooks/auth";
 
 function SidebarSectionHeader({ children, ...rest }) {
   return (
@@ -38,6 +44,7 @@ function SidebarSectionHeader({ children, ...rest }) {
 }
 
 export default function Sidebar() {
+  const signOutMutation = useSignOut();
   const {
     handleToggleSort,
     handleToggleGroup,
@@ -125,6 +132,17 @@ export default function Sidebar() {
             <ListItem>
               <SidebarSectionHeader>Auto Tags</SidebarSectionHeader>
               <SidebarTagTree />
+            </ListItem>
+            <ListItem
+              marginTop={8}
+              display={["list-item", "list-item", "none", "none"]}
+            >
+              <SidebarButton
+                leftIcon={<ArrowBackIcon />}
+                onClick={signOutMutation.mutate}
+              >
+                Sign out
+              </SidebarButton>
             </ListItem>
           </List>
         </Box>

@@ -65,9 +65,9 @@ export default function AuthLayout({ children }) {
                 Blog
               </UnderlineLink>
             </ListItem>
-            <ListItem>
-              <UnderlineLink to="/sign-in">Sign in</UnderlineLink>
-            </ListItem>
+            {/* <ListItem> */}
+            {/*   <UnderlineLink to="/sign-in">Sign in</UnderlineLink> */}
+            {/* </ListItem> */}
             {/* <UnderlineLink to="/sign-up">Sign up</UnderlineLink> */}
           </Stack>
         </Box>
