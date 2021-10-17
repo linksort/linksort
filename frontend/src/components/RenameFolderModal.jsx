@@ -35,7 +35,7 @@ export default function RenameFolderModal({ isOpen, onClose, folder }) {
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent marginX={4}>
         <Box as="form" onSubmit={formik.handleSubmit} padding={4}>
           <FormControl
             isInvalid={mutation.error?.message || mutation.error?.name}
@@ -45,7 +45,7 @@ export default function RenameFolderModal({ isOpen, onClose, folder }) {
                 type="text"
                 name="name"
                 value={formik.values.name}
-                borderRightRadius={["md", "none"]}
+                borderRightRadius="none"
                 required
                 autoFocus
                 onChange={formik.handleChange}
@@ -54,7 +54,7 @@ export default function RenameFolderModal({ isOpen, onClose, folder }) {
                 paddingX={8}
                 type="submit"
                 colorScheme="brand"
-                borderLeftRadius={["md", "none"]}
+                borderLeftRadius="none"
               >
                 Rename
               </Button>

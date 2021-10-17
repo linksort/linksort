@@ -9,7 +9,6 @@ import {
   Drawer,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 
@@ -79,11 +78,12 @@ export default function Header() {
         <Stack
           direction="row"
           as="nav"
-          spacing={4}
+          spacing={0}
           display={["flex", "flex", "none", "none"]}
         >
           <TopRightNewLinkPopover />
           <IconButton
+            borderLeftRadius="none"
             ref={buttonRef}
             onClick={onOpen}
             aria-label="nav"
@@ -99,8 +99,7 @@ export default function Header() {
       >
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton />
-          <Sidebar />
+          <Sidebar width="100%" />
         </DrawerContent>
       </Drawer>
     </Container>

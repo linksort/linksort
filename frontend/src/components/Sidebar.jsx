@@ -43,7 +43,7 @@ function SidebarSectionHeader({ children, ...rest }) {
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ width = "18rem" }) {
   const signOutMutation = useSignOut();
   const {
     handleToggleSort,
@@ -59,7 +59,7 @@ export default function Sidebar() {
       position="fixed"
       minHeight="100vh"
       height="100%"
-      width="18rem"
+      width={width}
       paddingLeft={4}
       zIndex={2}
       overflowY="scroll"
@@ -146,7 +146,7 @@ export default function Sidebar() {
             </ListItem>
           </List>
         </Box>
-        <Box paddingY={4}>
+        <Box paddingBottom={[16, 16, 4, 4]} paddingTop={4}>
           <MouseType align="left" color="gray.600" fontSize="xs" />
         </Box>
       </Flex>

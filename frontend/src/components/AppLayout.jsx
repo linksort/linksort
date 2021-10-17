@@ -47,7 +47,7 @@ export default function AppLayout({ children }) {
               backgroundColor="white"
             />
           </Flex>
-          <Box position="fixed" width="100%" top="0" left="0" zIndex={1}>
+          <Box position="fixed" width="100%" top="0" left="0" zIndex={10}>
             <Header />
           </Box>
           <Box as="main" marginTop={HEADER_HEIGHT}>

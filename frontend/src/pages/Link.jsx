@@ -8,24 +8,25 @@ import {
   FormLabel,
   HStack,
   Input,
-  Skeleton,
-  Stack,
   Switch,
   Tag,
+  Text,
   Textarea,
   Wrap,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { pick } from "lodash";
 
-import { useLink, useUpdateLink } from "../hooks/links";
+import { useDeleteLink, useLink, useUpdateLink } from "../hooks/links";
 import { suppressMutationErrors } from "../utils/mutations";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function Link() {
   const history = useHistory();
   const { linkId } = useParams();
   const { data: link, isLoading, isSuccess } = useLink(linkId);
   const mutation = useUpdateLink(linkId);
+  const deleteMutation = useDeleteLink(linkId);
   const formik = useFormik({
     initialValues: link || {
       title: "",
@@ -48,20 +49,26 @@ export default function Link() {
     ),
   });
 
+  function handleDelete(e) {
+    e.preventDefault();
+    deleteMutation.mutateAsync().then(() => {
+      history.goBack();
+    });
+  }
+
   if (isLoading) {
-    return (
-      <Stack>
-        <Skeleton height={8} />
-        <Skeleton height={8} />
-        <Skeleton height={8} />
-        <Skeleton height={8} />
-      </Stack>
-    );
+    return <LoadingScreen />;
   }
 
   if (isSuccess && link) {
     return (
-      <Box as="form" maxWidth="60ch" onSubmit={formik.handleSubmit}>
+      <Box
+        as="form"
+        maxWidth="60ch"
+        onSubmit={formik.handleSubmit}
+        paddingX={[0, 0, 6, 6]}
+        paddingY={6}
+      >
         <FormControl id="title" mb={6}>
           <FormLabel>Title</FormLabel>
           <Input
@@ -133,16 +140,29 @@ export default function Link() {
         </FormControl>
         <FormControl id="tags" mb={6}>
           <FormLabel>Auto tags</FormLabel>
-          <Wrap>
-            {link.tagDetails.map((detail) => (
-              <Tag key={detail.path} marginRight={2}>
-                {detail.name}
-              </Tag>
-            ))}
-          </Wrap>
+          {link.tagDetails.length > 0 ? (
+            <Wrap>
+              {link.tagDetails.map((detail) => (
+                <Tag key={detail.path} marginRight={2}>
+                  {detail.path
+                    .slice(1, detail.path.length)
+                    .replaceAll("/", " -> ")}
+                </Tag>
+              ))}
+            </Wrap>
+          ) : (
+            <Text color="gray.600">
+              No auto tags were assigned to this link.
+            </Text>
+          )}
         </FormControl>
 
-        <Flex justifyContent="flex-end">
+        <Flex justifyContent="space-between">
+          <HStack spacing={4}>
+            <Button colorScheme="red" onClick={handleDelete}>
+              Delete
+            </Button>
+          </HStack>
           <HStack spacing={4}>
             <Button as={RouterLink} to="/">
               Cancel

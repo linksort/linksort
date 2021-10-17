@@ -65,6 +65,7 @@ export default function TopRightNewLinkPopover() {
             New Link
           </Button>
           <IconButton
+            borderRightRadius="none"
             colorScheme="brand"
             icon={<AddIcon />}
             onClick={handleOpen}
