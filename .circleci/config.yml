@@ -94,8 +94,8 @@ jobs:
       - run:
           name: Initiate deployment
           command: |
-            echo "export LATEST_IMAGE=$(aws lightsail get-container-images --service-name ls-prod | jq '.containerImages[0].image')" >> $BASH_ENV
-            echo "export ENV_DETAILS=$(aws lightsail get-container-service-deployments --service-name ls-prod | jq '.deployments[0].containers.main.environment')" >> $BASH_ENV
+            export LATEST_IMAGE=$(aws lightsail get-container-images --service-name ls-prod | jq '.containerImages[0].image')
+            export ENV_DETAILS=$(aws lightsail get-container-service-deployments --service-name ls-prod | jq '.deployments[0].containers.main.environment')
             cat .circleci/deployment.json.tpl | envsubst > deployment.json
             aws lightsail create-container-service-deployment --cli-input-json file://deployment.json
       - run:
