@@ -1,10 +1,11 @@
 import React from "react";
 import { Menu, MenuList, MenuItem } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
+import { CloseIcon, CheckCircleIcon } from "@chakra-ui/icons";
 
 import { FolderIcon } from "./CustomIcons";
 
 export default function LinkItemFolderMenu({
+  link,
   buttonSlot,
   folderTree,
   onMoveToFolder,
@@ -19,7 +20,8 @@ export default function LinkItemFolderMenu({
             onClick={() => onMoveToFolder(folder.id)}
             icon={<FolderIcon />}
           >
-            {folder.name}
+            {folder.name}{" "}
+            {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
           </MenuItem>
         ))}
         <MenuItem

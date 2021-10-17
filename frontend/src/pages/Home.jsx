@@ -3,6 +3,7 @@ import { Box, Heading, HStack, Button, List, Grid } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 import ErrorScreen from "../components/ErrorScreen";
+import NullScreen from "../components/NullScreen";
 import LoadingScreen from "../components/LoadingScreen";
 import LinkItem from "../components/LinkItem";
 import ScrollToTop from "../components/ScrollToTop";
@@ -94,6 +95,10 @@ export default function Home() {
 
   if (isLoading) {
     return <LoadingScreen />;
+  }
+
+  if (linksCount === 0 && !isSearching) {
+    return <NullScreen />;
   }
 
   return (

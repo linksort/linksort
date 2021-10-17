@@ -38,6 +38,7 @@ export default function LinkItemControls({
   return (
     <HStack overflow="hidden" spacing={buttonSpacing} flexShrink={0} {...rest}>
       <LinkItemFolderMenu
+        link={link}
         buttonSlot={
           isLinkInFolder ? (
             <MenuButton

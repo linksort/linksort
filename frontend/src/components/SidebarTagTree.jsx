@@ -30,6 +30,14 @@ function SidebarTagItem({ tag }) {
 export default function SidebarTagTree() {
   const { tagTree } = useUser();
 
+  if (tagTree.children?.length === 0) {
+    return (
+      <Text fontSize="sm" color="gray.600">
+        As you save links, they will be automatically organzied for you here.
+      </Text>
+    );
+  }
+
   return (
     <Stack as={List} spacing={1}>
       {tagTree.children?.map((tag) => (
