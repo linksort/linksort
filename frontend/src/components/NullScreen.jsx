@@ -117,8 +117,8 @@ function WavingHand() {
           y2="55.8565"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFD748" />
+          <stop offset="0.00132565" stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFD748" />
         </linearGradient>
         <linearGradient
           id="paint1_linear"
@@ -128,8 +128,8 @@ function WavingHand() {
           y2="42.1276"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFD748" />
+          <stop offset="0.00132565" stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFD748" />
         </linearGradient>
         <linearGradient
           id="paint2_linear"
@@ -139,8 +139,8 @@ function WavingHand() {
           y2="55.5328"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFD748" />
+          <stop offset="0.00132565" stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFD748" />
         </linearGradient>
         <linearGradient
           id="paint3_linear"
@@ -150,8 +150,8 @@ function WavingHand() {
           y2="47.4775"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFD748" />
+          <stop offset="0.00132565" stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFD748" />
         </linearGradient>
         <linearGradient
           id="paint4_linear"
@@ -161,8 +161,8 @@ function WavingHand() {
           y2="45.5848"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <linearGradient
           id="paint5_linear"
@@ -172,8 +172,8 @@ function WavingHand() {
           y2="37.0154"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFD748" />
+          <stop offset="0.00132565" stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFD748" />
         </linearGradient>
         <linearGradient
           id="paint6_linear"
@@ -183,8 +183,8 @@ function WavingHand() {
           y2="42.0672"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFD748" />
+          <stop offset="0.00132565" stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFD748" />
         </linearGradient>
         <linearGradient
           id="paint7_linear"
@@ -194,8 +194,8 @@ function WavingHand() {
           y2="33.9688"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <linearGradient
           id="paint8_linear"
@@ -205,8 +205,8 @@ function WavingHand() {
           y2="40.1427"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <linearGradient
           id="paint9_linear"
@@ -216,8 +216,8 @@ function WavingHand() {
           y2="51.7442"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <radialGradient
           id="paint10_radial"
@@ -227,8 +227,8 @@ function WavingHand() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(59.5133 29.9083) scale(13.6681)"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </radialGradient>
         <linearGradient
           id="paint11_linear"
@@ -238,8 +238,8 @@ function WavingHand() {
           y2="31.5809"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.3118" stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FF8900" />
+          <stop offset="0.3118" stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FF8900" />
         </linearGradient>
         <linearGradient
           id="paint12_linear"
@@ -249,8 +249,8 @@ function WavingHand() {
           y2="36.9739"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.3118" stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FF8900" />
+          <stop offset="0.3118" stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FF8900" />
         </linearGradient>
         <linearGradient
           id="paint13_linear"
@@ -260,8 +260,8 @@ function WavingHand() {
           y2="47.3189"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.3118" stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FF8900" />
+          <stop offset="0.3118" stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FF8900" />
         </linearGradient>
         <linearGradient
           id="paint14_linear"
@@ -271,8 +271,8 @@ function WavingHand() {
           y2="55.5441"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFBC47" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFBC47" />
         </linearGradient>
         <linearGradient
           id="paint15_linear"
@@ -282,8 +282,8 @@ function WavingHand() {
           y2="47.0762"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFBC47" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFBC47" />
         </linearGradient>
         <linearGradient
           id="paint16_linear"
@@ -293,8 +293,8 @@ function WavingHand() {
           y2="30.0972"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <linearGradient
           id="paint17_linear"
@@ -304,8 +304,8 @@ function WavingHand() {
           y2="22.5692"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFBC47" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFBC47" />
         </linearGradient>
         <linearGradient
           id="paint18_linear"
@@ -315,8 +315,8 @@ function WavingHand() {
           y2="64.4703"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.3118" stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FF8900" />
+          <stop offset="0.3118" stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FF8900" />
         </linearGradient>
         <radialGradient
           id="paint19_radial"
@@ -326,8 +326,8 @@ function WavingHand() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(44.2763 41.2639) rotate(48.1401) scale(39.6178 35.9605)"
         >
-          <stop offset="0.6134" stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FF8900" />
+          <stop offset="0.6134" stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FF8900" />
         </radialGradient>
       </defs>
     </svg>
@@ -407,11 +407,11 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.5169 10.0777) scale(9.49336)"
         >
-          <stop stop-color="#FFE343" />
-          <stop offset="0.5492" stop-color="#FFE241" />
-          <stop offset="0.7469" stop-color="#FFDF3A" />
-          <stop offset="0.8874" stop-color="#FEDA2F" />
-          <stop offset="1" stop-color="#FED31E" />
+          <stop stopColor="#FFE343" />
+          <stop offset="0.5492" stopColor="#FFE241" />
+          <stop offset="0.7469" stopColor="#FFDF3A" />
+          <stop offset="0.8874" stopColor="#FEDA2F" />
+          <stop offset="1" stopColor="#FED31E" />
         </radialGradient>
         <radialGradient
           id="paint1_radial"
@@ -421,10 +421,10 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(4.49599 13.8245) rotate(-39.4857) scale(1.75579 4.72781)"
         >
-          <stop stop-color="#D86D00" />
-          <stop offset="0.3292" stop-color="#DC6C0A" stop-opacity="0.6708" />
-          <stop offset="0.8792" stop-color="#E86823" stop-opacity="0.1208" />
-          <stop offset="1" stop-color="#EB672A" stop-opacity="0" />
+          <stop stopColor="#D86D00" />
+          <stop offset="0.3292" stopColor="#DC6C0A" stopOpacity="0.6708" />
+          <stop offset="0.8792" stopColor="#E86823" stopOpacity="0.1208" />
+          <stop offset="1" stopColor="#EB672A" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint2_radial"
@@ -434,10 +434,10 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(19.2812 14.0812) rotate(-140.514) scale(1.75579 4.72781)"
         >
-          <stop stop-color="#D86D00" />
-          <stop offset="0.3292" stop-color="#DC6C0A" stop-opacity="0.6708" />
-          <stop offset="0.8792" stop-color="#E86823" stop-opacity="0.1208" />
-          <stop offset="1" stop-color="#EB672A" stop-opacity="0" />
+          <stop stopColor="#D86D00" />
+          <stop offset="0.3292" stopColor="#DC6C0A" stopOpacity="0.6708" />
+          <stop offset="0.8792" stopColor="#E86823" stopOpacity="0.1208" />
+          <stop offset="1" stopColor="#EB672A" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint3_radial"
@@ -447,8 +447,8 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(18.0285 4.69362) rotate(46.8275) scale(6.8756 4.73243)"
         >
-          <stop stop-color="#ED9900" />
-          <stop offset="1" stop-color="#ED9900" stop-opacity="0" />
+          <stop stopColor="#ED9900" />
+          <stop offset="1" stopColor="#ED9900" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint4_radial"
@@ -458,8 +458,8 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.2624 9.07147) rotate(-41.4123) scale(5.46203 2.99319)"
         >
-          <stop stop-color="#FFEC5F" />
-          <stop offset="1" stop-color="#FFEC5F" stop-opacity="0" />
+          <stop stopColor="#FFEC5F" />
+          <stop offset="1" stopColor="#FFEC5F" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint5_radial"
@@ -469,10 +469,10 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(9.62409 21.2697) rotate(-26.3216) scale(5.21989 2.47385)"
         >
-          <stop stop-color="#D86D00" />
-          <stop offset="0.3292" stop-color="#DC6C0A" stop-opacity="0.6708" />
-          <stop offset="0.8792" stop-color="#E86823" stop-opacity="0.1208" />
-          <stop offset="1" stop-color="#EB672A" stop-opacity="0" />
+          <stop stopColor="#D86D00" />
+          <stop offset="0.3292" stopColor="#DC6C0A" stopOpacity="0.6708" />
+          <stop offset="0.8792" stopColor="#E86823" stopOpacity="0.1208" />
+          <stop offset="1" stopColor="#EB672A" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint6_radial"
@@ -482,10 +482,10 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(14.3179 21.4168) rotate(-153.678) scale(5.21989 2.47385)"
         >
-          <stop stop-color="#D86D00" />
-          <stop offset="0.3292" stop-color="#DC6C0A" stop-opacity="0.6708" />
-          <stop offset="0.8792" stop-color="#E86823" stop-opacity="0.1208" />
-          <stop offset="1" stop-color="#EB672A" stop-opacity="0" />
+          <stop stopColor="#D86D00" />
+          <stop offset="0.3292" stopColor="#DC6C0A" stopOpacity="0.6708" />
+          <stop offset="0.8792" stopColor="#E86823" stopOpacity="0.1208" />
+          <stop offset="1" stopColor="#EB672A" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint7_radial"
@@ -495,10 +495,10 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.9948 24.1965) rotate(177.226) scale(6.90514 7.07936)"
         >
-          <stop stop-color="#D86D00" />
-          <stop offset="0.3292" stop-color="#DC6C0A" stop-opacity="0.6708" />
-          <stop offset="0.8792" stop-color="#E86823" stop-opacity="0.1208" />
-          <stop offset="1" stop-color="#EB672A" stop-opacity="0" />
+          <stop stopColor="#D86D00" />
+          <stop offset="0.3292" stopColor="#DC6C0A" stopOpacity="0.6708" />
+          <stop offset="0.8792" stopColor="#E86823" stopOpacity="0.1208" />
+          <stop offset="1" stopColor="#EB672A" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint8_radial"
@@ -508,10 +508,10 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(14.3253 16.556) rotate(158.456) scale(7.29673 5.51594)"
         >
-          <stop stop-color="#D86D00" />
-          <stop offset="0.3292" stop-color="#DC6C0A" stop-opacity="0.6708" />
-          <stop offset="0.8792" stop-color="#E86823" stop-opacity="0.1208" />
-          <stop offset="1" stop-color="#EB672A" stop-opacity="0" />
+          <stop stopColor="#D86D00" />
+          <stop offset="0.3292" stopColor="#DC6C0A" stopOpacity="0.6708" />
+          <stop offset="0.8792" stopColor="#E86823" stopOpacity="0.1208" />
+          <stop offset="1" stopColor="#EB672A" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint9_radial"
@@ -521,8 +521,8 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.2388 9.84634) rotate(158.456) scale(4.39634 3.3234)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint10_radial"
@@ -532,8 +532,8 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(5.97178 4.69288) rotate(133.173) scale(6.8756 4.73243)"
         >
-          <stop stop-color="#ED9900" />
-          <stop offset="1" stop-color="#ED9900" stop-opacity="0" />
+          <stop stopColor="#ED9900" />
+          <stop offset="1" stopColor="#ED9900" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint11_radial"
@@ -543,12 +543,12 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.1073 12.4931) scale(11.3187)"
         >
-          <stop stop-color="#FF8000" stop-opacity="0" />
-          <stop offset="0.5434" stop-color="#FD7F00" stop-opacity="0.5434" />
-          <stop offset="0.7391" stop-color="#F67C00" stop-opacity="0.7391" />
-          <stop offset="0.8781" stop-color="#EB7600" stop-opacity="0.8781" />
-          <stop offset="0.9903" stop-color="#DA6E00" stop-opacity="0.9903" />
-          <stop offset="1" stop-color="#D86D00" />
+          <stop stopColor="#FF8000" stopOpacity="0" />
+          <stop offset="0.5434" stopColor="#FD7F00" stopOpacity="0.5434" />
+          <stop offset="0.7391" stopColor="#F67C00" stopOpacity="0.7391" />
+          <stop offset="0.8781" stopColor="#EB7600" stopOpacity="0.8781" />
+          <stop offset="0.9903" stopColor="#DA6E00" stopOpacity="0.9903" />
+          <stop offset="1" stopColor="#D86D00" />
         </radialGradient>
         <radialGradient
           id="paint12_radial"
@@ -558,12 +558,12 @@ function Star() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12 12.8584) scale(9.78074)"
         >
-          <stop stop-color="#A3541E" stop-opacity="0.5" />
-          <stop offset="0.5109" stop-color="#A5551D" stop-opacity="0.7555" />
-          <stop offset="0.695" stop-color="#AC5819" stop-opacity="0.8475" />
-          <stop offset="0.8261" stop-color="#B75E12" stop-opacity="0.9131" />
-          <stop offset="0.9315" stop-color="#C86609" stop-opacity="0.9657" />
-          <stop offset="1" stop-color="#D86D00" />
+          <stop stopColor="#A3541E" stopOpacity="0.5" />
+          <stop offset="0.5109" stopColor="#A5551D" stopOpacity="0.7555" />
+          <stop offset="0.695" stopColor="#AC5819" stopOpacity="0.8475" />
+          <stop offset="0.8261" stopColor="#B75E12" stopOpacity="0.9131" />
+          <stop offset="0.9315" stopColor="#C86609" stopOpacity="0.9657" />
+          <stop offset="1" stopColor="#D86D00" />
         </radialGradient>
       </defs>
     </svg>
@@ -762,8 +762,8 @@ function CrystalBall() {
           y2="18.8623"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" />
-          <stop offset="0.9996" stop-color="#FF8000" />
+          <stop stopColor="#FFBC47" />
+          <stop offset="0.9996" stopColor="#FF8000" />
         </linearGradient>
         <linearGradient
           id="paint1_linear"
@@ -773,12 +773,12 @@ function CrystalBall() {
           y2="19.3558"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FDBC2B" stop-opacity="0" />
-          <stop offset="0.2611" stop-color="#FCCC37" stop-opacity="0.5328" />
-          <stop offset="0.6488" stop-color="#FCCE38" />
-          <stop offset="0.7345" stop-color="#FCCC31" stop-opacity="0.756" />
-          <stop offset="0.8568" stop-color="#FAC71F" stop-opacity="0.4079" />
-          <stop offset="1" stop-color="#F8BE00" stop-opacity="0" />
+          <stop stopColor="#FDBC2B" stopOpacity="0" />
+          <stop offset="0.2611" stopColor="#FCCC37" stopOpacity="0.5328" />
+          <stop offset="0.6488" stopColor="#FCCE38" />
+          <stop offset="0.7345" stopColor="#FCCC31" stopOpacity="0.756" />
+          <stop offset="0.8568" stopColor="#FAC71F" stopOpacity="0.4079" />
+          <stop offset="1" stopColor="#F8BE00" stopOpacity="0" />
         </linearGradient>
         <radialGradient
           id="paint2_radial"
@@ -788,10 +788,10 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(8.7295 22.1624) rotate(-18.7538) scale(12.537 8.58504)"
         >
-          <stop offset="0.3018" stop-color="#C86F34" stop-opacity="0" />
-          <stop offset="0.4439" stop-color="#AD5B24" stop-opacity="0.5" />
-          <stop offset="0.6318" stop-color="#A3541E" stop-opacity="0.75" />
-          <stop offset="0.7729" stop-color="#C86F34" stop-opacity="0" />
+          <stop offset="0.3018" stopColor="#C86F34" stopOpacity="0" />
+          <stop offset="0.4439" stopColor="#AD5B24" stopOpacity="0.5" />
+          <stop offset="0.6318" stopColor="#A3541E" stopOpacity="0.75" />
+          <stop offset="0.7729" stopColor="#C86F34" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint3_radial"
@@ -801,9 +801,9 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.6482 4.03587) scale(19.134)"
         >
-          <stop stop-color="#C76E33" stop-opacity="0.1634" />
-          <stop offset="0.9646" stop-color="#AD5B24" stop-opacity="0.5" />
-          <stop offset="1" stop-color="#C86F34" stop-opacity="0" />
+          <stop stopColor="#C76E33" stopOpacity="0.1634" />
+          <stop offset="0.9646" stopColor="#AD5B24" stopOpacity="0.5" />
+          <stop offset="1" stopColor="#C86F34" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint4_linear"
@@ -813,8 +813,8 @@ function CrystalBall() {
           y2="17.4928"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#A3541E" />
-          <stop offset="0.9996" stop-color="#643800" />
+          <stop stopColor="#A3541E" />
+          <stop offset="0.9996" stopColor="#643800" />
         </linearGradient>
         <radialGradient
           id="paint5_radial"
@@ -824,13 +824,13 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.0455 11.0016) scale(9.61478)"
         >
-          <stop stop-color="#D1F2FF" />
-          <stop offset="0.1112" stop-color="#CBF0FF" />
-          <stop offset="0.2664" stop-color="#B8EBFF" />
-          <stop offset="0.4474" stop-color="#9BE2FF" />
-          <stop offset="0.6479" stop-color="#71D6FE" />
-          <stop offset="0.8621" stop-color="#3DC6FE" />
-          <stop offset="1" stop-color="#17BBFE" />
+          <stop stopColor="#D1F2FF" />
+          <stop offset="0.1112" stopColor="#CBF0FF" />
+          <stop offset="0.2664" stopColor="#B8EBFF" />
+          <stop offset="0.4474" stopColor="#9BE2FF" />
+          <stop offset="0.6479" stopColor="#71D6FE" />
+          <stop offset="0.8621" stopColor="#3DC6FE" />
+          <stop offset="1" stopColor="#17BBFE" />
         </radialGradient>
         <radialGradient
           id="paint6_radial"
@@ -840,13 +840,13 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(-0.699169 2.82526) scale(19.4867)"
         >
-          <stop stop-color="#E100FF" stop-opacity="0" />
-          <stop offset="0.1148" stop-color="#DB00FD" stop-opacity="0.08613" />
-          <stop offset="0.2751" stop-color="#C800F7" stop-opacity="0.2063" />
-          <stop offset="0.4621" stop-color="#AB00EC" stop-opacity="0.3466" />
-          <stop offset="0.6692" stop-color="#8100DE" stop-opacity="0.5019" />
-          <stop offset="0.8904" stop-color="#4D00CC" stop-opacity="0.6678" />
-          <stop offset="1" stop-color="#3000C2" stop-opacity="0.75" />
+          <stop stopColor="#E100FF" stopOpacity="0" />
+          <stop offset="0.1148" stopColor="#DB00FD" stopOpacity="0.08613" />
+          <stop offset="0.2751" stopColor="#C800F7" stopOpacity="0.2063" />
+          <stop offset="0.4621" stopColor="#AB00EC" stopOpacity="0.3466" />
+          <stop offset="0.6692" stopColor="#8100DE" stopOpacity="0.5019" />
+          <stop offset="0.8904" stopColor="#4D00CC" stopOpacity="0.6678" />
+          <stop offset="1" stopColor="#3000C2" stopOpacity="0.75" />
         </radialGradient>
         <radialGradient
           id="paint7_radial"
@@ -856,11 +856,11 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(9.65123 8.2604) scale(12.4176)"
         >
-          <stop stop-color="#D1F2FF" />
-          <stop offset="0.1913" stop-color="#CBF0FF" stop-opacity="0.9522" />
-          <stop offset="0.458" stop-color="#B8EBFF" stop-opacity="0.8855" />
-          <stop offset="0.7676" stop-color="#9BE2FE" stop-opacity="0.8081" />
-          <stop offset="1" stop-color="#80DAFE" stop-opacity="0.75" />
+          <stop stopColor="#D1F2FF" />
+          <stop offset="0.1913" stopColor="#CBF0FF" stopOpacity="0.9522" />
+          <stop offset="0.458" stopColor="#B8EBFF" stopOpacity="0.8855" />
+          <stop offset="0.7676" stopColor="#9BE2FE" stopOpacity="0.8081" />
+          <stop offset="1" stopColor="#80DAFE" stopOpacity="0.75" />
         </radialGradient>
         <radialGradient
           id="paint8_radial"
@@ -870,11 +870,11 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.8371 10.978) scale(9.1098)"
         >
-          <stop offset="0.873" stop-color="#3640FF" stop-opacity="0" />
-          <stop offset="0.9013" stop-color="#353AF9" stop-opacity="0.1673" />
-          <stop offset="0.9408" stop-color="#3427E8" stop-opacity="0.4006" />
-          <stop offset="0.9867" stop-color="#310ACB" stop-opacity="0.6715" />
-          <stop offset="1" stop-color="#3000C2" stop-opacity="0.75" />
+          <stop offset="0.873" stopColor="#3640FF" stopOpacity="0" />
+          <stop offset="0.9013" stopColor="#353AF9" stopOpacity="0.1673" />
+          <stop offset="0.9408" stopColor="#3427E8" stopOpacity="0.4006" />
+          <stop offset="0.9867" stopColor="#310ACB" stopOpacity="0.6715" />
+          <stop offset="1" stopColor="#3000C2" stopOpacity="0.75" />
         </radialGradient>
         <linearGradient
           id="paint9_linear"
@@ -884,8 +884,8 @@ function CrystalBall() {
           y2="3.2521"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.0322279" stop-color="#80DAFE" stop-opacity="0" />
-          <stop offset="1" stop-color="#9F00E8" />
+          <stop offset="0.0322279" stopColor="#80DAFE" stopOpacity="0" />
+          <stop offset="1" stopColor="#9F00E8" />
         </linearGradient>
         <linearGradient
           id="paint10_linear"
@@ -895,8 +895,8 @@ function CrystalBall() {
           y2="27.8952"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#80DAFE" stop-opacity="0" />
-          <stop offset="1" stop-color="#008EE6" />
+          <stop stopColor="#80DAFE" stopOpacity="0" />
+          <stop offset="1" stopColor="#008EE6" />
         </linearGradient>
         <linearGradient
           id="paint11_linear"
@@ -906,8 +906,8 @@ function CrystalBall() {
           y2="21.3261"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#B64AE8" stop-opacity="0" />
-          <stop offset="1" stop-color="#7000A3" />
+          <stop stopColor="#B64AE8" stopOpacity="0" />
+          <stop offset="1" stopColor="#7000A3" />
         </linearGradient>
         <linearGradient
           id="paint12_linear"
@@ -917,8 +917,8 @@ function CrystalBall() {
           y2="4.55349"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#80DAFE" stop-opacity="0" />
-          <stop offset="1" stop-color="#008EE6" />
+          <stop stopColor="#80DAFE" stopOpacity="0" />
+          <stop offset="1" stopColor="#008EE6" />
         </linearGradient>
         <radialGradient
           id="paint13_radial"
@@ -928,8 +928,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(8.99043 6.69763) rotate(-33.2499) scale(4.07374)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint14_radial"
@@ -939,8 +939,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(3.90997 3.14752) scale(19.878)"
         >
-          <stop stop-color="#FF7AD3" />
-          <stop offset="0.9987" stop-color="#3000C2" stop-opacity="0" />
+          <stop stopColor="#FF7AD3" />
+          <stop offset="0.9987" stopColor="#3000C2" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint15_radial"
@@ -950,8 +950,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(9.36762 1.12359) scale(14.5473)"
         >
-          <stop stop-color="#7000A3" />
-          <stop offset="1" stop-color="#B64AE8" stop-opacity="0" />
+          <stop stopColor="#7000A3" />
+          <stop offset="1" stopColor="#B64AE8" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint16_radial"
@@ -961,12 +961,12 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(6.53026 18.0356) scale(0.0902938)"
         >
-          <stop stop-color="#FB9DC1" />
-          <stop offset="0.1456" stop-color="#F5A0C4" stop-opacity="0.8544" />
-          <stop offset="0.3488" stop-color="#E2A9CD" stop-opacity="0.6512" />
-          <stop offset="0.5857" stop-color="#C5B8DC" stop-opacity="0.4143" />
-          <stop offset="0.8461" stop-color="#9CCCF0" stop-opacity="0.1539" />
-          <stop offset="1" stop-color="#80DAFE" stop-opacity="0" />
+          <stop stopColor="#FB9DC1" />
+          <stop offset="0.1456" stopColor="#F5A0C4" stopOpacity="0.8544" />
+          <stop offset="0.3488" stopColor="#E2A9CD" stopOpacity="0.6512" />
+          <stop offset="0.5857" stopColor="#C5B8DC" stopOpacity="0.4143" />
+          <stop offset="0.8461" stopColor="#9CCCF0" stopOpacity="0.1539" />
+          <stop offset="1" stopColor="#80DAFE" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint17_radial"
@@ -976,12 +976,12 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(6.38275 17.9156) scale(0.0905678)"
         >
-          <stop stop-color="#FB9DC1" />
-          <stop offset="0.1456" stop-color="#F5A0C4" stop-opacity="0.8544" />
-          <stop offset="0.3488" stop-color="#E2A9CD" stop-opacity="0.6512" />
-          <stop offset="0.5857" stop-color="#C5B8DC" stop-opacity="0.4143" />
-          <stop offset="0.8461" stop-color="#9CCCF0" stop-opacity="0.1539" />
-          <stop offset="1" stop-color="#80DAFE" stop-opacity="0" />
+          <stop stopColor="#FB9DC1" />
+          <stop offset="0.1456" stopColor="#F5A0C4" stopOpacity="0.8544" />
+          <stop offset="0.3488" stopColor="#E2A9CD" stopOpacity="0.6512" />
+          <stop offset="0.5857" stopColor="#C5B8DC" stopOpacity="0.4143" />
+          <stop offset="0.8461" stopColor="#9CCCF0" stopOpacity="0.1539" />
+          <stop offset="1" stopColor="#80DAFE" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint18_linear"
@@ -991,8 +991,8 @@ function CrystalBall() {
           y2="26.0498"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#80DAFE" stop-opacity="0" />
-          <stop offset="1" stop-color="#008EE6" />
+          <stop stopColor="#80DAFE" stopOpacity="0" />
+          <stop offset="1" stopColor="#008EE6" />
         </linearGradient>
         <linearGradient
           id="paint19_linear"
@@ -1002,8 +1002,8 @@ function CrystalBall() {
           y2="27.4101"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#80DAFE" stop-opacity="0" />
-          <stop offset="1" stop-color="#008EE6" />
+          <stop stopColor="#80DAFE" stopOpacity="0" />
+          <stop offset="1" stopColor="#008EE6" />
         </linearGradient>
         <linearGradient
           id="paint20_linear"
@@ -1013,8 +1013,8 @@ function CrystalBall() {
           y2="18.7233"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#80DAFE" stop-opacity="0" />
-          <stop offset="1" stop-color="#008EE6" />
+          <stop stopColor="#80DAFE" stopOpacity="0" />
+          <stop offset="1" stopColor="#008EE6" />
         </linearGradient>
         <radialGradient
           id="paint21_radial"
@@ -1024,13 +1024,13 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.0616 7.64599) scale(13.7552)"
         >
-          <stop stop-color="#E100FF" stop-opacity="0" />
-          <stop offset="0.1148" stop-color="#DB00FD" stop-opacity="0.08613" />
-          <stop offset="0.2751" stop-color="#C800F7" stop-opacity="0.2063" />
-          <stop offset="0.4621" stop-color="#AB00EC" stop-opacity="0.3466" />
-          <stop offset="0.6692" stop-color="#8100DE" stop-opacity="0.5019" />
-          <stop offset="0.8904" stop-color="#4D00CC" stop-opacity="0.6678" />
-          <stop offset="1" stop-color="#3000C2" stop-opacity="0.75" />
+          <stop stopColor="#E100FF" stopOpacity="0" />
+          <stop offset="0.1148" stopColor="#DB00FD" stopOpacity="0.08613" />
+          <stop offset="0.2751" stopColor="#C800F7" stopOpacity="0.2063" />
+          <stop offset="0.4621" stopColor="#AB00EC" stopOpacity="0.3466" />
+          <stop offset="0.6692" stopColor="#8100DE" stopOpacity="0.5019" />
+          <stop offset="0.8904" stopColor="#4D00CC" stopOpacity="0.6678" />
+          <stop offset="1" stopColor="#3000C2" stopOpacity="0.75" />
         </radialGradient>
         <radialGradient
           id="paint22_radial"
@@ -1040,8 +1040,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(14.4658 11.3691) scale(0.186742)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint23_radial"
@@ -1051,8 +1051,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.5831 4.0596) scale(0.186743)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint24_radial"
@@ -1062,8 +1062,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(9.40319 10.32) scale(0.186743)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint25_radial"
@@ -1073,8 +1073,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(13.3503 18.538) scale(0.186739)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint26_radial"
@@ -1084,8 +1084,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(19.0495 8.2809) scale(0.186744)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint27_radial"
@@ -1095,8 +1095,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(6.54266 14.8591) scale(0.186744)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint28_radial"
@@ -1106,8 +1106,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(10.9009 6.69703) scale(0.186742)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint29_radial"
@@ -1117,8 +1117,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(10.9009 17.2156) scale(0.186742)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint30_radial"
@@ -1128,8 +1128,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(18.442 14.5015) scale(0.186742)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint31_radial"
@@ -1139,8 +1139,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(16.1625 9.35304) scale(0.186743)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint32_radial"
@@ -1150,8 +1150,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(16.9689 4.49224) scale(0.186743)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint33_radial"
@@ -1161,8 +1161,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(8.4106 15.7664) scale(0.435739)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint34_radial"
@@ -1172,8 +1172,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(8.16244 6.14269) scale(0.435736)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint35_radial"
@@ -1183,8 +1183,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.4515 8.5912) scale(0.435737)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint36_radial"
@@ -1194,8 +1194,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(18.8675 11.301) scale(0.435738)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint37_radial"
@@ -1205,8 +1205,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(16.355 16.2327) scale(0.435742)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint38_radial"
@@ -1216,8 +1216,8 @@ function CrystalBall() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(4.7467 11.9885) scale(0.435737)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
       </defs>
     </svg>
@@ -2192,8 +2192,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.0266 19.591) rotate(-1.3891) scale(9.10384 2.33941)"
         >
-          <stop stop-color="white" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint1_radial"
@@ -2203,8 +2203,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(15.4487 19.1251) rotate(93.4705) scale(2.81845 22.6009)"
         >
-          <stop stop-color="white" stop-opacity="0.5" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stopColor="white" stopOpacity="0.5" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint2_linear"
@@ -2214,10 +2214,10 @@ function Beach() {
           y2="17.0317"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFD87C" />
-          <stop offset="0.343" stop-color="#FFD981" />
-          <stop offset="0.7666" stop-color="#FFDE90" />
-          <stop offset="1" stop-color="#FFE19C" />
+          <stop stopColor="#FFD87C" />
+          <stop offset="0.343" stopColor="#FFD981" />
+          <stop offset="0.7666" stopColor="#FFDE90" />
+          <stop offset="1" stopColor="#FFE19C" />
         </linearGradient>
         <radialGradient
           id="paint3_radial"
@@ -2227,8 +2227,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.6982 16.3738) rotate(78.8728) scale(3.45296 6.69013)"
         >
-          <stop stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint4_radial"
@@ -2238,8 +2238,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.4393 17.7263) rotate(-1.3891) scale(8.19202 4.08846)"
         >
-          <stop stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint5_radial"
@@ -2249,8 +2249,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(14.8025 14.6664) scale(3.22976 3.23012)"
         >
-          <stop stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint6_radial"
@@ -2260,8 +2260,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(6.40516 19.1163) scale(0.125622)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint7_radial"
@@ -2271,8 +2271,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(10.7753 16.2243) scale(0.125625)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint8_radial"
@@ -2282,8 +2282,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(9.19743 17.3102) scale(0.108439)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint9_radial"
@@ -2293,8 +2293,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.3343 18.7706) rotate(-177.23) scale(0.0687936)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint10_radial"
@@ -2304,8 +2304,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(8.57098 19.4026) scale(0.100338)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint11_radial"
@@ -2315,8 +2315,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(11.4981 17.8885) scale(0.0682209)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint12_radial"
@@ -2326,8 +2326,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(12.7575 17.5988) scale(0.119216)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint13_radial"
@@ -2337,8 +2337,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(10.0253 18.2601) rotate(-177.23) scale(0.119218)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint14_radial"
@@ -2348,8 +2348,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(13.6219 18.5503) scale(0.181931)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint15_radial"
@@ -2359,8 +2359,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(15.1826 16.4885) scale(0.0682203)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint16_radial"
@@ -2370,8 +2370,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(15.2242 17.6508) scale(0.0808445)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint17_radial"
@@ -2381,8 +2381,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(15.0335 19.0279) scale(0.0511764)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint18_radial"
@@ -2392,8 +2392,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(16.4693 19.01) scale(0.102824)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint19_radial"
@@ -2403,8 +2403,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(16.3785 16.0263) scale(0.119214)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint20_radial"
@@ -2414,8 +2414,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(19.3457 16.5258) scale(0.0829747)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint21_radial"
@@ -2425,8 +2425,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(17.5308 17.8866) scale(0.0479968)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint22_radial"
@@ -2436,8 +2436,8 @@ function Beach() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(17.8264 16.7538) scale(0.120103)"
         >
-          <stop stop-color="#FFA754" />
-          <stop offset="1" stop-color="#FFA754" stop-opacity="0" />
+          <stop stopColor="#FFA754" />
+          <stop offset="1" stopColor="#FFA754" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint23_linear"
@@ -2447,8 +2447,8 @@ function Beach() {
           y2="7.04724"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#3C2200" />
-          <stop offset="1" stop-color="#643800" />
+          <stop stopColor="#3C2200" />
+          <stop offset="1" stopColor="#643800" />
         </linearGradient>
         <linearGradient
           id="paint24_linear"
@@ -2458,8 +2458,8 @@ function Beach() {
           y2="0.352765"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint25_linear"
@@ -2469,8 +2469,8 @@ function Beach() {
           y2="-0.0296032"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint26_linear"
@@ -2480,8 +2480,8 @@ function Beach() {
           y2="0.616299"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint27_linear"
@@ -2491,8 +2491,8 @@ function Beach() {
           y2="0.478672"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint28_linear"
@@ -2502,8 +2502,8 @@ function Beach() {
           y2="2.57138"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint29_linear"
@@ -2513,8 +2513,8 @@ function Beach() {
           y2="1.24691"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#76AB50" stop-opacity="0" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#76AB50" stopOpacity="0" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint30_linear"
@@ -2524,8 +2524,8 @@ function Beach() {
           y2="1.15225"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint31_linear"
@@ -2535,8 +2535,8 @@ function Beach() {
           y2="1.55964"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint32_linear"
@@ -2546,8 +2546,8 @@ function Beach() {
           y2="-0.313914"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint33_linear"
@@ -2557,8 +2557,8 @@ function Beach() {
           y2="6.07156"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint34_linear"
@@ -2568,8 +2568,8 @@ function Beach() {
           y2="1.80283"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint35_linear"
@@ -2579,8 +2579,8 @@ function Beach() {
           y2="5.40529"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint36_linear"
@@ -2590,8 +2590,8 @@ function Beach() {
           y2="10.8185"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#A3541E" />
-          <stop offset="1" stop-color="#512D00" />
+          <stop stopColor="#A3541E" />
+          <stop offset="1" stopColor="#512D00" />
         </linearGradient>
         <linearGradient
           id="paint37_linear"
@@ -2601,8 +2601,8 @@ function Beach() {
           y2="12.1483"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#C86F34" />
-          <stop offset="1" stop-color="#A3541E" />
+          <stop stopColor="#C86F34" />
+          <stop offset="1" stopColor="#A3541E" />
         </linearGradient>
         <linearGradient
           id="paint38_linear"
@@ -2612,8 +2612,8 @@ function Beach() {
           y2="10.0666"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#A3541E" />
-          <stop offset="1" stop-color="#512D00" />
+          <stop stopColor="#A3541E" />
+          <stop offset="1" stopColor="#512D00" />
         </linearGradient>
         <linearGradient
           id="paint39_linear"
@@ -2623,8 +2623,8 @@ function Beach() {
           y2="10.7758"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#3C2200" />
-          <stop offset="1" stop-color="#643800" />
+          <stop stopColor="#3C2200" />
+          <stop offset="1" stopColor="#643800" />
         </linearGradient>
         <linearGradient
           id="paint40_linear"
@@ -2634,8 +2634,8 @@ function Beach() {
           y2="9.19967"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#3C2200" />
-          <stop offset="1" stop-color="#643800" />
+          <stop stopColor="#3C2200" />
+          <stop offset="1" stopColor="#643800" />
         </linearGradient>
         <linearGradient
           id="paint41_linear"
@@ -2645,8 +2645,8 @@ function Beach() {
           y2="12.4479"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#3C2200" />
-          <stop offset="1" stop-color="#643800" />
+          <stop stopColor="#3C2200" />
+          <stop offset="1" stopColor="#643800" />
         </linearGradient>
         <linearGradient
           id="paint42_linear"
@@ -2656,8 +2656,8 @@ function Beach() {
           y2="15.9806"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#3C2200" />
-          <stop offset="1" stop-color="#643800" />
+          <stop stopColor="#3C2200" />
+          <stop offset="1" stopColor="#643800" />
         </linearGradient>
         <linearGradient
           id="paint43_linear"
@@ -2667,8 +2667,8 @@ function Beach() {
           y2="14.2154"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#3C2200" />
-          <stop offset="1" stop-color="#643800" />
+          <stop stopColor="#3C2200" />
+          <stop offset="1" stopColor="#643800" />
         </linearGradient>
         <linearGradient
           id="paint44_linear"
@@ -2678,8 +2678,8 @@ function Beach() {
           y2="8.04194"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#3C2200" />
-          <stop offset="1" stop-color="#643800" />
+          <stop stopColor="#3C2200" />
+          <stop offset="1" stopColor="#643800" />
         </linearGradient>
         <linearGradient
           id="paint45_linear"
@@ -2689,8 +2689,8 @@ function Beach() {
           y2="6.70776"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint46_linear"
@@ -2700,8 +2700,8 @@ function Beach() {
           y2="3.53122"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint47_linear"
@@ -2711,8 +2711,8 @@ function Beach() {
           y2="6.28997"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint48_linear"
@@ -2722,8 +2722,8 @@ function Beach() {
           y2="4.20825"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint49_linear"
@@ -2733,8 +2733,8 @@ function Beach() {
           y2="0.12208"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint50_linear"
@@ -2744,8 +2744,8 @@ function Beach() {
           y2="3.42998"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint51_linear"
@@ -2755,8 +2755,8 @@ function Beach() {
           y2="7.18761"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint52_linear"
@@ -2766,8 +2766,8 @@ function Beach() {
           y2="5.71637"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint53_linear"
@@ -2777,8 +2777,8 @@ function Beach() {
           y2="8.82071"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint54_linear"
@@ -2788,8 +2788,8 @@ function Beach() {
           y2="9.22086"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint55_linear"
@@ -2799,8 +2799,8 @@ function Beach() {
           y2="4.23931"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <linearGradient
           id="paint56_linear"
@@ -2810,8 +2810,8 @@ function Beach() {
           y2="0.982259"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint57_linear"
@@ -2821,8 +2821,8 @@ function Beach() {
           y2="2.47659"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint58_linear"
@@ -2832,8 +2832,8 @@ function Beach() {
           y2="1.96899"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint59_linear"
@@ -2843,8 +2843,8 @@ function Beach() {
           y2="2.73463"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint60_linear"
@@ -2854,8 +2854,8 @@ function Beach() {
           y2="3.18929"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint61_linear"
@@ -2865,8 +2865,8 @@ function Beach() {
           y2="7.85074"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint62_linear"
@@ -2876,8 +2876,8 @@ function Beach() {
           y2="3.8754"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint63_linear"
@@ -2887,8 +2887,8 @@ function Beach() {
           y2="4.98126"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint64_linear"
@@ -2898,8 +2898,8 @@ function Beach() {
           y2="5.35453"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#4B8C1C" stop-opacity="0" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#4B8C1C" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="paint65_linear"
@@ -2909,8 +2909,8 @@ function Beach() {
           y2="6.14699"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="0.9987" stop-color="#407817" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="0.9987" stopColor="#407817" />
         </linearGradient>
         <linearGradient
           id="paint66_linear"
@@ -2920,8 +2920,8 @@ function Beach() {
           y2="0.841485"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B8C1C" />
-          <stop offset="1" stop-color="#76AB50" />
+          <stop stopColor="#4B8C1C" />
+          <stop offset="1" stopColor="#76AB50" />
         </linearGradient>
         <clipPath id="clip0">
           <rect width="24" height="24" fill="white" />
@@ -3034,8 +3034,8 @@ function ThinkingFace() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(45.9963 27.649) rotate(180) scale(36.7656)"
         >
-          <stop stop-color="#FFE030" />
-          <stop offset="1" stop-color="#FFB92E" />
+          <stop stopColor="#FFE030" />
+          <stop offset="1" stopColor="#FFB92E" />
         </radialGradient>
         <radialGradient
           id="paint1_radial"
@@ -3045,8 +3045,8 @@ function ThinkingFace() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(45.9963 27.649) rotate(180) scale(43.6362)"
         >
-          <stop stop-color="#FFEA5F" />
-          <stop offset="1" stop-color="#FFBC47" stop-opacity="0" />
+          <stop stopColor="#FFEA5F" />
+          <stop offset="1" stopColor="#FFBC47" stopOpacity="0" />
         </radialGradient>
         <radialGradient
           id="paint2_radial"
@@ -3056,8 +3056,8 @@ function ThinkingFace() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(50.8089 37.6564) rotate(109.828) scale(4.30581 2.78578)"
         >
-          <stop offset="0.00132565" stop-color="#7A4400" />
-          <stop offset="1" stop-color="#643800" />
+          <stop offset="0.00132565" stopColor="#7A4400" />
+          <stop offset="1" stopColor="#643800" />
         </radialGradient>
         <linearGradient
           id="paint3_linear"
@@ -3067,8 +3067,8 @@ function ThinkingFace() {
           y2="37.1754"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#3C2200" />
-          <stop offset="1" stop-color="#512D00" />
+          <stop offset="0.00132565" stopColor="#3C2200" />
+          <stop offset="1" stopColor="#512D00" />
         </linearGradient>
         <radialGradient
           id="paint4_radial"
@@ -3078,8 +3078,8 @@ function ThinkingFace() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(30.9502 36.3774) rotate(109.828) scale(4.30581 2.78578)"
         >
-          <stop offset="0.00132565" stop-color="#7A4400" />
-          <stop offset="1" stop-color="#643800" />
+          <stop offset="0.00132565" stopColor="#7A4400" />
+          <stop offset="1" stopColor="#643800" />
         </radialGradient>
         <linearGradient
           id="paint5_linear"
@@ -3089,8 +3089,8 @@ function ThinkingFace() {
           y2="36.0055"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#3C2200" />
-          <stop offset="1" stop-color="#512D00" />
+          <stop offset="0.00132565" stopColor="#3C2200" />
+          <stop offset="1" stopColor="#512D00" />
         </linearGradient>
         <linearGradient
           id="paint6_linear"
@@ -3100,8 +3100,8 @@ function ThinkingFace() {
           y2="22.4061"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#3C2200" />
-          <stop offset="1" stop-color="#7A4400" />
+          <stop offset="0.00132565" stopColor="#3C2200" />
+          <stop offset="1" stopColor="#7A4400" />
         </linearGradient>
         <linearGradient
           id="paint7_linear"
@@ -3111,8 +3111,8 @@ function ThinkingFace() {
           y2="41.1426"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#3C2200" />
-          <stop offset="1" stop-color="#512D00" />
+          <stop offset="0.00132565" stopColor="#3C2200" />
+          <stop offset="1" stopColor="#512D00" />
         </linearGradient>
         <linearGradient
           id="paint8_linear"
@@ -3122,8 +3122,8 @@ function ThinkingFace() {
           y2="67.1557"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.4938" stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FF8900" />
+          <stop offset="0.4938" stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FF8900" />
         </linearGradient>
         <linearGradient
           id="paint9_linear"
@@ -3133,8 +3133,8 @@ function ThinkingFace() {
           y2="26.681"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#3C2200" />
-          <stop offset="1" stop-color="#7A4400" />
+          <stop offset="0.00132565" stopColor="#3C2200" />
+          <stop offset="1" stopColor="#7A4400" />
         </linearGradient>
         <radialGradient
           id="paint10_radial"
@@ -3144,8 +3144,8 @@ function ThinkingFace() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(42.02 64.03) scale(11.7924)"
         >
-          <stop offset="0.1836" stop-color="#FF8000" stop-opacity="0.75" />
-          <stop offset="0.995" stop-color="#FF8000" stop-opacity="0" />
+          <stop offset="0.1836" stopColor="#FF8000" stopOpacity="0.75" />
+          <stop offset="0.995" stopColor="#FF8000" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint11_linear"
@@ -3155,8 +3155,8 @@ function ThinkingFace() {
           y2="55.4633"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.00132565" stop-color="#FFCB4B" />
-          <stop offset="1" stop-color="#FFD748" />
+          <stop offset="0.00132565" stopColor="#FFCB4B" />
+          <stop offset="1" stopColor="#FFD748" />
         </linearGradient>
         <linearGradient
           id="paint12_linear"
@@ -3166,8 +3166,8 @@ function ThinkingFace() {
           y2="67.2141"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <radialGradient
           id="paint13_radial"
@@ -3177,8 +3177,8 @@ function ThinkingFace() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(57.8002 53.4314) rotate(-173.079) scale(5.40836)"
         >
-          <stop stop-color="#FFE85B" />
-          <stop offset="1" stop-color="#FFE85B" stop-opacity="0" />
+          <stop stopColor="#FFE85B" />
+          <stop offset="1" stopColor="#FFE85B" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint14_linear"
@@ -3188,8 +3188,8 @@ function ThinkingFace() {
           y2="79.3148"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.4938" stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FF8900" />
+          <stop offset="0.4938" stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FF8900" />
         </linearGradient>
         <radialGradient
           id="paint15_radial"
@@ -3199,8 +3199,8 @@ function ThinkingFace() {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(53.5895 60.4774) rotate(-174.35) scale(9.61913 3.511)"
         >
-          <stop stop-color="#FFE85B" />
-          <stop offset="1" stop-color="#FFE85B" stop-opacity="0" />
+          <stop stopColor="#FFE85B" />
+          <stop offset="1" stopColor="#FFE85B" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint16_linear"
@@ -3210,8 +3210,8 @@ function ThinkingFace() {
           y2="73.4043"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <linearGradient
           id="paint17_linear"
@@ -3221,8 +3221,8 @@ function ThinkingFace() {
           y2="80.2503"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <linearGradient
           id="paint18_linear"
@@ -3232,8 +3232,8 @@ function ThinkingFace() {
           y2="79.7513"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
         <linearGradient
           id="paint19_linear"
@@ -3243,8 +3243,8 @@ function ThinkingFace() {
           y2="67.09"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFBC47" stop-opacity="0" />
-          <stop offset="1" stop-color="#FFA754" />
+          <stop stopColor="#FFBC47" stopOpacity="0" />
+          <stop offset="1" stopColor="#FFA754" />
         </linearGradient>
       </defs>
     </svg>
