@@ -3340,7 +3340,7 @@ export default function NullScreen() {
     <NullScreenHelper
       imageSlot={<WavingHand />}
       headingText="Welcome!"
-      detailText="To get started, click the new link button in the upper right to save your first link."
+      detailText="To get started, click the blue new link button in the upper right to save your first link."
     />
   );
 }

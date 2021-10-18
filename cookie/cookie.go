@@ -16,7 +16,7 @@ func SetSession(r *http.Request, w http.ResponseWriter, sessionID string) {
 		MaxAge:   2592000,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 }
 
@@ -30,6 +30,6 @@ func UnsetSession(r *http.Request, w http.ResponseWriter) {
 		MaxAge:   0,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 }
