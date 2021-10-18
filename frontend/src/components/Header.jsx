@@ -42,12 +42,12 @@ export default function Header() {
   }
 
   return (
-    <Container maxWidth="7xl" px={[0, 0, 6, 6]}>
+    <Container maxWidth="7xl" px={[0, 0, 0, 0, 6]}>
       <Flex
         paddingLeft={6}
-        paddingRight={[6, 6, 0, 0]}
-        marginLeft={["0rem", "0rem", "18rem", "18rem"]}
-        width={["100%", "100%", "calc(100% - 18rem)", "calc(100% - 18rem)"]}
+        paddingRight={[6, 6, 6, 6, 0]}
+        marginLeft={["0rem", "0rem", "0rem", "0rem", "18rem"]}
+        width={["100%", "100%", "100%", "100%", "calc(100% - 18rem)"]}
         height={HEADER_HEIGHT}
         borderBottom="1px"
         borderBottomColor="gray.100"
@@ -69,7 +69,7 @@ export default function Header() {
           direction="row"
           as="nav"
           spacing={4}
-          display={["none", "none", "flex", "flex"]}
+          display={["none", "none", "none", "none", "flex"]}
         >
           <TopRightNewLinkPopover />
           <TopRightViewPicker />
@@ -79,7 +79,7 @@ export default function Header() {
           direction="row"
           as="nav"
           spacing={0}
-          display={["flex", "flex", "none", "none"]}
+          display={["flex", "flex", "flex", "flex", "none"]}
         >
           <TopRightNewLinkPopover />
           <IconButton

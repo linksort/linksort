@@ -37,8 +37,9 @@ export default function LinkItemCondensed({
       borderBottomStyle="solid"
       borderBottomWidth={1}
       paddingX={2}
-      maxWidth="92ch"
+      maxWidth={["100%", "100%", "100%", "100%", "calc(100% - 2rem)", "100%"]}
       width="100%"
+      flexGrow={0}
       overflow="hidden"
       _hover={{
         backgroundColor: "gray.100",

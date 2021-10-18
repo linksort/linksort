@@ -71,14 +71,17 @@ export default function Sidebar({ width = "18rem" }) {
             height="5rem"
             justifyContent="flex-start"
             alignItems="center"
-            marginBottom={[2, 2, 4, 4]}
+            marginBottom={[2, 2, 2, 2, 4]}
           >
             <RouterLink to="/">
               <Logo />
               <VisuallyHidden>Linksort</VisuallyHidden>
             </RouterLink>
           </Flex>
-          <Box display={["block", "block", "none", "none"]} marginBottom={6}>
+          <Box
+            display={["block", "block", "block", "block", "none"]}
+            marginBottom={6}
+          >
             <TopRightViewPicker />
           </Box>
           <List paddingRight={2}>
@@ -135,7 +138,13 @@ export default function Sidebar({ width = "18rem" }) {
             </ListItem>
             <ListItem
               marginTop={8}
-              display={["list-item", "list-item", "none", "none"]}
+              display={[
+                "list-item",
+                "list-item",
+                "list-item",
+                "list-item",
+                "none",
+              ]}
             >
               <SidebarButton
                 leftIcon={<ArrowBackIcon />}
@@ -146,7 +155,7 @@ export default function Sidebar({ width = "18rem" }) {
             </ListItem>
           </List>
         </Box>
-        <Box paddingBottom={[16, 16, 4, 4]} paddingTop={4}>
+        <Box paddingBottom={[16, 16, 16, 16, 4]} paddingTop={4}>
           <MouseType align="left" color="gray.600" fontSize="xs" />
         </Box>
       </Flex>

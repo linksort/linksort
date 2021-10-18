@@ -60,7 +60,7 @@ export default function TopRightNewLinkPopover() {
             colorScheme="brand"
             leftIcon={<AddIcon />}
             onClick={handleOpen}
-            display={["none", "none", "block", "block"]}
+            display={["none", "none", "none", "none", "block"]}
           >
             New Link
           </Button>
@@ -69,7 +69,7 @@ export default function TopRightNewLinkPopover() {
             colorScheme="brand"
             icon={<AddIcon />}
             onClick={handleOpen}
-            display={["block", "block", "none", "none"]}
+            display={["block", "block", "block", "block", "none"]}
           />
         </Box>
       </PopoverTrigger>

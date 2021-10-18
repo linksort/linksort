@@ -58,7 +58,8 @@ function LinkList({ viewSetting, children }) {
             "repeat(1, 1fr)",
             "repeat(2, 1fr)",
             "repeat(2, 1fr)",
-            "repeat(2, 1fr)",
+            "repeat(3, 1fr)",
+            "repeat(3, 1fr)",
             "repeat(3, 1fr)",
           ]}
           marginBottom={16}
@@ -106,7 +107,7 @@ export default function Home() {
       minHeight="calc(100vh - 6.5rem)"
       position="relative"
       paddingTop={6}
-      paddingLeft={[0, 0, 6, 6]}
+      paddingLeft={[0, 0, 0, 0, 6]}
       paddingBottom={6}
       marginBottom="1.5rem"
     >
@@ -138,7 +139,7 @@ export default function Home() {
           <Button onClick={() => handleSearch("")}>Clear search</Button>
         </Box>
       ) : (
-        <HStack position="absolute" bottom={0} left={[0, 0, 6, 6]}>
+        <HStack position="absolute" bottom={0} left={[0, 0, 0, 0, 6]}>
           <Button
             isDisabled={pageNumber === "0"}
             onClick={handleGoToPrevPage}

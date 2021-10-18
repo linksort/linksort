@@ -12,11 +12,11 @@ export default function AppLayout({ children }) {
         maxWidth="100%"
         width="100%"
         minHeight="100vh"
-        templateColumns={["1fr", "1fr", "18rem 1fr", "18rem 1fr"]}
+        templateColumns={["1fr", "1fr", "1fr", "1fr", "18rem 1fr"]}
       >
         <GridItem
           height="100%"
-          display={["none", "none", "block", "block"]}
+          display={["none", "none", "none", "none", "block"]}
           borderRight="1px"
           borderRightColor="gray.100"
         >
@@ -27,7 +27,8 @@ export default function AppLayout({ children }) {
           maxWidth={[
             "calc(100vw - 3rem)",
             "calc(100vw - 3rem)",
-            "calc(100vw - 19rem)",
+            "calc(100vw - 3rem)",
+            "calc(100vw - 3rem)",
             "calc(100vw - 19rem)",
           ]}
         >
