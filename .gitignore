@@ -10,6 +10,8 @@ tmp
 build
 splash/public
 splash/.cache
+splash/node_modules
+frontend/node_modules
 
 # Logs and databases
 *.log

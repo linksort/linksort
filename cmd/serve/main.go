@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/getsentry/raven-go"
 	"github.com/linksort/analyze"
 
 	"github.com/linksort/linksort/db"
@@ -19,6 +20,8 @@ import (
 )
 
 func main() {
+	raven.SetDSN(getenv("SENTRY_DSN", ""))
+
 	ctx := context.Background()
 
 	mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost"))
