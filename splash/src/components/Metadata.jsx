@@ -26,15 +26,16 @@ export default function Metadata({ description = "", title = "" }) {
     `
   )
 
-  const metaDescription = description || site.siteMetadata.description
   const defaultTitle = site.siteMetadata?.title
+  const metaTitle = title || defaultTitle
+  const metaDescription = description || site.siteMetadata.description
 
   return (
     <Helmet
       htmlAttributes={{
         lang: "en",
       }}
-      title={title || defaultTitle}
+      title={metaTitle}
       titleTemplate={!title ? null : `%s | ${defaultTitle}`}
       meta={[
         {
@@ -43,7 +44,7 @@ export default function Metadata({ description = "", title = "" }) {
         },
         {
           property: `og:title`,
-          content: title,
+          content: metaTitle,
         },
         {
           property: `og:description`,
@@ -63,7 +64,7 @@ export default function Metadata({ description = "", title = "" }) {
         },
         {
           name: `twitter:title`,
-          content: title,
+          content: metaTitle,
         },
         {
           name: `twitter:description`,

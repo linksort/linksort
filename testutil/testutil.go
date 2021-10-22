@@ -26,7 +26,6 @@ import (
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
-	"github.com/linksort/linksort/opengraph"
 )
 
 // nolint
@@ -38,7 +37,6 @@ var (
 	_linkStore model.LinkStore
 	_magic     = magic.New("test-secret")
 	_email     = email.New()
-	_opengraph = opengraph.NewTestClient()
 	_txnClient db.Transactor
 )
 

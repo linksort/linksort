@@ -5,8 +5,6 @@ go 1.17
 require (
 	github.com/certifi/gocertifi v0.0.0-20200922220541-2c3bb06c6054 // indirect
 	github.com/corpix/uarand v0.1.1 // indirect
-	github.com/dyatlov/go-htmlinfo v0.0.0-20180517114536-d9417c75de65
-	github.com/dyatlov/go-opengraph v0.0.0-20210112100619-dae8665a5b09
 	github.com/getsentry/raven-go v0.2.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
@@ -36,7 +34,9 @@ require (
 	github.com/aws/aws-sdk-go v1.34.28 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dyatlov/go-htmlinfo v0.0.0-20180517114536-d9417c75de65 // indirect
 	github.com/dyatlov/go-oembed v0.0.0-20191103150536-a57c85b3b37c // indirect
+	github.com/dyatlov/go-opengraph v0.0.0-20210112100619-dae8665a5b09 // indirect
 	github.com/dyatlov/go-readability v0.0.0-20150926130635-e7b2080f87f8 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
