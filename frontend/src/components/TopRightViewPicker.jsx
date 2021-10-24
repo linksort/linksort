@@ -9,11 +9,11 @@ import {
   VIEW_SETTING_TILES,
 } from "../hooks/views";
 
-export default function TopRightViewPicker() {
+export default function TopRightViewPicker({ isMobile }) {
   const { setting, setSetting } = useViewSetting();
 
   return (
-    <Flex>
+    <Flex id={isMobile ? "mobile-view-setting" : "view-setting"}>
       <Tooltip label="Condensed view">
         <IconButton
           zIndex={1}
@@ -29,8 +29,8 @@ export default function TopRightViewPicker() {
           colorScheme={setting === VIEW_SETTING_TALL ? "brand" : "gray"}
           icon={<MenuIcon />}
           borderRadius="none"
-          borderLeft="thin"
-          borderRight="thin"
+          borderLeft={setting === VIEW_SETTING_TALL ? "none" : "thin"}
+          borderRight={setting === VIEW_SETTING_TALL ? "none" : "thin"}
           borderColor="gray.200"
           borderRightStyle="solid"
           borderLeftStyle="solid"

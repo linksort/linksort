@@ -21,7 +21,7 @@ import { useFormik } from "formik";
 import { useCreateLink } from "../hooks/links";
 import { suppressMutationErrors } from "../utils/mutations";
 
-export default function TopRightNewLinkPopover() {
+export default function TopRightNewLinkPopover({ isMobile }) {
   const [isOpen, setIsOpen] = useState(false);
   const focus = useRef();
   const mutation = useCreateLink();
@@ -57,6 +57,7 @@ export default function TopRightNewLinkPopover() {
       <PopoverTrigger>
         <Box>
           <Button
+            id={isMobile ? "" : "new-link"}
             colorScheme="brand"
             leftIcon={<AddIcon />}
             onClick={handleOpen}
@@ -65,6 +66,7 @@ export default function TopRightNewLinkPopover() {
             New Link
           </Button>
           <IconButton
+            id={isMobile ? "mobile-new-link" : ""}
             borderRightRadius="none"
             colorScheme="brand"
             icon={<AddIcon />}

@@ -6,6 +6,7 @@ import { extendTheme } from "@chakra-ui/react";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 import "../theme/prose.css";
+import "../theme/shepherd.css";
 import theme from "../theme/theme";
 
 import AuthRoute from "./AuthRoute";

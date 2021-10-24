@@ -12,18 +12,19 @@ import (
 )
 
 type User struct {
-	Key            primitive.ObjectID `json:"-" bson:"_id,omitempty"`
-	ID             string             `json:"id"`
-	Email          string             `json:"email"`
-	FirstName      string             `json:"firstName"`
-	LastName       string             `json:"lastName"`
-	CreatedAt      time.Time          `json:"createdAt"`
-	UpdatedAt      time.Time          `json:"updatedAt"`
-	SessionID      string             `json:"-" bson:"sessionId,omitempty"`
-	SessionExpiry  time.Time          `json:"-" bson:"sessionExpiry,omitempty"`
-	PasswordDigest string             `json:"-" bson:"passwordDigest"`
-	FolderTree     *Folder            `json:"folderTree"`
-	TagTree        *TagNode           `json:"tagTree"`
+	Key                primitive.ObjectID `json:"-" bson:"_id,omitempty"`
+	ID                 string             `json:"id"`
+	Email              string             `json:"email"`
+	FirstName          string             `json:"firstName"`
+	LastName           string             `json:"lastName"`
+	CreatedAt          time.Time          `json:"createdAt"`
+	UpdatedAt          time.Time          `json:"updatedAt"`
+	SessionID          string             `json:"-" bson:"sessionId,omitempty"`
+	SessionExpiry      time.Time          `json:"-" bson:"sessionExpiry,omitempty"`
+	PasswordDigest     string             `json:"-" bson:"passwordDigest"`
+	FolderTree         *Folder            `json:"folderTree"`
+	TagTree            *TagNode           `json:"tagTree"`
+	HasSeenWelcomeTour bool               `json:"hasSeenWelcomeTour"`
 }
 
 type UserStore interface {

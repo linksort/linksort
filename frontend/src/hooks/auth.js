@@ -57,6 +57,7 @@ export function useSignOut() {
         window.__SERVER_DATA__ = {};
         queryClient.setQueryData("user", USER_SHAPE);
         history.push("/sign-in");
+        window.location.reload();
       },
     }
   );
@@ -128,6 +129,23 @@ export function useChangePassword() {
       onSuccess: (data) => {
         queryClient.setQueryData("user", data.user);
         history.push("/");
+      },
+    }
+  );
+}
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (payload) =>
+      apiFetch(`/api/users`, {
+        body: payload,
+        method: "PATCH",
+      }),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData("user", data.user);
       },
     }
   );

@@ -80,8 +80,16 @@ func (u *User) UpdateUser(ctx context.Context, usr *model.User, req *handler.Upd
 	rt := rv.Type()
 
 	for i := 0; i < rv.NumField(); i++ {
-		if ss := rv.Field(i).String(); ss != "" {
-			uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(ss))
+		switch rv.Type().Field(i).Name {
+		case "HasSeenWelcomeTour":
+			if isNil := rv.Field(i).IsNil(); !isNil {
+				uv.FieldByName(rt.Field(i).Name).
+					Set(reflect.ValueOf(rv.Field(i).Elem().Bool()))
+			}
+		default:
+			if ss := rv.Field(i).String(); ss != "" {
+				uv.FieldByName(rt.Field(i).Name).Set(reflect.ValueOf(ss))
+			}
 		}
 	}
 

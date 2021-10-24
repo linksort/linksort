@@ -20,6 +20,7 @@ import {
   VIEW_SETTING_TALL,
   VIEW_SETTING_TILES,
 } from "../hooks/views";
+import { useTour } from "../hooks/tour";
 
 function linksBy(grouping, links) {
   switch (grouping) {
@@ -89,6 +90,8 @@ export default function Home() {
   const linksCount = links.length;
   const isSearching = searchQuery && searchQuery.length > 0;
   const isViewSettingCondensed = viewSetting === VIEW_SETTING_CONDENSED;
+
+  useTour();
 
   if (isError) {
     return <ErrorScreen error={error} />;

@@ -1,0 +1,17 @@
+.shepherd-button {
+  background: var(--chakra-colors-brand-500) !important;
+  color: var(--chakra-colors-white) !important;
+  border-radius: var(--chakra-radii-md) !important;
+}
+
+[data-popper-placement="right"] .shepherd-arrow:before {
+  box-shadow: -2px 2px 2px var(--chakra-colors-gray-200) !important;
+}
+
+[data-popper-placement="bottom"] .shepherd-arrow:before {
+  box-shadow: -1px -1px 2px var(--chakra-colors-gray-200) !important;
+}
+
+[data-popper-placement="top"] .shepherd-arrow:before {
+  box-shadow: 2px 2px 2px var(--chakra-colors-gray-200) !important;
+}

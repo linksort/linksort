@@ -14,7 +14,6 @@ import { HamburgerIcon } from "@chakra-ui/icons";
 
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
-import TopRightViewPicker from "./TopRightViewPicker";
 import { HEADER_HEIGHT } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
 import Sidebar from "./Sidebar";
@@ -72,7 +71,6 @@ export default function Header() {
           display={["none", "none", "none", "none", "flex"]}
         >
           <TopRightNewLinkPopover />
-          <TopRightViewPicker />
           <TopRightUserMenu />
         </Stack>
         <Stack
@@ -81,8 +79,9 @@ export default function Header() {
           spacing={0}
           display={["flex", "flex", "flex", "flex", "none"]}
         >
-          <TopRightNewLinkPopover />
+          <TopRightNewLinkPopover isMobile={true} />
           <IconButton
+            id="mobile-nav"
             borderLeftRadius="none"
             ref={buttonRef}
             onClick={onOpen}
@@ -96,10 +95,11 @@ export default function Header() {
         placement="left"
         onClose={onClose}
         finalFocusRef={buttonRef}
+        autoFocus={false}
       >
         <DrawerOverlay />
         <DrawerContent>
-          <Sidebar width="100%" />
+          <Sidebar width="100%" isMobile={true} />
         </DrawerContent>
       </Drawer>
     </Container>

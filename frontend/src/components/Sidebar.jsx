@@ -43,7 +43,7 @@ function SidebarSectionHeader({ children, ...rest }) {
   );
 }
 
-export default function Sidebar({ width = "18rem" }) {
+export default function Sidebar({ width = "18rem", isMobile = false }) {
   const signOutMutation = useSignOut();
   const {
     handleToggleSort,
@@ -78,15 +78,16 @@ export default function Sidebar({ width = "18rem" }) {
               <VisuallyHidden>Linksort</VisuallyHidden>
             </RouterLink>
           </Flex>
-          <Box
-            display={["block", "block", "block", "block", "none"]}
-            marginBottom={6}
-          >
-            <TopRightViewPicker />
+          <Box marginBottom={6}>
+            <TopRightViewPicker isMobile={isMobile} />
           </Box>
           <List paddingRight={2}>
             <ListItem marginBottom={8}>
-              <Stack as={List} spacing={1}>
+              <Stack
+                as={List}
+                spacing={1}
+                id={isMobile ? "mobile-filter-controls" : "filter-controls"}
+              >
                 <ListItem>
                   <SidebarSearchButton />
                 </ListItem>
@@ -128,11 +129,16 @@ export default function Sidebar({ width = "18rem" }) {
                 </ListItem>
               </Stack>
             </ListItem>
-            <ListItem marginBottom={8}>
+            <ListItem
+              marginBottom={8}
+              id={isMobile ? "mobile-folder-controls" : "folder-controls"}
+            >
               <SidebarSectionHeader>Folders</SidebarSectionHeader>
               <SidebarFolderTree />
             </ListItem>
-            <ListItem>
+            <ListItem
+              id={isMobile ? "mobile-auto-tag-controls" : "auto-tag-controls"}
+            >
               <SidebarSectionHeader>Auto Tags</SidebarSectionHeader>
               <SidebarTagTree />
             </ListItem>

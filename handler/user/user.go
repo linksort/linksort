@@ -197,9 +197,10 @@ func (s *config) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdateUserRequest struct {
-	Email     string `json:"email" validate:"required,email"`
-	FirstName string `json:"firstName" validate:"required,max=100"`
-	LastName  string `json:"lastName" validate:"max=100"`
+	Email              string `json:"email" validate:"omitempty,email"`
+	FirstName          string `json:"firstName" validate:"omitempty,max=100"`
+	LastName           string `json:"lastName" validate:"omitempty,max=100"`
+	HasSeenWelcomeTour *bool  `json:"hasSeenWelcomeTour" validate:"omitempty"`
 }
 
 type UpdateUserResponse struct {

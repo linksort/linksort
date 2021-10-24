@@ -3258,7 +3258,7 @@ function NullScreenHelper({
   callToActionSlot,
 }) {
   return (
-    <Center flexDirection="column" padding={4}>
+    <Center flexDirection="column" padding={4} id="null-screen">
       <Box paddingTop={8}>{imageSlot}</Box>
       <Box maxWidth="48ch" textAlign="center">
         <Heading as="h2" size="md" paddingTop={4}>

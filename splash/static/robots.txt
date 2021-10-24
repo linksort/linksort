@@ -1,2 +1,3 @@
 User-agent: *
 Disallow: /waitlist
+Disallow: /forgot-password-sent-email
