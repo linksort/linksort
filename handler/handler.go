@@ -9,7 +9,6 @@ import (
 
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
-	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/handler/folder"
 	"github.com/linksort/linksort/handler/frontend"
 	"github.com/linksort/linksort/handler/link"
@@ -26,8 +25,10 @@ type Config struct {
 	UserStore  model.UserStore
 	LinkStore  model.LinkStore
 	Magic      *magic.Client
-	Email      *email.Client
-	Analyzer   interface {
+	Email      interface {
+		SendForgotPassword(context.Context, *model.User, string) error
+	}
+	Analyzer interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
 	}
 	FrontendProxyHostname string

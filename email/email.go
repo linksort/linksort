@@ -46,3 +46,15 @@ Linksort Team`, usr.FirstName, link),
 
 	return nil
 }
+
+type Logger struct{}
+
+func NewLogger() *Logger {
+	return &Logger{}
+}
+
+func (l *Logger) SendForgotPassword(ctx context.Context, usr *model.User, link string) error {
+	log.FromContext(ctx).Printf("email=%s, link=%s", usr.Email, link)
+
+	return nil
+}

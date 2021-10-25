@@ -36,7 +36,7 @@ var (
 	_userStore model.UserStore
 	_linkStore model.LinkStore
 	_magic     = magic.New("test-secret")
-	_email     = email.New()
+	_email     = email.NewLogger()
 	_txnClient db.Transactor
 )
 
@@ -160,7 +160,7 @@ func Magic(t *testing.T) *magic.Client {
 	return _magic
 }
 
-func Email(t *testing.T) *email.Client {
+func Email(t *testing.T) *email.Logger {
 	t.Helper()
 
 	return _email
