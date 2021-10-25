@@ -8,6 +8,7 @@ export default function LinkItemFolderMenu({
   link,
   buttonSlot,
   folderTree,
+  isLinkInFolder,
   onMoveToFolder,
 }) {
   return (
@@ -24,13 +25,15 @@ export default function LinkItemFolderMenu({
             {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
           </MenuItem>
         ))}
-        <MenuItem
-          key="none"
-          onClick={() => onMoveToFolder("root")}
-          icon={<CloseIcon />}
-        >
-          Remove from folder
-        </MenuItem>
+        {isLinkInFolder && (
+          <MenuItem
+            key="none"
+            onClick={() => onMoveToFolder("root")}
+            icon={<CloseIcon />}
+          >
+            Remove from folder
+          </MenuItem>
+        )}
       </MenuList>
     </Menu>
   );

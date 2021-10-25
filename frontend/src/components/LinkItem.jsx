@@ -18,7 +18,7 @@ export default function LinkItem({ link }) {
   const deleteMutation = useDeleteLink(link.id);
   const updateMutation = useUpdateLink(link.id);
   const { folderTree, resolveFolderName } = useFolders();
-  const currentFolderName = resolveFolderName(link.folderId, "Add to folder");
+  const currentFolderName = resolveFolderName(link.folderId, "");
   const isLinkInFolder = link.folderId !== "root" && link.folderId.length > 0;
 
   function handleDeleteLink() {

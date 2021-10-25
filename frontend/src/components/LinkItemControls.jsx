@@ -38,9 +38,10 @@ export default function LinkItemControls({
   return (
     <HStack overflow="hidden" spacing={buttonSpacing} flexShrink={0} {...rest}>
       <LinkItemFolderMenu
+        isLinkInFolder={isLinkInFolder}
         link={link}
         buttonSlot={
-          isLinkInFolder ? (
+          isLinkInFolder && currentFolderName !== "" ? (
             <MenuButton
               as={Button}
               backgroundColor={buttonColor}

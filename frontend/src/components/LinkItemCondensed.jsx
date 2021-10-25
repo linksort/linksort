@@ -23,6 +23,7 @@ import { DotDotDotVert, FolderIcon, StarBorderIcon } from "./CustomIcons";
 export default function LinkItemCondensed({
   link,
   folderTree,
+  isLinkInFolder,
   onDeleteLink,
   onToggleIsFavorite,
   onMoveToFolder,
@@ -91,13 +92,15 @@ export default function LinkItemCondensed({
               {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
             </MenuItem>
           ))}
-          <MenuItem
-            key="none"
-            onClick={() => onMoveToFolder("root")}
-            icon={<CloseIcon />}
-          >
-            Remove from folder
-          </MenuItem>
+          {isLinkInFolder && (
+            <MenuItem
+              key="none"
+              onClick={() => onMoveToFolder("root")}
+              icon={<CloseIcon />}
+            >
+              Remove from folder
+            </MenuItem>
+          )}
         </MenuList>
       </Menu>
     </Flex>

@@ -44,7 +44,7 @@ func main() {
 		UserStore:             db.NewUserStore(mongo),
 		LinkStore:             db.NewLinkStore(mongo),
 		Magic:                 magic.New(getenv("APP_SECRET", "")),
-		Email:                 email.New(),
+		Email:                 email.New(getenv("MAILGUN_KEY", "")),
 		Analyzer:              analyzer,
 		FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
 		FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
