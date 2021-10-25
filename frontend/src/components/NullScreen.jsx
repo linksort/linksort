@@ -3282,6 +3282,19 @@ export default function NullScreen() {
     handleSearch,
   } = useFilters();
 
+  if (searchQuery.length > 0) {
+    return (
+      <NullScreenHelper
+        imageSlot={<ThinkingFace />}
+        headingText="Nada."
+        detailText="We couldn't find anything."
+        callToActionSlot={
+          <Button onClick={() => handleSearch("")}>Clear search</Button>
+        }
+      />
+    );
+  }
+
   if (areFavoritesShowing) {
     return (
       <NullScreenHelper
@@ -3319,19 +3332,6 @@ export default function NullScreen() {
         imageSlot={<Beach />}
         headingText="Nope."
         detailText="There don't seem to be any links here."
-      />
-    );
-  }
-
-  if (searchQuery.length > 0) {
-    return (
-      <NullScreenHelper
-        imageSlot={<ThinkingFace />}
-        headingText="Nada."
-        detailText="We couldn't find anything."
-        callToActionSlot={
-          <Button onClick={() => handleSearch("")}>Clear search</Button>
-        }
       />
     );
   }

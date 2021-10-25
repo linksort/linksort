@@ -100,7 +100,7 @@ function tour() {
   t.addStep({
     id: "folder-controls",
     text:
-      "Finally, you can create folders to organize you links the way you want. Click anywhere in the dimmed area to close the sidebar.",
+      "Finally, you can create folders to organize your links the way you want. Click anywhere in the dimmed area to close the sidebar.",
     attachTo: {
       element: isMobile ? "#mobile-folder-controls" : "#folder-controls",
       on: isMobile ? "top" : "right",
