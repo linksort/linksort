@@ -51,7 +51,12 @@ export default function AppLayout({ children }) {
           <Box position="fixed" width="100%" top="0" left="0" zIndex={10}>
             <Header />
           </Box>
-          <Box as="main" marginTop={HEADER_HEIGHT}>
+          <Box
+            as="main"
+            marginTop={HEADER_HEIGHT}
+            maxWidth="calc(var(--chakra-sizes-container-xl) - 21rem)"
+            width="100%"
+          >
             {children}
           </Box>
         </GridItem>
