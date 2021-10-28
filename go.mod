@@ -27,6 +27,7 @@ require (
 	cloud.google.com/go v0.94.1 // indirect
 	cloud.google.com/go/language v0.1.0 // indirect
 	github.com/Jeffail/gabs v1.4.0 // indirect
+	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/PuerkitoBio/goquery v1.7.1 // indirect
