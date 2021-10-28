@@ -40,7 +40,10 @@ type Config struct {
 func Server(c *Config) http.Handler {
 	r := mux.NewRouter()
 
-	r.Use(gziphandler.GzipHandler, withIndexHandler(c.UserStore, c.Magic), with404Handler("./assets", "404.html"))
+	r.Use(
+		gziphandler.GzipHandler,
+		withIndexHandler(c.UserStore, c.Magic),
+		with404Handler("./assets", "404.html"))
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./assets")))
 
 	return r
