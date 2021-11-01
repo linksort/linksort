@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -12,6 +13,9 @@ import (
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
+
+//go:embed templates/*.html
+var f embed.FS
 
 type Config struct {
 	OAuthController interface {
@@ -31,7 +35,7 @@ type config struct {
 func Handler(c *Config) *mux.Router {
 	cc := config{Config: c}
 
-	cc.template = template.Must(template.ParseFiles("handler/oauth/templates/oauth.html"))
+	cc.template = template.Must(template.ParseFS(f, "templates/oauth.html"))
 
 	r := mux.NewRouter()
 
