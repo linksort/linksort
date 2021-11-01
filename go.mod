@@ -9,10 +9,12 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/linksort/analyze v0.0.0-20211010051416-ece18bef78df
+	github.com/mailgun/mailgun-go/v3 v3.6.4
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/rs/zerolog v1.21.0
 	github.com/steinfletcher/apitest v1.5.5
@@ -27,7 +29,6 @@ require (
 	cloud.google.com/go v0.94.1 // indirect
 	cloud.google.com/go/language v0.1.0 // indirect
 	github.com/Jeffail/gabs v1.4.0 // indirect
-	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/PuerkitoBio/goquery v1.7.1 // indirect
@@ -39,6 +40,7 @@ require (
 	github.com/dyatlov/go-oembed v0.0.0-20191103150536-a57c85b3b37c // indirect
 	github.com/dyatlov/go-opengraph v0.0.0-20210112100619-dae8665a5b09 // indirect
 	github.com/dyatlov/go-readability v0.0.0-20150926130635-e7b2080f87f8 // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/go-chi/chi v4.0.0+incompatible // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
@@ -50,7 +52,6 @@ require (
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.9.5 // indirect
-	github.com/mailgun/mailgun-go/v3 v3.6.4 // indirect
 	github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

@@ -18,19 +18,42 @@ import (
 
 type contextKey int
 
-const userKey contextKey = iota
+const (
+	_userKey         contextKey = iota
+	_userCsrfTimeout            = time.Hour * 24 * 7
+	_csrfTimeout                = time.Hour * 24
+)
 
 // WithUser adds the authenticated user to the context and validates her CSRF
 // token if the incoming request is a write request. If the user cannot be
 // found, then a 401 unauthorized response is returned.
 func WithUser(s interface {
 	GetUserBySessionID(context.Context, string) (*model.User, error)
+	GetUserByToken(context.Context, string) (*model.User, error)
 }, m interface {
 	VerifyUserCSRF(string, string, time.Duration) error
 }) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			var op errors.Op = "middleware.WithUser"
+			op := errors.Op("middleware.WithUser")
+			ctx := r.Context()
+
+			// If a token is in the headers, use that to authenticate. Otherwise,
+			// default to cookie-based auth.
+			if token, found := GetAuthBearerToken(r.Header); found {
+				user, err := s.GetUserByToken(ctx, token)
+				if err != nil {
+					payload.WriteError(w, r, errors.E(op, err,
+						http.StatusUnauthorized,
+						errors.M{"message": "Unauthorized"}))
+
+					return
+				}
+
+				next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, _userKey, user)))
+
+				return
+			}
 
 			c, err := r.Cookie("session_id")
 			if err != nil {
@@ -41,7 +64,6 @@ func WithUser(s interface {
 				return
 			}
 
-			ctx := r.Context()
 			user, err := s.GetUserBySessionID(ctx, c.Value)
 			if err != nil {
 				cookie.UnsetSession(r, w)
@@ -63,9 +85,8 @@ func WithUser(s interface {
 			}
 
 			if isWriteRequest(r.Method) {
-				token := r.Header.Get("X-Csrf-Token")
-
-				err = m.VerifyUserCSRF(token, user.SessionID, time.Hour*24*7)
+				err = m.VerifyUserCSRF(
+					r.Header.Get("X-Csrf-Token"), user.SessionID, _userCsrfTimeout)
 				if err != nil {
 					payload.WriteError(w, r, errors.E(op,
 						http.StatusForbidden,
@@ -76,7 +97,7 @@ func WithUser(s interface {
 				}
 			}
 
-			next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, userKey, user)))
+			next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, _userKey, user)))
 		})
 	}
 }
@@ -92,7 +113,7 @@ func WithCSRF(m interface {
 			if isWriteRequest(r.Method) {
 				token := r.Header.Get("X-Csrf-Token")
 
-				err := m.VerifyCSRF(token, time.Hour*24)
+				err := m.VerifyCSRF(token, _csrfTimeout)
 				if err != nil {
 					payload.WriteError(w, r, errors.E(op,
 						http.StatusForbidden,
@@ -111,7 +132,7 @@ func WithCSRF(m interface {
 // UserFromContext returns the User object that was added to the context via
 // WithUser middleware.
 func UserFromContext(ctx context.Context) *model.User {
-	return ctx.Value(userKey).(*model.User)
+	return ctx.Value(_userKey).(*model.User)
 }
 
 // GetAuthBearerToken extracts the Authorization Bearer token from request
@@ -139,12 +160,14 @@ func WithPanicHandling(handler http.Handler) http.Handler {
 				if err, ok := rval.(error); ok {
 					packet = raven.NewPacket(
 						rvalStr,
-						raven.NewException(errors.Str(rvalStr), raven.GetOrNewStacktrace(err, 2, 3, nil)),
+						raven.NewException(errors.Str(rvalStr),
+							raven.GetOrNewStacktrace(err, 2, 3, nil)),
 						raven.NewHttp(r))
 				} else {
 					packet = raven.NewPacket(
 						rvalStr,
-						raven.NewException(errors.Str(rvalStr), raven.NewStacktrace(2, 3, nil)),
+						raven.NewException(errors.Str(rvalStr),
+							raven.NewStacktrace(2, 3, nil)),
 						raven.NewHttp(r))
 				}
 				raven.Capture(packet, nil)
@@ -157,5 +180,8 @@ func WithPanicHandling(handler http.Handler) http.Handler {
 }
 
 func isWriteRequest(method string) bool {
-	return method == http.MethodDelete || method == http.MethodPatch || method == http.MethodPost || method == http.MethodPut
+	return method == http.MethodDelete ||
+		method == http.MethodPatch ||
+		method == http.MethodPost ||
+		method == http.MethodPut
 }

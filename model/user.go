@@ -22,6 +22,7 @@ type User struct {
 	SessionID          string             `json:"-" bson:"sessionId,omitempty"`
 	SessionExpiry      time.Time          `json:"-" bson:"sessionExpiry,omitempty"`
 	PasswordDigest     string             `json:"-" bson:"passwordDigest"`
+	Token              string             `json:"token"`
 	FolderTree         *Folder            `json:"folderTree"`
 	TagTree            *TagNode           `json:"tagTree"`
 	HasSeenWelcomeTour bool               `json:"hasSeenWelcomeTour"`
@@ -29,6 +30,7 @@ type User struct {
 
 type UserStore interface {
 	GetUserBySessionID(context.Context, string) (*User, error)
+	GetUserByToken(context.Context, string) (*User, error)
 	GetUserByEmail(context.Context, string) (*User, error)
 	CreateUser(context.Context, *User) (*User, error)
 	UpdateUser(context.Context, *User) (*User, error)

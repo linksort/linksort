@@ -54,6 +54,12 @@ func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 				SetUnique(true).
 				SetSparse(true),
 		},
+		{
+			Keys: bson.D{primitive.E{Key: "token", Value: 1}},
+			Options: options.Index().
+				SetUnique(true).
+				SetSparse(true),
+		},
 	})
 	if err != nil {
 		return errors.Wrap(op, err)

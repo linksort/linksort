@@ -19,6 +19,7 @@ type Config struct {
 	UserController interface {
 		CreateUser(context.Context, *CreateUserRequest) (*model.User, error)
 		GetUserBySessionID(context.Context, string) (*model.User, error)
+		GetUserByToken(context.Context, string) (*model.User, error)
 		UpdateUser(context.Context, *model.User, *UpdateUserRequest) (*model.User, error)
 		DeleteUser(context.Context, *model.User) error
 		ForgotPassword(context.Context, *ForgotPasswordRequest) error

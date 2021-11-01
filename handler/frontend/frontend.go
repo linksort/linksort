@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/NYTimes/gziphandler"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/errors"
@@ -40,13 +40,10 @@ type Config struct {
 func Server(c *Config) http.Handler {
 	r := mux.NewRouter()
 
-	r.Use(
-		gziphandler.GzipHandler,
-		withIndexHandler(c.UserStore, c.Magic),
-		with404Handler("./assets", "404.html"))
+	r.Use(withIndexHandler(c.UserStore, c.Magic), with404Handler("./assets", "404.html"))
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./assets")))
 
-	return r
+	return handlers.CompressHandler(r)
 }
 
 func ReverseProxy(c *Config) http.Handler {

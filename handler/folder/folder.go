@@ -21,6 +21,7 @@ type Config struct {
 	}
 	UserController interface {
 		GetUserBySessionID(context.Context, string) (*model.User, error)
+		GetUserByToken(context.Context, string) (*model.User, error)
 	}
 	CSRF interface {
 		VerifyUserCSRF(token string, sessionID string, expiry time.Duration) error

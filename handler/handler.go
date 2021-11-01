@@ -3,7 +3,9 @@ package handler
 import (
 	"context"
 	"net/http"
+	"strings"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/linksort/analyze"
 
@@ -13,6 +15,7 @@ import (
 	"github.com/linksort/linksort/handler/frontend"
 	"github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/handler/middleware"
+	"github.com/linksort/linksort/handler/oauth"
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/magic"
@@ -78,6 +81,13 @@ func New(c *Config) http.Handler {
 		CSRF: c.Magic,
 	})))
 
+	router.PathPrefix("/oauth").Handler(oauth.Handler(&oauth.Config{
+		OAuthController: &controller.OAuth{
+			Store: c.UserStore,
+		},
+		CSRF: c.Magic,
+	}))
+
 	// Frontend Routes
 	if c.IsProd == "1" {
 		router.PathPrefix("/").Handler(frontend.Server(&frontend.Config{
@@ -96,11 +106,18 @@ func New(c *Config) http.Handler {
 	return log.WithAccessLogging(middleware.WithPanicHandling(router))
 }
 
-func wrap(h *mux.Router) *mux.Router {
+func wrap(h *mux.Router) http.Handler {
 	h.NotFoundHandler = http.HandlerFunc(notFound)
 	h.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowed)
 
-	return h
+	return handlers.CORS(
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
+		handlers.AllowedOriginValidator(func(origin string) bool {
+			return strings.HasPrefix(origin, "moz-extension://") ||
+				strings.HasPrefix(origin, "chrome-extension://") ||
+				strings.HasPrefix(origin, "safari-web-extension://")
+		}),
+	)(h)
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {

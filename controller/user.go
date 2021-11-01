@@ -42,6 +42,7 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 		SessionID:      random.Token(),
 		SessionExpiry:  time.Now().Add(time.Hour * time.Duration(24*30)),
 		PasswordDigest: digest,
+		Token:          random.Token(),
 		FolderTree: &model.Folder{
 			Name:     "root",
 			ID:       "root",
@@ -65,6 +66,17 @@ func (u *User) GetUserBySessionID(ctx context.Context, sessionID string) (*model
 	op := errors.Opf("controller.GetUserBySessionID(%q)", sessionID)
 
 	usr, err := u.Store.GetUserBySessionID(ctx, sessionID)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return usr, nil
+}
+
+func (u *User) GetUserByToken(ctx context.Context, token string) (*model.User, error) {
+	op := errors.Opf("controller.GetUserByToken()")
+
+	usr, err := u.Store.GetUserByToken(ctx, token)
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
@@ -157,6 +169,7 @@ func (u *User) ChangePassword(ctx context.Context, req *handler.ChangePasswordRe
 
 	usr.PasswordDigest = digest
 	usr.RefreshSession()
+	usr.Token = random.Token()
 
 	usr, err = u.Store.UpdateUser(ctx, usr)
 	if err != nil {

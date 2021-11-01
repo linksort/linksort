@@ -72,6 +72,27 @@ func (s *UserStore) GetUserBySessionID(ctx context.Context, sessionID string) (*
 	return usr, nil
 }
 
+func (s *UserStore) GetUserByToken(ctx context.Context, token string) (*model.User, error) {
+	op := errors.Op("UserStore.GetUserByToken()")
+
+	usr := new(model.User)
+
+	err := s.col.FindOne(ctx, bson.M{"token": token}).Decode(usr)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, errors.E(op, err, errors.Str("no documents"), http.StatusNotFound)
+		}
+
+		return nil, errors.E(op, err)
+	}
+
+	usr.ID = usr.Key.Hex()
+
+	handleNullValues(usr)
+
+	return usr, nil
+}
+
 func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
 	op := errors.Op("UserStore.GetUserByEmail()")
 
