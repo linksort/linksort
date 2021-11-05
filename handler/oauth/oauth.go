@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
@@ -20,6 +21,9 @@ var f embed.FS
 type Config struct {
 	OAuthController interface {
 		Authenticate(context.Context, *OAuthAuthRequest) (*model.User, error)
+	}
+	Auth interface {
+		WithCookie(context.Context, string) (*model.User, error)
 	}
 	CSRF interface {
 		CSRF() []byte
@@ -51,15 +55,8 @@ type OAuthAuthRequest struct {
 }
 
 func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
-	redirectURI := r.URL.Query().Get("redirect_uri")
-
 	if err := s.CSRF.VerifyCSRF(r.FormValue("csrf"), time.Hour); err != nil {
-		s.template.Execute(w, map[string]string{
-			"IsError":     "1",
-			"Error":       "You ran out of time. Please refresh the page and try again.",
-			"RedirectURI": redirectURI,
-			"CSRF":        string(s.CSRF.CSRF()),
-		})
+		s.handleError(w, r, err, "You ran out of time. Please refresh the page and try again.")
 		return
 	}
 
@@ -69,39 +66,57 @@ func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := payload.Valid(req); err != nil {
-		s.template.Execute(w, map[string]string{
-			"IsError":     "1",
-			"Error":       "Invalid credentials given.",
-			"RedirectURI": redirectURI,
-			"CSRF":        string(s.CSRF.CSRF()),
-		})
+		s.handleError(w, r, err, "Invalid credentials given.")
 		return
 	}
 
 	usr, err := s.OAuthController.Authenticate(r.Context(), req)
 	if err != nil {
-		s.template.Execute(w, map[string]string{
-			"IsError":     "1",
-			"Error":       "Invalid credentials given.",
-			"RedirectURI": redirectURI,
-			"CSRF":        string(s.CSRF.CSRF()),
-		})
+		s.handleError(w, r, err, "Invalid credentials given.")
 		return
 	}
 
+	redirectURI := r.URL.Query().Get("redirect_uri")
+
 	http.Redirect(w, r,
-		fmt.Sprintf("%s?token=%s", redirectURI,
-			url.QueryEscape(usr.Token)), http.StatusFound)
+		fmt.Sprintf("%s?token=%s", redirectURI, url.QueryEscape(usr.Token)),
+		http.StatusFound)
 }
 
 func (s *config) OauthForm(w http.ResponseWriter, r *http.Request) {
 	redirectURI := r.URL.Query().Get("redirect_uri")
 
-	err := s.template.Execute(w, map[string]string{
+	c, _ := r.Cookie("session_id")
+	user, err := s.Auth.WithCookie(r.Context(), c.Value)
+
+	if err == nil {
+		http.Redirect(w, r,
+			fmt.Sprintf("%s?token=%s", redirectURI, url.QueryEscape(user.Token)),
+			http.StatusFound)
+		return
+	}
+
+	err = s.template.Execute(w, map[string]string{
 		"RedirectURI": redirectURI,
 		"CSRF":        string(s.CSRF.CSRF()),
 	})
 	if err != nil {
+		log.Alarm(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func (s *config) handleError(w http.ResponseWriter, r *http.Request, err error, message string) {
+	log.FromRequest(r).Print(err)
+
+	renderErr := s.template.Execute(w, map[string]string{
+		"IsError":     "1",
+		"Error":       message,
+		"RedirectURI": r.URL.Query().Get("redirect_uri"),
+		"CSRF":        string(s.CSRF.CSRF()),
+	})
+	if renderErr != nil {
+		log.Alarm(renderErr)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

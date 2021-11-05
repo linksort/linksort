@@ -29,6 +29,10 @@ type Config struct {
 		CreateSession(context.Context, *CreateSessionRequest) (*model.User, error)
 		DeleteSession(context.Context, *model.User) error
 	}
+	AuthController interface {
+		WithCookie(context.Context, string) (*model.User, error)
+		WithToken(context.Context, string) (*model.User, error)
+	}
 	CSRF interface {
 		CSRF() []byte
 		UserCSRF(sessionID string) []byte
@@ -55,7 +59,7 @@ func Handler(c *Config) *mux.Router {
 	s.HandleFunc("/api/users/sessions", cc.CreateSession).Methods("POST")
 
 	t := r.NewRoute().Subrouter()
-	t.Use(middleware.WithUser(c.UserController, c.CSRF))
+	t.Use(middleware.WithUser(c.AuthController, c.CSRF))
 	t.HandleFunc("/api/users", cc.GetUser).Methods("GET")
 	t.HandleFunc("/api/users", cc.UpdateUser).Methods("PATCH")
 	t.HandleFunc("/api/users", cc.DeleteUser).Methods("DELETE")

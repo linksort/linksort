@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/linksort/linksort/errors"
 	handler "github.com/linksort/linksort/handler/user"
@@ -15,22 +14,11 @@ type Session struct {
 
 func (s *Session) CreateSession(ctx context.Context, req *handler.CreateSessionRequest) (*model.User, error) {
 	op := errors.Opf("controller.CreateSession(%q)", req.Email)
+	auth := Auth{s.Store}
 
-	usr, err := s.Store.GetUserByEmail(ctx, req.Email)
+	usr, err := auth.WithCredentials(ctx, req.Email, req.Password)
 	if err != nil {
-		return nil, errors.E(
-			op,
-			err,
-			http.StatusBadRequest,
-			errors.M{"message": "Invalid credentials given."})
-	}
-
-	if !usr.CheckPassword(req.Password) {
-		return nil, errors.E(
-			op,
-			errors.Str("wrong password"),
-			http.StatusBadRequest,
-			errors.M{"message": "Invalid credentials given."})
+		return nil, errors.E(op, err)
 	}
 
 	if usr.IsSessionExpired() {

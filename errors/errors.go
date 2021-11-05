@@ -127,7 +127,7 @@ func Strf(format string, args ...interface{}) error {
 // Str returns an error from the given string.
 func Str(s string) error {
 	// nolint
-	return fmt.Errorf(s)
+	return native.New(s)
 }
 
 // Opf returns an Op from the given format string.

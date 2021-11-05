@@ -22,9 +22,9 @@ type Config struct {
 		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, error)
 		DeleteLink(context.Context, *model.User, string) (*model.User, error)
 	}
-	UserController interface {
-		GetUserBySessionID(context.Context, string) (*model.User, error)
-		GetUserByToken(context.Context, string) (*model.User, error)
+	AuthController interface {
+		WithCookie(context.Context, string) (*model.User, error)
+		WithToken(context.Context, string) (*model.User, error)
 	}
 	CSRF interface {
 		VerifyUserCSRF(token string, sessionID string, expiry time.Duration) error
@@ -37,7 +37,7 @@ func Handler(c *Config) *mux.Router {
 	cc := config{Config: c}
 	r := mux.NewRouter()
 
-	r.Use(middleware.WithUser(c.UserController, c.CSRF))
+	r.Use(middleware.WithUser(c.AuthController, c.CSRF))
 
 	r.HandleFunc("/api/links", cc.CreateLink).Methods("POST")
 	r.HandleFunc("/api/links/{linkID}", cc.GetLink).Methods("GET")

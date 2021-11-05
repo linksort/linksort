@@ -52,6 +52,9 @@ func New(c *Config) http.Handler {
 			Magic: c.Magic,
 			Email: c.Email,
 		},
+		AuthController: &controller.Auth{
+			Store: c.UserStore,
+		},
 		SessionController: &controller.Session{Store: c.UserStore},
 		CSRF:              c.Magic,
 	})))
@@ -62,10 +65,8 @@ func New(c *Config) http.Handler {
 			UserStore:  c.UserStore,
 			Transactor: c.Transactor,
 		},
-		UserController: &controller.User{
+		AuthController: &controller.Auth{
 			Store: c.UserStore,
-			Magic: c.Magic,
-			Email: c.Email,
 		},
 		CSRF: c.Magic,
 	})))
@@ -73,15 +74,16 @@ func New(c *Config) http.Handler {
 		FolderController: &controller.Folder{
 			Store: c.UserStore,
 		},
-		UserController: &controller.User{
+		AuthController: &controller.Auth{
 			Store: c.UserStore,
-			Magic: c.Magic,
-			Email: c.Email,
 		},
 		CSRF: c.Magic,
 	})))
 
 	router.PathPrefix("/oauth").Handler(oauth.Handler(&oauth.Config{
+		Auth: &controller.Auth{
+			Store: c.UserStore,
+		},
 		OAuthController: &controller.OAuth{
 			Store: c.UserStore,
 		},

@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/linksort/analyze"
@@ -136,8 +135,6 @@ func (n *TagNode) incrementOrCreateByTagDetail(t *TagDetail) {
 func (n *TagNode) decrementOrDeleteByTagDetail(t *TagDetail) {
 	paths := getPathSegments(t.Path)
 
-	fmt.Printf("%#v\n", paths)
-
 	for depth, path := range paths {
 		var (
 			parentPath string
@@ -149,8 +146,6 @@ func (n *TagNode) decrementOrDeleteByTagDetail(t *TagDetail) {
 		} else {
 			parentPath = paths[depth-1]
 		}
-
-		fmt.Printf("%#v\n", parentPath)
 
 		found = nil
 		currentNode := n.FindByPathname(parentPath)

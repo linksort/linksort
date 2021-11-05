@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/linksort/linksort/errors"
 	handler "github.com/linksort/linksort/handler/oauth"
@@ -19,22 +18,11 @@ func (o *OAuth) Authenticate(
 	req *handler.OAuthAuthRequest,
 ) (*model.User, error) {
 	op := errors.Opf("controller.OAuthAuthenticate(%q)", req.Email)
+	auth := Auth{o.Store}
 
-	usr, err := o.Store.GetUserByEmail(ctx, req.Email)
+	usr, err := auth.WithCredentials(ctx, req.Email, req.Password)
 	if err != nil {
-		return nil, errors.E(
-			op,
-			err,
-			http.StatusBadRequest,
-			errors.M{"message": "Invalid credentials given."})
-	}
-
-	if !usr.CheckPassword(req.Password) {
-		return nil, errors.E(
-			op,
-			errors.Str("wrong password"),
-			http.StatusBadRequest,
-			errors.M{"message": "Invalid credentials given."})
+		return nil, errors.E(op, err)
 	}
 
 	if usr.Token == "" {

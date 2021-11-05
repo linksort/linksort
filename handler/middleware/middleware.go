@@ -27,9 +27,9 @@ const (
 // WithUser adds the authenticated user to the context and validates her CSRF
 // token if the incoming request is a write request. If the user cannot be
 // found, then a 401 unauthorized response is returned.
-func WithUser(s interface {
-	GetUserBySessionID(context.Context, string) (*model.User, error)
-	GetUserByToken(context.Context, string) (*model.User, error)
+func WithUser(auth interface {
+	WithCookie(context.Context, string) (*model.User, error)
+	WithToken(context.Context, string) (*model.User, error)
 }, m interface {
 	VerifyUserCSRF(string, string, time.Duration) error
 }) func(http.Handler) http.Handler {
@@ -41,17 +41,13 @@ func WithUser(s interface {
 			// If a token is in the headers, use that to authenticate. Otherwise,
 			// default to cookie-based auth.
 			if token, found := GetAuthBearerToken(r.Header); found {
-				user, err := s.GetUserByToken(ctx, token)
+				user, err := auth.WithToken(ctx, token)
 				if err != nil {
-					payload.WriteError(w, r, errors.E(op, err,
-						http.StatusUnauthorized,
-						errors.M{"message": "Unauthorized"}))
-
+					payload.WriteError(w, r, err)
 					return
 				}
 
 				next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, _userKey, user)))
-
 				return
 			}
 
@@ -60,27 +56,13 @@ func WithUser(s interface {
 				payload.WriteError(w, r, errors.E(op, err,
 					http.StatusUnauthorized,
 					errors.M{"message": "Unauthorized"}))
-
 				return
 			}
 
-			user, err := s.GetUserBySessionID(ctx, c.Value)
+			user, err := auth.WithCookie(ctx, c.Value)
 			if err != nil {
 				cookie.UnsetSession(r, w)
-				payload.WriteError(w, r, errors.E(op, err,
-					http.StatusUnauthorized,
-					errors.M{"message": "Unauthorized"}))
-
-				return
-			}
-
-			if time.Now().After(user.SessionExpiry) {
-				cookie.UnsetSession(r, w)
-				payload.WriteError(w, r, errors.E(op,
-					http.StatusUnauthorized,
-					errors.M{"message": "Unauthorized"},
-					errors.Str("expired session cookie")))
-
+				payload.WriteError(w, r, errors.E(op, err))
 				return
 			}
 
@@ -92,7 +74,6 @@ func WithUser(s interface {
 						http.StatusForbidden,
 						errors.M{"message": "Forbidden"},
 						errors.Str("invalid user csrf token")))
-
 					return
 				}
 			}

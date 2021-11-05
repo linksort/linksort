@@ -13,6 +13,8 @@ import (
 	"github.com/linksort/linksort/model"
 )
 
+var ErrNoDocuments = errors.Str("no documents")
+
 type UserStore struct {
 	col    *mongo.Collection
 	client *mongo.Client
@@ -59,7 +61,7 @@ func (s *UserStore) GetUserBySessionID(ctx context.Context, sessionID string) (*
 	err := s.col.FindOne(ctx, bson.M{"sessionId": sessionID}).Decode(usr)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.E(op, err, errors.Str("no documents"), http.StatusNotFound)
+			return nil, errors.E(op, err, ErrNoDocuments, http.StatusNotFound)
 		}
 
 		return nil, errors.E(op, err)
@@ -80,7 +82,7 @@ func (s *UserStore) GetUserByToken(ctx context.Context, token string) (*model.Us
 	err := s.col.FindOne(ctx, bson.M{"token": token}).Decode(usr)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.E(op, err, errors.Str("no documents"), http.StatusNotFound)
+			return nil, errors.E(op, err, ErrNoDocuments, http.StatusNotFound)
 		}
 
 		return nil, errors.E(op, err)
@@ -101,7 +103,7 @@ func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*model.Us
 	err := s.col.FindOne(ctx, bson.M{"email": email}).Decode(usr)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.E(op, err, errors.Str("no documents"), http.StatusNotFound)
+			return nil, errors.E(op, err, ErrNoDocuments, http.StatusNotFound)
 		}
 
 		return nil, errors.E(op, err)
