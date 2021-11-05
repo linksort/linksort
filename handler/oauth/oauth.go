@@ -86,6 +86,7 @@ func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
 			"RedirectURI": redirectURI,
 			"CSRF":        string(s.CSRF.CSRF()),
 		})
+		return
 	}
 
 	http.Redirect(w, r,
