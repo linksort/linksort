@@ -86,14 +86,14 @@ func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
 func (s *config) OauthForm(w http.ResponseWriter, r *http.Request) {
 	redirectURI := r.URL.Query().Get("redirect_uri")
 
-	c, _ := r.Cookie("session_id")
-	user, err := s.Auth.WithCookie(r.Context(), c.Value)
-
+	c, err := r.Cookie("session_id")
 	if err == nil {
-		http.Redirect(w, r,
-			fmt.Sprintf("%s?token=%s", redirectURI, url.QueryEscape(user.Token)),
-			http.StatusFound)
-		return
+		if user, err := s.Auth.WithCookie(r.Context(), c.Value); err == nil {
+			http.Redirect(w, r,
+				fmt.Sprintf("%s?token=%s", redirectURI, url.QueryEscape(user.Token)),
+				http.StatusFound)
+			return
+		}
 	}
 
 	err = s.template.Execute(w, map[string]string{
