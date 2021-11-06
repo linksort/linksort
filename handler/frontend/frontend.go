@@ -33,14 +33,16 @@ var applicationRoutes = map[string]bool{
 type Config struct {
 	FrontendProxyHostname string
 	FrontendProxyPort     string
-	UserStore             model.UserStore
-	Magic                 *magic.Client
+	AuthController        interface {
+		WithCookie(context.Context, string) (*model.User, error)
+	}
+	Magic *magic.Client
 }
 
 func Server(c *Config) http.Handler {
 	r := mux.NewRouter()
 
-	r.Use(withIndexHandler(c.UserStore, c.Magic), with404Handler("./assets", "404.html"))
+	r.Use(c.withIndexHandler(), with404Handler("./assets", "404.html"))
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./assets")))
 
 	return handlers.CompressHandler(r)
@@ -67,7 +69,7 @@ func ReverseProxy(c *Config) http.Handler {
 					return errors.E(op, err)
 				}
 
-				d, _, err := getUserData(r.Request.Context(), c.UserStore, c.Magic, r.Request)
+				d, _, err := c.getUserData(r.Request)
 				if err != nil {
 					return errors.E(op, err)
 				}
@@ -87,10 +89,7 @@ func ReverseProxy(c *Config) http.Handler {
 	}
 }
 
-func withIndexHandler(
-	store model.UserStore,
-	magic *magic.Client,
-) mux.MiddlewareFunc {
+func (c *Config) withIndexHandler() mux.MiddlewareFunc {
 	dat, err := os.ReadFile("./assets/app.html")
 	if err != nil {
 		panic(err)
@@ -99,7 +98,7 @@ func withIndexHandler(
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if isAppRoute := isApplicationRoute(r.URL.Path); isIndexRoute(r.URL.Path) || isAppRoute {
-				d, found, err := getUserData(r.Context(), store, magic, r)
+				d, found, err := c.getUserData(r)
 				if err != nil {
 					panic(err)
 				}
@@ -170,6 +169,52 @@ func with404Handler(assetsPath, notFoundPath string) mux.MiddlewareFunc {
 	}
 }
 
+type getUserDataResponse struct {
+	userData json.RawMessage
+	csrf     []byte
+}
+
+func (c *Config) getUserData(r *http.Request) (*getUserDataResponse, bool, error) {
+	op := errors.Op("getUserData")
+
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		if errors.Is(err, http.ErrNoCookie) {
+			return &getUserDataResponse{
+				userData: json.RawMessage("{}"),
+				csrf:     c.Magic.CSRF(),
+			}, false, nil
+		}
+
+		return nil, false, errors.E(op, err)
+	}
+
+	usr, err := c.AuthController.WithCookie(r.Context(), cookie.Value)
+	if err != nil {
+		lserr := new(errors.Error)
+		if errors.As(err, &lserr) && lserr.Status() == http.StatusInternalServerError {
+			return nil, false, errors.E(op, err)
+		}
+
+		return &getUserDataResponse{
+			userData: json.RawMessage("{}"),
+			csrf:     c.Magic.CSRF(),
+		}, false, nil
+	}
+
+	encodedUser, err := json.Marshal(struct {
+		User *model.User `json:"user"`
+	}{usr})
+	if err != nil {
+		return nil, false, errors.E(op, err)
+	}
+
+	return &getUserDataResponse{
+		userData: encodedUser,
+		csrf:     c.Magic.UserCSRF(usr.SessionID),
+	}, true, nil
+}
+
 func isApplicationRoute(path string) bool {
 	split := strings.Split(path, "/")
 	if len(split) > 1 {
@@ -183,57 +228,5 @@ func isApplicationRoute(path string) bool {
 
 func isIndexRoute(path string) bool {
 	p := strings.Trim(path, "/")
-
 	return p == "" || p == "index.html"
-}
-
-type getUserDataResponse struct {
-	userData json.RawMessage
-	csrf     []byte
-}
-
-func getUserData(
-	ctx context.Context,
-	store model.UserStore,
-	magic *magic.Client,
-	r *http.Request,
-) (*getUserDataResponse, bool, error) {
-	op := errors.Op("getUserData")
-
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		if errors.As(err, &http.ErrNoCookie) {
-			return &getUserDataResponse{
-				userData: json.RawMessage("{}"),
-				csrf:     magic.CSRF(),
-			}, false, nil
-		}
-
-		return nil, false, errors.E(op, err)
-	}
-
-	usr, err := store.GetUserBySessionID(ctx, cookie.Value)
-	if err != nil {
-		lserr := new(errors.Error)
-		if errors.As(err, &lserr) && lserr.Status() == http.StatusNotFound {
-			return &getUserDataResponse{
-				userData: json.RawMessage("{}"),
-				csrf:     magic.CSRF(),
-			}, false, nil
-		}
-
-		return nil, false, errors.E(op, err)
-	}
-
-	encodedUser, err := json.Marshal(struct {
-		User *model.User `json:"user"`
-	}{usr})
-	if err != nil {
-		return nil, false, errors.E(op, err)
-	}
-
-	return &getUserDataResponse{
-		userData: encodedUser,
-		csrf:     magic.UserCSRF(usr.SessionID),
-	}, true, nil
 }

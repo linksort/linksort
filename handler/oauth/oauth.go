@@ -22,7 +22,7 @@ type Config struct {
 	OAuthController interface {
 		Authenticate(context.Context, *OAuthAuthRequest) (*model.User, error)
 	}
-	Auth interface {
+	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)
 	}
 	CSRF interface {
@@ -88,7 +88,7 @@ func (s *config) OauthForm(w http.ResponseWriter, r *http.Request) {
 
 	c, err := r.Cookie("session_id")
 	if err == nil {
-		if user, err := s.Auth.WithCookie(r.Context(), c.Value); err == nil {
+		if user, err := s.AuthController.WithCookie(r.Context(), c.Value); err == nil {
 			http.Redirect(w, r,
 				fmt.Sprintf("%s?token=%s", redirectURI, url.QueryEscape(user.Token)),
 				http.StatusFound)

@@ -42,66 +42,62 @@ type Config struct {
 func New(c *Config) http.Handler {
 	router := mux.NewRouter()
 
+	// Controllers
+	userC := &controller.User{
+		Store: c.UserStore,
+		Magic: c.Magic,
+		Email: c.Email,
+	}
+	authC := &controller.Auth{Store: c.UserStore}
+	linkC := &controller.Link{
+		Store:      c.LinkStore,
+		Analyzer:   c.Analyzer,
+		UserStore:  c.UserStore,
+		Transactor: c.Transactor,
+	}
+	folderC := &controller.Folder{Store: c.UserStore}
+	oauthC := &controller.OAuth{Store: c.UserStore}
+	sessionC := &controller.Session{Store: c.UserStore}
+
 	// API Routes
 	api := router.PathPrefix("/api").Subrouter()
 	api.NotFoundHandler = http.HandlerFunc(notFound)
 
 	api.PathPrefix("/users").Handler(wrap(user.Handler(&user.Config{
-		UserController: &controller.User{
-			Store: c.UserStore,
-			Magic: c.Magic,
-			Email: c.Email,
-		},
-		AuthController: &controller.Auth{
-			Store: c.UserStore,
-		},
-		SessionController: &controller.Session{Store: c.UserStore},
+		AuthController:    authC,
+		UserController:    userC,
+		SessionController: sessionC,
 		CSRF:              c.Magic,
 	})))
 	api.PathPrefix("/links").Handler(wrap(link.Handler(&link.Config{
-		LinkController: &controller.Link{
-			Store:      c.LinkStore,
-			Analyzer:   c.Analyzer,
-			UserStore:  c.UserStore,
-			Transactor: c.Transactor,
-		},
-		AuthController: &controller.Auth{
-			Store: c.UserStore,
-		},
-		CSRF: c.Magic,
+		AuthController: authC,
+		LinkController: linkC,
+		CSRF:           c.Magic,
 	})))
 	api.PathPrefix("/folders").Handler(wrap(folder.Handler(&folder.Config{
-		FolderController: &controller.Folder{
-			Store: c.UserStore,
-		},
-		AuthController: &controller.Auth{
-			Store: c.UserStore,
-		},
-		CSRF: c.Magic,
+		AuthController:   authC,
+		FolderController: folderC,
+		CSRF:             c.Magic,
 	})))
 
 	router.PathPrefix("/oauth").Handler(oauth.Handler(&oauth.Config{
-		Auth: &controller.Auth{
-			Store: c.UserStore,
-		},
-		OAuthController: &controller.OAuth{
-			Store: c.UserStore,
-		},
-		CSRF: c.Magic,
+		AuthController:  authC,
+		OAuthController: oauthC,
+		CSRF:            c.Magic,
 	}))
 
 	// Frontend Routes
 	if c.IsProd == "1" {
 		router.PathPrefix("/").Handler(frontend.Server(&frontend.Config{
-			UserStore: c.UserStore,
-			Magic:     c.Magic,
+			AuthController: authC,
+			Magic:          c.Magic,
 		}))
 	} else {
 		router.PathPrefix("/").Handler(frontend.ReverseProxy(&frontend.Config{
+			AuthController:        authC,
+			Magic:                 c.Magic,
 			FrontendProxyHostname: c.FrontendProxyHostname,
 			FrontendProxyPort:     c.FrontendProxyPort,
-			UserStore:             c.UserStore,
-			Magic:                 c.Magic,
 		}))
 	}
 
