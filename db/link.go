@@ -73,7 +73,24 @@ func (s *LinkStore) GetLinksByUser(
 	cur, err := s.col.Find(ctx, bson.M(m), options.Find().
 		SetSort(sort).
 		SetLimit(int64(p.Limit())).
-		SetSkip(int64(p.Offset())))
+		SetSkip(int64(p.Offset())).
+		SetProjection(bson.D{
+			primitive.E{Key: "_id", Value: 1},
+			primitive.E{Key: "id", Value: 1},
+			primitive.E{Key: "userid", Value: 1},
+			primitive.E{Key: "createdat", Value: 1},
+			primitive.E{Key: "updatedat", Value: 1},
+			primitive.E{Key: "tagpaths", Value: 1},
+			primitive.E{Key: "tagdetails", Value: 1},
+			primitive.E{Key: "isfavorite", Value: 1},
+			primitive.E{Key: "folderid", Value: 1},
+			primitive.E{Key: "url", Value: 1},
+			primitive.E{Key: "title", Value: 1},
+			primitive.E{Key: "description", Value: 1},
+			primitive.E{Key: "favicon", Value: 1},
+			primitive.E{Key: "image", Value: 1},
+			primitive.E{Key: "site", Value: 1},
+		}))
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
