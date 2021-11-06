@@ -1,6 +1,6 @@
 import React from "react"
-import { graphql, Link as RouterLink } from "gatsby"
-import { Box, Heading, Link, Text, Wrap, WrapItem } from "@chakra-ui/react"
+import { graphql } from "gatsby"
+import { Box, Heading, Text, Wrap, WrapItem } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
@@ -75,32 +75,6 @@ export default function BlogPostTemplate({ data }) {
             {post.frontmatter.date}
           </Text>
         </Box>
-        <Heading
-          as="h4"
-          color="brand.600"
-          size="md"
-          fontWeight="medium"
-          marginBottom={6}
-          lineHeight="tall"
-          border="1px"
-          borderRadius="lg"
-          borderColor="brand.600"
-          borderStyle="dashed"
-          padding={6}
-        >
-          Linksort allows you to save, auto-organize, and share your links{" "}
-          <span role="img" aria-label="smiling face emoji">
-            &#x1F642;
-          </span>{" "}
-          and its beta is coming soon(ish).{" "}
-          <Link as={RouterLink} to="/" textDecoration="underline">
-            Join the waitlist
-          </Link>{" "}
-          to get an invitation when we're ready to launch.{" "}
-          <span role="img" aria-label="rocket ship emoji">
-            &#x1F680;
-          </span>
-        </Heading>
         <Box
           className="prose"
           dangerouslySetInnerHTML={{ __html: post.html }}
