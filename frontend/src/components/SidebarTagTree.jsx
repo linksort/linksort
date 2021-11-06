@@ -33,7 +33,7 @@ export default function SidebarTagTree() {
   if (tagTree.children?.length === 0) {
     return (
       <Text fontSize="sm" color="gray.600">
-        As you save links, they will be automatically organzied for you here.
+        As you save links, they will be automatically organized for you here.
       </Text>
     );
   }
