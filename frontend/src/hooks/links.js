@@ -88,7 +88,7 @@ export function useUpdateLink(linkId) {
         method: "PATCH",
       }),
     {
-      onSuccess: (data) => {
+      onSuccess: (data, payload) => {
         queryClient.setQueryData(["links", "detail", linkId], () => data.link);
         queryClient.setQueryData(["links", "list", filterParams], (old = []) =>
           old.map((l) => (l.id === data.link.id ? data.link : l))
@@ -98,7 +98,7 @@ export function useUpdateLink(linkId) {
           refetchActive: false,
         });
         toast({
-          title: "Link updated",
+          title: payload?.toast || "Link updated",
           status: "success",
           duration: 9000,
           isClosable: true,

@@ -30,6 +30,7 @@ export default function LinkItemTile({
   onDeleteLink,
   onToggleIsFavorite,
   onMoveToFolder,
+  onCopyLink,
 }) {
   return (
     <GridItem
@@ -83,6 +84,7 @@ export default function LinkItemTile({
             onDeleteLink={onDeleteLink}
             onToggleIsFavorite={onToggleIsFavorite}
             onMoveToFolder={onMoveToFolder}
+            onCopyLink={onCopyLink}
           />
         </Flex>
       </Box>

@@ -1,5 +1,5 @@
 import React from "react";
-import { ListItem } from "@chakra-ui/react";
+import { ListItem, useToast } from "@chakra-ui/react";
 
 import { useDeleteLink, useUpdateLink } from "../hooks/links";
 import { useFolders } from "../hooks/folders";
@@ -14,6 +14,7 @@ import LinkItemTall from "./LinkItemTall";
 import LinkItemTile from "./LinkItemTile";
 
 export default function LinkItem({ link }) {
+  const toast = useToast();
   const { setting: viewSetting } = useViewSetting();
   const deleteMutation = useDeleteLink(link.id);
   const updateMutation = useUpdateLink(link.id);
@@ -26,11 +27,34 @@ export default function LinkItem({ link }) {
   }
 
   function handleToggleIsFavorite() {
-    updateMutation.mutate({ isFavorite: !link.isFavorite });
+    const toast = link.isFavorite
+      ? "Link removed from favorites"
+      : "Link added to favorites";
+    updateMutation.mutate({ isFavorite: !link.isFavorite, toast });
   }
 
   function handleMoveToFolder(folderId) {
-    updateMutation.mutate({ folderId });
+    const toast =
+      folderId === "root" ? "Link removed from folder" : "Link added to folder";
+    updateMutation.mutate({ folderId, toast });
+  }
+
+  function handleCopyLink() {
+    const input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.setAttribute("value", link.url);
+    document.body.appendChild(input);
+    input.select();
+    const isSuccess = document.execCommand("copy");
+    document.body.removeChild(input);
+    if (isSuccess) {
+      toast({
+        title: "Copied URL to clipboard",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   }
 
   return (
@@ -46,6 +70,7 @@ export default function LinkItem({ link }) {
               onDeleteLink={handleDeleteLink}
               onToggleIsFavorite={handleToggleIsFavorite}
               onMoveToFolder={handleMoveToFolder}
+              onCopyLink={handleCopyLink}
             />
           ),
           [VIEW_SETTING_TALL]: (
@@ -57,6 +82,7 @@ export default function LinkItem({ link }) {
               onDeleteLink={handleDeleteLink}
               onToggleIsFavorite={handleToggleIsFavorite}
               onMoveToFolder={handleMoveToFolder}
+              onCopyLink={handleCopyLink}
             />
           ),
           [VIEW_SETTING_TILES]: (
@@ -68,6 +94,7 @@ export default function LinkItem({ link }) {
               onDeleteLink={handleDeleteLink}
               onToggleIsFavorite={handleToggleIsFavorite}
               onMoveToFolder={handleMoveToFolder}
+              onCopyLink={handleCopyLink}
             />
           ),
         }[viewSetting]

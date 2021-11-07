@@ -12,6 +12,7 @@ export default function LinkItemTall({
   onDeleteLink,
   onToggleIsFavorite,
   onMoveToFolder,
+  onCopyLink,
 }) {
   return (
     <Flex
@@ -63,6 +64,7 @@ export default function LinkItemTall({
             onDeleteLink={onDeleteLink}
             onToggleIsFavorite={onToggleIsFavorite}
             onMoveToFolder={onMoveToFolder}
+            onCopyLink={onCopyLink}
           />
         </Flex>
       </Flex>

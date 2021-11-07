@@ -8,7 +8,7 @@ import {
   Button,
   MenuButton,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon, StarIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, LinkIcon, StarIcon } from "@chakra-ui/icons";
 
 import { FolderIcon, StarBorderIcon } from "./CustomIcons";
 import LinkItemFolderMenu from "./LinkItemFolderMenu";
@@ -21,6 +21,7 @@ export default function LinkItemControls({
   onDeleteLink,
   onToggleIsFavorite,
   onMoveToFolder,
+  onCopyLink,
   buttonSpacing = 2,
   buttonColor = "gray.100",
   buttonFolderIconPlacement = "left",
@@ -83,6 +84,14 @@ export default function LinkItemControls({
           icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
           size="sm"
           onClick={onToggleIsFavorite}
+        />
+      </Tooltip>
+      <Tooltip label="Copy link">
+        <IconButton
+          backgroundColor={buttonColor}
+          icon={<LinkIcon />}
+          size="sm"
+          onClick={onCopyLink}
         />
       </Tooltip>
       <Tooltip label="Edit link">

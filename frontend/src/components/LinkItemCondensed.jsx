@@ -15,6 +15,7 @@ import {
   StarIcon,
   CloseIcon,
   CheckCircleIcon,
+  LinkIcon,
 } from "@chakra-ui/icons";
 
 import LinkItemFavicon from "./LinkItemFavicon";
@@ -27,6 +28,7 @@ export default function LinkItemCondensed({
   onDeleteLink,
   onToggleIsFavorite,
   onMoveToFolder,
+  onCopyLink,
 }) {
   return (
     <Flex
@@ -70,6 +72,9 @@ export default function LinkItemCondensed({
             onClick={onToggleIsFavorite}
           >
             Favorite
+          </MenuItem>
+          <MenuItem icon={<LinkIcon />} onClick={onCopyLink}>
+            Copy link
           </MenuItem>
           <MenuItem
             icon={<EditIcon />}
