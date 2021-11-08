@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { pick } from "lodash";
+import { merge, pick } from "lodash";
 import { useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import queryString from "query-string";
@@ -28,8 +28,8 @@ const QUERY_FILTER_KEYS = [
 const DEFAULT_FILTER_PARAMS = Object.freeze({
   [FILTER_KEY_PAGE]: "0",
   [FILTER_KEY_SEARCH]: "",
-  [FILTER_KEY_SORT]: "-1",
-  [FILTER_KEY_GROUP]: "none",
+  [FILTER_KEY_SORT]: { root: "-1" },
+  [FILTER_KEY_GROUP]: { root: "none" },
   [FILTER_KEY_FAVORITE]: "0",
   [FILTER_KEY_FOLDER]: "root",
   [FILTER_KEY_TAG]: "",
@@ -70,7 +70,7 @@ function useLocalStorageParams() {
   const values = pick(localStore, LOCALSTORAGE_FILTER_KEYS);
 
   function setValues(valuesObj) {
-    setLocalStore(Object.assign({}, localStore, valuesObj));
+    setLocalStore(merge({}, localStore, valuesObj));
   }
 
   return [values, setValues];
@@ -80,12 +80,19 @@ export function useFilterParams() {
   const query = useQueryString();
   const queryParams = pick(query, QUERY_FILTER_KEYS);
   const [localStorageParams] = useLocalStorageParams();
-  return Object.assign(
+
+  const start = Object.assign(
     {},
     DEFAULT_FILTER_PARAMS,
     queryParams,
     localStorageParams
   );
+
+  const index = start.folder + unescape(start.tag);
+  const sort = start.sort[index] || start.sort.root || start.sort || "-1";
+  const group = start.group[index] || start.group.root || start.group || "none";
+
+  return Object.assign(start, { sort, group });
 }
 
 function filterNonDefaultValues(params) {
@@ -114,6 +121,7 @@ export function useFilters() {
     const folderName = resolveFolderName(filterParams.folder);
     const folderId = filterParams.folder;
     const tagPath = unescape(filterParams.tag);
+    const index = folderId + tagPath;
 
     function mergeParamAndStringify(param = {}) {
       return `/?${queryString.stringify(
@@ -145,6 +153,7 @@ export function useFilters() {
       return mergeParamAndStringify({
         folder: encodeURIComponent(folder),
         tag: "",
+        page: "0",
       });
     }
 
@@ -157,17 +166,19 @@ export function useFilters() {
 
     function handleToggleSort() {
       setLocalStorageParam({
-        [FILTER_KEY_SORT]: filterParams.sort * -1,
+        [FILTER_KEY_SORT]: { [index]: (filterParams.sort || -1) * -1 },
       });
     }
 
     function handleToggleGroup() {
       setLocalStorageParam({
-        group:
-          GROUP_BY_OPTIONS[
-            (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
-              GROUP_BY_OPTIONS.length
-          ],
+        group: {
+          [index]:
+            GROUP_BY_OPTIONS[
+              (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
+                GROUP_BY_OPTIONS.length
+            ],
+        },
       });
     }
 
