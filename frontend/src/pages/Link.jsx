@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   Input,
@@ -21,6 +22,7 @@ import { useFormik } from "formik";
 import { useDeleteLink, useLink, useUpdateLink } from "../hooks/links";
 import { suppressMutationErrors } from "../utils/mutations";
 import LoadingScreen from "../components/LoadingScreen";
+import { pick } from "lodash";
 
 export default function Link() {
   const history = useHistory();
@@ -42,9 +44,21 @@ export default function Link() {
     },
     enableReinitialize: true,
     onSubmit: suppressMutationErrors((params) =>
-      mutation.mutateAsync(params).then(() => {
-        history.goBack();
-      })
+      mutation
+        .mutateAsync(
+          pick(params, [
+            "title",
+            "url",
+            "description",
+            "site",
+            "favicon",
+            "image",
+            "isFavorite",
+          ])
+        )
+        .then(() => {
+          history.goBack();
+        })
     ),
   });
 
@@ -68,7 +82,7 @@ export default function Link() {
         paddingX={[0, 0, 6, 6]}
         paddingY={6}
       >
-        <FormControl id="title" mb={6}>
+        <FormControl id="title" mb={6} isInvalid={mutation.error?.title}>
           <FormLabel>Title</FormLabel>
           <Input
             type="text"
@@ -77,8 +91,9 @@ export default function Link() {
             value={formik.values.title}
             autoFocus
           />
+          <FormErrorMessage>{mutation.error?.title}</FormErrorMessage>
         </FormControl>
-        <FormControl id="url" mb={6}>
+        <FormControl id="url" mb={6} isInvalid={mutation.error?.url}>
           <FormLabel>URL</FormLabel>
           <Input
             type="text"
@@ -87,16 +102,22 @@ export default function Link() {
             onChange={formik.handleChange}
             value={formik.values.url}
           />
+          <FormErrorMessage>{mutation.error?.url}</FormErrorMessage>
         </FormControl>
-        <FormControl id="description" mb={6}>
+        <FormControl
+          id="description"
+          mb={6}
+          isInvalid={mutation.error?.description}
+        >
           <FormLabel>Description</FormLabel>
           <Textarea
             name="description"
             onChange={formik.handleChange}
             value={formik.values.description}
           />
+          <FormErrorMessage>{mutation.error?.description}</FormErrorMessage>
         </FormControl>
-        <FormControl id="favicon" mb={6}>
+        <FormControl id="favicon" mb={6} isInvalid={mutation.error?.favicon}>
           <FormLabel>Favicon</FormLabel>
           <Input
             type="text"
@@ -105,8 +126,9 @@ export default function Link() {
             onChange={formik.handleChange}
             value={formik.values.favicon}
           />
+          <FormErrorMessage>{mutation.error?.favicon}</FormErrorMessage>
         </FormControl>
-        <FormControl id="image" mb={6}>
+        <FormControl id="image" mb={6} isInvalid={mutation.error?.image}>
           <FormLabel>Image</FormLabel>
           <InputGroup size="md">
             <Input
@@ -128,8 +150,9 @@ export default function Link() {
               </Button>
             </InputRightElement>
           </InputGroup>
+          <FormErrorMessage>{mutation.error?.image}</FormErrorMessage>
         </FormControl>
-        <FormControl id="site" mb={6}>
+        <FormControl id="site" mb={6} isInvalid={mutation.error?.site}>
           <FormLabel>Site</FormLabel>
           <Input
             type="text"
@@ -137,6 +160,7 @@ export default function Link() {
             onChange={formik.handleChange}
             value={formik.values.site}
           />
+          <FormErrorMessage>{mutation.error?.site}</FormErrorMessage>
         </FormControl>
         <FormControl id="isFavorite" mb={6}>
           <FormLabel>Favorite</FormLabel>
