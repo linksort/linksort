@@ -1,5 +1,6 @@
 // Copied from https://usehooks.com/useLocalStorage/
 import { useMemo, useState } from "react";
+import * as Sentry from "@sentry/react";
 
 export function useLocalStorage(key, initialValue) {
   // Pass initial state function to useState so logic is only executed once
@@ -21,8 +22,7 @@ export function useLocalStorage(key, initialValue) {
         setStoredValue(value);
         window.localStorage.setItem(key, JSON.stringify(value));
       } catch (error) {
-        // TODO: Sentry
-        console.log(error);
+        Sentry.captureEvent(error);
       }
     }
 

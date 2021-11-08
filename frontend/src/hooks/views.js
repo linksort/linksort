@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 
 import { useLocalStorage } from "./localStorage";
+import { useFilters } from "./filters";
 
 export const VIEW_SETTING_CONDENSED = "condensed";
 export const VIEW_SETTING_TALL = "tall";
@@ -34,13 +35,13 @@ export function ViewSettingProvider({ children }) {
 
 export function useViewSetting() {
   const [localStore, setLocalStore] = useContext(Context);
+  const { folderId, tagPath } = useFilters();
 
-  const setting = localStore.viewSetting || VIEW_SETTING_TILES;
+  const index = folderId + tagPath;
+  const setting = localStore[index] || VIEW_SETTING_TILES;
 
   const setSetting = (newSetting) => {
-    setLocalStore(
-      Object.assign({}, localStore, { [LOCALSTORAGE_OBJECT_KEY]: newSetting })
-    );
+    setLocalStore(Object.assign({}, localStore, { [index]: newSetting }));
   };
 
   return { setting, setSetting };
