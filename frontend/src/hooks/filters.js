@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { merge, pick } from "lodash";
+import { isObject, merge, pick } from "lodash";
 import { useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import queryString from "query-string";
@@ -89,8 +89,12 @@ export function useFilterParams() {
   );
 
   const index = start.folder + unescape(start.tag);
-  const sort = start.sort[index] || start.sort.root || start.sort || "-1";
-  const group = start.group[index] || start.group.root || start.group || "none";
+  const sort = isObject(start.sort)
+    ? start.sort[index] || start.sort.root
+    : "-1";
+  const group = isObject(start.group)
+    ? start.group[index] || start.group.root
+    : "none";
 
   return Object.assign(start, { sort, group });
 }
