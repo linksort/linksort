@@ -264,7 +264,7 @@ func TestUpdateLink(t *testing.T) {
 				"url": "everything is what it is and not what it isn't",
 			},
 			ExpectStatus: http.StatusBadRequest,
-			ExpectBody:   `{"message":"The request was invalid"}`,
+			ExpectBody:   `{"url": "This is not valid."}`,
 		},
 	}
 
