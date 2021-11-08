@@ -154,9 +154,11 @@ func (l *Link) UpdateLink(
 					Set(reflect.ValueOf(folderID))
 			}
 		default:
-			if ss := rv.Field(i).String(); ss != "" {
+			if isNil := rv.Field(i).IsNil(); !isNil {
+				image := rv.Field(i).Elem().String()
+
 				uv.FieldByName(rt.Field(i).Name).
-					Set(reflect.ValueOf(ss))
+					Set(reflect.ValueOf(image))
 			}
 		}
 	}

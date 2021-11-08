@@ -8,6 +8,8 @@ import {
   FormLabel,
   HStack,
   Input,
+  InputGroup,
+  InputRightElement,
   Switch,
   Tag,
   Text,
@@ -15,7 +17,6 @@ import {
   Wrap,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { pick } from "lodash";
 
 import { useDeleteLink, useLink, useUpdateLink } from "../hooks/links";
 import { suppressMutationErrors } from "../utils/mutations";
@@ -41,11 +42,9 @@ export default function Link() {
     },
     enableReinitialize: true,
     onSubmit: suppressMutationErrors((params) =>
-      mutation
-        .mutateAsync(pick(params, ["title", "description", "isFavorite"]))
-        .then(() => {
-          history.goBack();
-        })
+      mutation.mutateAsync(params).then(() => {
+        history.goBack();
+      })
     ),
   });
 
@@ -87,7 +86,6 @@ export default function Link() {
             fontFamily="mono"
             onChange={formik.handleChange}
             value={formik.values.url}
-            readOnly
           />
         </FormControl>
         <FormControl id="description" mb={6}>
@@ -106,19 +104,30 @@ export default function Link() {
             fontFamily="mono"
             onChange={formik.handleChange}
             value={formik.values.favicon}
-            readOnly
           />
         </FormControl>
         <FormControl id="image" mb={6}>
           <FormLabel>Image</FormLabel>
-          <Input
-            type="text"
-            name="image"
-            fontFamily="mono"
-            onChange={formik.handleChange}
-            value={formik.values.image}
-            readOnly
-          />
+          <InputGroup size="md">
+            <Input
+              type="text"
+              name="image"
+              fontFamily="mono"
+              onChange={formik.handleChange}
+              value={formik.values.image}
+              paddingRight="8.5rem"
+            />
+            <InputRightElement width="8rem">
+              <Button
+                height="1.75rem"
+                size="sm"
+                onClick={() => formik.setFieldValue("image", "")}
+                mr={2}
+              >
+                Remove image
+              </Button>
+            </InputRightElement>
+          </InputGroup>
         </FormControl>
         <FormControl id="site" mb={6}>
           <FormLabel>Site</FormLabel>
@@ -127,7 +136,6 @@ export default function Link() {
             name="site"
             onChange={formik.handleChange}
             value={formik.values.site}
-            readOnly
           />
         </FormControl>
         <FormControl id="isFavorite" mb={6}>

@@ -153,11 +153,14 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 
 type UpdateLinkRequest struct {
 	ID          string  `json:"-"`
-	Title       string  `json:"title" validate:"omitempty,max=512"`
+	Title       *string `json:"title" validate:"omitempty,max=512"`
+	URL         *string `json:"url" validate:"omitempty,url,max=2048"`
+	Favicon     *string `json:"favicon" validate:"omitempty,url,max=512"`
 	IsFavorite  *bool   `json:"isFavorite"`
 	FolderID    *string `json:"folderId" validate:"omitempty,uuid|eq=root"`
-	Description string  `json:"description" validate:"omitempty,max=2048"`
-	Site        string  `json:"site" validate:"omitempty,max=512"`
+	Description *string `json:"description" validate:"omitempty,max=2048"`
+	Image       *string `json:"image" validate:"omitempty,len=0|url,max=512"`
+	Site        *string `json:"site" validate:"omitempty,max=512"`
 }
 
 type UpdateLinkResponse struct {
