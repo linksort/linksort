@@ -38,7 +38,7 @@ export function useViewSetting() {
   const { folderId, tagPath } = useFilters();
 
   const index = folderId + tagPath;
-  const setting = localStore[index] || VIEW_SETTING_TILES;
+  const setting = localStore[index] || localStore.root || VIEW_SETTING_TILES;
 
   const setSetting = (newSetting) => {
     setLocalStore(Object.assign({}, localStore, { [index]: newSetting }));
