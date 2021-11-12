@@ -17,6 +17,7 @@ Run [`air`](https://github.com/cosmtrek/air) to start the backend server. This a
 ```bash
 export GOPRIVATE=github.com/linksort/analyze
 export PRODUCTION=0
+export ANALYZER_KEY=$(cat /path/to/key)
 air
 ```
 

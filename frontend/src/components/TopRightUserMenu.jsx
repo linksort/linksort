@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Menu,
   MenuButton,
@@ -27,6 +28,9 @@ export default function TopRightUserMenu() {
           <Link href="/blog" isExternal width="100%">
             Blog
           </Link>
+        </MenuItem>
+        <MenuItem>
+          <RouterLink to="/extensions">Browser extension</RouterLink>
         </MenuItem>
         <MenuItem onClick={signOutMutation.mutate}>Sign out</MenuItem>
       </MenuList>

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as BrowserLink } from "react-router-dom";
 import { Box, Center, Heading, Text, Button, Image } from "@chakra-ui/react";
 
 import { useFilters } from "../hooks/filters";
@@ -355,6 +356,7 @@ function NullScreenHelper({
   headingText,
   detailText,
   callToActionSlot,
+  extra,
 }) {
   return (
     <Center flexDirection="column" padding={4} id="null-screen">
@@ -365,6 +367,7 @@ function NullScreenHelper({
         </Heading>
         <Text paddingTop={4}>{detailText}</Text>
         <Box paddingTop={4}>{callToActionSlot}</Box>
+        {extra}
       </Box>
     </Center>
   );
@@ -439,7 +442,12 @@ export default function NullScreen() {
     <NullScreenHelper
       imageSlot={<WavingHand />}
       headingText="Welcome!"
-      detailText="To get started, click the blue new link button in the upper right to save your first link."
+      detailText="To get started, download the browser extension. Or click the blue new link button in the upper right to save your first link."
+      extra={
+        <Button as={BrowserLink} colorScheme="brand" to="/extensions">
+          Get Browser Extension
+        </Button>
+      }
     />
   );
 }
