@@ -7,9 +7,11 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
@@ -60,6 +62,14 @@ func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	redirectURI := r.URL.Query().Get("redirect_uri")
+	if !strings.HasPrefix(redirectURI, "https://linksort.com") {
+		s.handleError(w, r,
+			errors.Strf("invalid redirect uri: %s", redirectURI),
+			"Invalid redirect URI.")
+		return
+	}
+
 	req := &OAuthAuthRequest{
 		Email:    r.FormValue("email"),
 		Password: r.FormValue("password"),
@@ -76,8 +86,6 @@ func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURI := r.URL.Query().Get("redirect_uri")
-
 	http.Redirect(w, r,
 		fmt.Sprintf("%s?token=%s", redirectURI, url.QueryEscape(usr.Token)),
 		http.StatusFound)
@@ -85,6 +93,12 @@ func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
 
 func (s *config) OauthForm(w http.ResponseWriter, r *http.Request) {
 	redirectURI := r.URL.Query().Get("redirect_uri")
+	if !strings.HasPrefix(redirectURI, "https://linksort.com") {
+		s.handleError(w, r,
+			errors.Strf("invalid redirect uri: %s", redirectURI),
+			"Invalid redirect URI.")
+		return
+	}
 
 	c, err := r.Cookie("session_id")
 	if err == nil {
