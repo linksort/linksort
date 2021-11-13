@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react"
 
+const isBrowser = typeof window !== `undefined`
+
 function getScrollPosition() {
-  return { x: window.pageXOffset, y: window.pageYOffset }
+  return isBrowser
+    ? { x: window.pageXOffset, y: window.pageYOffset }
+    : { x: 0, y: 0 }
 }
 
 export default function useScrollPosition() {
@@ -18,8 +22,10 @@ export default function useScrollPosition() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    if (isBrowser) {
+      window.addEventListener("scroll", handleScroll)
+      return () => window.removeEventListener("scroll", handleScroll)
+    }
   }, [])
 
   return position
