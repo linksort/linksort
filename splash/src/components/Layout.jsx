@@ -10,8 +10,10 @@ import {
   ListItem,
   Link,
   Stack,
+  Button,
 } from "@chakra-ui/react"
 
+import useScrollPosition from "../hooks/scroll"
 import { HEADER_HEIGHT, FOOTER_HEIGHT } from "../theme/theme"
 import Logo from "./Logo"
 
@@ -35,10 +37,34 @@ function UnderlineLink({ to, href, children }) {
   )
 }
 
-export default function Layout({ children }) {
+export default function Layout({ children, isHomePage }) {
+  const { y } = useScrollPosition()
+  const showTransparent = y < 80 && isHomePage
+  const navTextColor = showTransparent ? "#fff" : "unset"
+  const logoColor = showTransparent ? "#fff" : "#0a52ff"
+  const buttonColorscheme = showTransparent ? "whiteAlpha" : "gray"
+  const buttonColor = showTransparent ? "white" : "gray.800"
+  const signInButtonColorscheme = showTransparent ? "whiteAlpha" : "brand"
+  const fixedProps = showTransparent
+    ? {}
+    : {
+        backgroundColor: "white",
+        borderBottomColor: "gray.100",
+        borderBottomStyle: "solid",
+        borderBottomWidth: "thin",
+      }
+
   return (
     <>
-      <Box position="fixed" top={0} left={0} width="100%">
+      <Box
+        position="fixed"
+        top={0}
+        left={0}
+        width="100%"
+        zIndex="100"
+        transition="all 0.2s ease"
+        {...fixedProps}
+      >
         <Container maxWidth="7xl" centerContent px={6}>
           <Flex
             as="header"
@@ -54,35 +80,68 @@ export default function Layout({ children }) {
               _hover={{ textDecoration: "underline" }}
             >
               <RouterLink to="/">
-                <Logo />
+                <Logo color={logoColor} />
               </RouterLink>
             </Heading>
             <Box as="nav">
-              <Stack as={List} direction="row" spacing={4}>
-                <ListItem>
-                  <Link
+              <Stack as={List} direction="row" spacing={0}>
+                <ListItem display={["none", "none", "list-item"]}>
+                  <Button
+                    as={RouterLink}
+                    fontWeight="medium"
+                    to="/"
+                    variant="ghost"
+                    colorScheme={buttonColorscheme}
+                    color={buttonColor}
+                  >
+                    Home
+                  </Button>
+                </ListItem>
+                <ListItem display={["none", "none", "list-item"]}>
+                  <Button
                     as={RouterLink}
                     fontWeight="medium"
                     to="/blog/idea"
-                    color="white"
+                    variant="ghost"
+                    colorScheme={buttonColorscheme}
+                    color={buttonColor}
                   >
                     About
-                  </Link>
+                  </Button>
                 </ListItem>
                 <ListItem>
-                  <Link
+                  <Button
                     as={RouterLink}
                     fontWeight="medium"
                     to="/blog"
-                    color="white"
+                    variant="ghost"
+                    colorScheme={buttonColorscheme}
+                    color={buttonColor}
                   >
                     Blog
-                  </Link>
+                  </Button>
                 </ListItem>
-                <ListItem display="flex" alignItems="center" color="white">
-                  <Link fontWeight="medium" href="/sign-in">
+                <ListItem display={["none", "none", "list-item"]}>
+                  <Button
+                    as={Link}
+                    fontWeight="medium"
+                    href="/sign-in"
+                    variant="ghost"
+                    colorScheme={buttonColorscheme}
+                    color={buttonColor}
+                  >
                     Sign in
-                  </Link>
+                  </Button>
+                </ListItem>
+                <ListItem>
+                  <Button
+                    as={Link}
+                    fontWeight="medium"
+                    href="/sign-up"
+                    colorScheme={signInButtonColorscheme}
+                  >
+                    Sign up
+                  </Button>
                 </ListItem>
               </Stack>
             </Box>

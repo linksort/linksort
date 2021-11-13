@@ -1,6 +1,6 @@
 import React from "react"
 import { graphql } from "gatsby"
-import { Box, Heading } from "@chakra-ui/react"
+import { Box, Container, Heading } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
@@ -21,18 +21,20 @@ export default function PageTemplate({ data }) {
 
   return (
     <Layout>
-      <Metadata title={title} />
-      <Box as="article">
-        <Box mb={8}>
-          <Heading as="h1" mb={2}>
-            {title}
-          </Heading>
+      <Container maxWidth="3xl" paddingTop="8rem">
+        <Metadata title={title} />
+        <Box as="article">
+          <Box mb={8}>
+            <Heading as="h1" mb={2}>
+              {title}
+            </Heading>
+          </Box>
+          <Box
+            className="prose"
+            dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }}
+          />
         </Box>
-        <Box
-          className="prose"
-          dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }}
-        />
-      </Box>
+      </Container>
     </Layout>
   )
 }

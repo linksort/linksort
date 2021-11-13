@@ -1,6 +1,6 @@
 import React from "react"
 import { graphql } from "gatsby"
-import { Heading, Wrap, WrapItem } from "@chakra-ui/react"
+import { Container, Heading, Wrap, WrapItem } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
@@ -31,20 +31,22 @@ export default function BlogIndex({ data }) {
 
   return (
     <Layout>
-      <Metadata title="Blog" />
-      <Heading mb={[8, 12]}>Blog</Heading>
-      <Wrap spacing="2rem">
-        {posts.map(post => {
-          return (
-            <WrapItem
-              key={post.fields.slug}
-              width={["100%", "calc(50% - 2rem)"]}
-            >
-              <BlogListItem post={post} />
-            </WrapItem>
-          )
-        })}
-      </Wrap>
+      <Container maxWidth="3xl" paddingTop="8rem">
+        <Metadata title="Blog" />
+        <Heading mb={[8, 12]}>Blog</Heading>
+        <Wrap spacing="2rem">
+          {posts.map(post => {
+            return (
+              <WrapItem
+                key={post.fields.slug}
+                width={["100%", "calc(50% - 2rem)"]}
+              >
+                <BlogListItem post={post} />
+              </WrapItem>
+            )
+          })}
+        </Wrap>
+      </Container>
     </Layout>
   )
 }

@@ -10,6 +10,7 @@ import {
   Button,
   Flex,
   Stack,
+  Link,
 } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
@@ -112,7 +113,7 @@ function MarketingModule({
 
 export default function Index({ data }) {
   return (
-    <Layout>
+    <Layout isHomePage>
       <Metadata />
       <Box
         background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
@@ -136,7 +137,13 @@ export default function Index({ data }) {
           <Text color="white" marginBottom={4} textAlign="center">
             Linksort makes saving links and staying organized easy.
           </Text>
-          <Button colorScheme="whiteAlpha" marginBottom={6} paddingX={10}>
+          <Button
+            as={Link}
+            href="/sign-up"
+            colorScheme="whiteAlpha"
+            marginBottom={6}
+            paddingX={10}
+          >
             Sign Up
           </Button>
           <Image
@@ -203,7 +210,12 @@ export default function Index({ data }) {
               Get started
             </Heading>
             <Box>
-              <Button colorScheme="whiteAlpha" paddingX={10}>
+              <Button
+                as={Link}
+                href="/sign-up"
+                colorScheme="whiteAlpha"
+                paddingX={10}
+              >
                 Sign Up
               </Button>
             </Box>

@@ -1,6 +1,6 @@
 import React from "react"
 import { graphql } from "gatsby"
-import { Box, Heading, Text, Wrap, WrapItem } from "@chakra-ui/react"
+import { Box, Container, Heading, Text, Wrap, WrapItem } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
@@ -62,38 +62,40 @@ export default function BlogPostTemplate({ data }) {
 
   return (
     <Layout>
-      <Metadata
-        title={post.frontmatter.title}
-        description={post.frontmatter.description || post.excerpt}
-      />
-      <Box as="article">
-        <Box mb={6}>
-          <Heading as="h1" mb={2}>
-            {post.frontmatter.title}
-          </Heading>
-          <Text as="time" dateTime={post.frontmatter.date}>
-            {post.frontmatter.date}
-          </Text>
-        </Box>
-        <Box
-          className="prose"
-          dangerouslySetInnerHTML={{ __html: post.html }}
+      <Container maxWidth="3xl" paddingTop="8rem">
+        <Metadata
+          title={post.frontmatter.title}
+          description={post.frontmatter.description || post.excerpt}
         />
-      </Box>
-      <Box as="nav" mt={16}>
-        <Wrap spacing="2rem">
-          {[previous, next, other]
-            .filter(p => !!p)
-            .map(post => (
-              <WrapItem
-                key={post.fields.slug}
-                width={["100%", "calc(50% - 2rem)"]}
-              >
-                <BlogListItem post={post} />
-              </WrapItem>
-            ))}
-        </Wrap>
-      </Box>
+        <Box as="article">
+          <Box mb={6}>
+            <Heading as="h1" mb={2}>
+              {post.frontmatter.title}
+            </Heading>
+            <Text as="time" dateTime={post.frontmatter.date}>
+              {post.frontmatter.date}
+            </Text>
+          </Box>
+          <Box
+            className="prose"
+            dangerouslySetInnerHTML={{ __html: post.html }}
+          />
+        </Box>
+        <Box as="nav" mt={16}>
+          <Wrap spacing="2rem">
+            {[previous, next, other]
+              .filter(p => !!p)
+              .map(post => (
+                <WrapItem
+                  key={post.fields.slug}
+                  width={["100%", "calc(50% - 2rem)"]}
+                >
+                  <BlogListItem post={post} />
+                </WrapItem>
+              ))}
+          </Wrap>
+        </Box>
+      </Container>
     </Layout>
   )
 }
