@@ -21,7 +21,11 @@ export default function PageTemplate({ data }) {
 
   return (
     <Layout>
-      <Container maxWidth="3xl" paddingTop="8rem">
+      <Container
+        maxWidth="3xl"
+        paddingTop={["7rem", "7rem", "8rem"]}
+        paddingX={6}
+      >
         <Metadata title={title} />
         <Box as="article">
           <Box mb={8}>

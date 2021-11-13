@@ -74,6 +74,7 @@ function MarketingModule({
 }) {
   const orient = orientation === "left" ? "row" : "row-reverse"
   const padding = orientation === "left" ? "paddingLeft" : "paddingRight"
+
   return (
     <Flex
       padding={8}
@@ -117,9 +118,9 @@ export default function Index({ data }) {
       <Metadata />
       <Box
         background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
-        height="80vh"
         width="100%"
         paddingTop="7rem"
+        paddingBottom="2rem"
       >
         <Container maxWidth="7xl" centerContent px={6}>
           <Heading
@@ -159,7 +160,7 @@ export default function Index({ data }) {
           />
         </Container>
       </Box>
-      <Container maxWidth="2xl" px={6} marginTop="calc(20vw + 10vh)">
+      <Container maxWidth="2xl" px={6} marginTop={6}>
         <Stack spacing={4}>
           <MarketingModule
             heading="Auto tags."

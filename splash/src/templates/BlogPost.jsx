@@ -62,7 +62,11 @@ export default function BlogPostTemplate({ data }) {
 
   return (
     <Layout>
-      <Container maxWidth="3xl" paddingTop="8rem">
+      <Container
+        maxWidth="3xl"
+        paddingTop={["7rem", "7rem", "8rem"]}
+        paddingX={6}
+      >
         <Metadata
           title={post.frontmatter.title}
           description={post.frontmatter.description || post.excerpt}

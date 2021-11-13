@@ -31,7 +31,11 @@ export default function BlogIndex({ data }) {
 
   return (
     <Layout>
-      <Container maxWidth="3xl" paddingTop="8rem">
+      <Container
+        maxWidth="3xl"
+        paddingTop={["7rem", "7rem", "8rem"]}
+        paddingX={6}
+      >
         <Metadata title="Blog" />
         <Heading mb={[8, 12]}>Blog</Heading>
         <Wrap spacing="2rem">
