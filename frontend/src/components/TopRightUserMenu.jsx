@@ -6,7 +6,7 @@ import {
   MenuList,
   MenuItem,
   IconButton,
-  Link,
+  Text,
 } from "@chakra-ui/react";
 import { SettingsIcon } from "@chakra-ui/icons";
 
@@ -25,12 +25,14 @@ export default function TopRightUserMenu() {
       />
       <MenuList>
         <MenuItem>
-          <Link href="/blog" isExternal width="100%">
+          <Text as="a" href="/blog" target="_blank" width="100%">
             Blog
-          </Link>
+          </Text>
         </MenuItem>
         <MenuItem>
-          <RouterLink to="/extensions">Browser extension</RouterLink>
+          <Text as={RouterLink} to="/extensions" width="100%">
+            Browser extension
+          </Text>
         </MenuItem>
         <MenuItem onClick={signOutMutation.mutate}>Sign out</MenuItem>
       </MenuList>

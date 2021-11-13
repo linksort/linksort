@@ -9,6 +9,7 @@ import {
   Drawer,
   DrawerOverlay,
   DrawerContent,
+  Button,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 
@@ -17,6 +18,7 @@ import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
 import { HEADER_HEIGHT } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
 import Sidebar from "./Sidebar";
+import GiveFeedbackButton from "./GiveFeedbackButton";
 
 export default function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,6 +73,9 @@ export default function Header() {
           display={["none", "none", "none", "none", "flex"]}
         >
           <TopRightNewLinkPopover />
+          <GiveFeedbackButton>
+            <Button>Give Feedback</Button>
+          </GiveFeedbackButton>
           <TopRightUserMenu />
         </Stack>
         <Stack
