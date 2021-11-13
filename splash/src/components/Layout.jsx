@@ -40,7 +40,6 @@ function UnderlineLink({ to, href, children }) {
 export default function Layout({ children, isHomePage }) {
   const { y } = useScrollPosition()
   const showTransparent = y < 80 && isHomePage
-  const navTextColor = showTransparent ? "#fff" : "unset"
   const logoColor = showTransparent ? "#fff" : "#0a52ff"
   const buttonColorscheme = showTransparent ? "whiteAlpha" : "gray"
   const buttonColor = showTransparent ? "white" : "gray.800"
@@ -84,7 +83,7 @@ export default function Layout({ children, isHomePage }) {
               </RouterLink>
             </Heading>
             <Box as="nav">
-              <Stack as={List} direction="row" spacing={0}>
+              <Stack as={List} direction="row" spacing={1}>
                 <ListItem display={["none", "none", "list-item"]}>
                   <Button
                     as={RouterLink}
@@ -123,7 +122,7 @@ export default function Layout({ children, isHomePage }) {
                 </ListItem>
                 <ListItem display={["none", "none", "list-item"]}>
                   <Button
-                    as={Link}
+                    as="a"
                     fontWeight="medium"
                     href="/sign-in"
                     variant="ghost"
@@ -135,7 +134,7 @@ export default function Layout({ children, isHomePage }) {
                 </ListItem>
                 <ListItem>
                   <Button
-                    as={Link}
+                    as="a"
                     fontWeight="medium"
                     href="/sign-up"
                     colorScheme={signInButtonColorscheme}

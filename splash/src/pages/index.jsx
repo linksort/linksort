@@ -10,7 +10,6 @@ import {
   Button,
   Flex,
   Stack,
-  Link,
 } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
@@ -139,9 +138,9 @@ export default function Index({ data }) {
             Linksort makes saving links and staying organized easy.
           </Text>
           <Button
-            as={Link}
+            as="a"
             href="/sign-up"
-            colorScheme="whiteAlpha"
+            colorScheme="gray"
             marginBottom={6}
             paddingX={10}
           >
@@ -160,7 +159,7 @@ export default function Index({ data }) {
           />
         </Container>
       </Box>
-      <Container maxWidth="2xl" px={6} marginTop={6}>
+      <Container maxWidth="2xl" px={6} marginTop={8}>
         <Stack spacing={4}>
           <MarketingModule
             heading="Auto tags."
@@ -212,7 +211,7 @@ export default function Index({ data }) {
             </Heading>
             <Box>
               <Button
-                as={Link}
+                as="a"
                 href="/sign-up"
                 colorScheme="whiteAlpha"
                 paddingX={10}
