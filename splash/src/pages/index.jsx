@@ -1,95 +1,215 @@
 import React from "react"
-import { Link } from "gatsby"
-import { Box, Text, Heading, Stack, Input, Button } from "@chakra-ui/react"
+import { graphql } from "gatsby"
+import GatsbyImage from "gatsby-image"
+import {
+  Box,
+  Text,
+  Heading,
+  Container,
+  Image,
+  Button,
+  Flex,
+  Stack,
+} from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
 
-function ProminentLink({ to, children }) {
+export const query = graphql`
+  query {
+    hero: file(relativePath: { eq: "screenshot-hero.png" }) {
+      childImageSharp {
+        # Specify the image processing specifications right in the query.
+        # Makes it trivial to update as your page's design changes.
+        fluid(maxWidth: 900) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    autoTags: file(relativePath: { eq: "auto-tags.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    extension: file(relativePath: { eq: "extension.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    filterSort: file(relativePath: { eq: "sort-filter.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    tilePreview: file(relativePath: { eq: "tile-preview.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    folders: file(relativePath: { eq: "folders.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+  }
+`
+
+function MarketingModule({
+  heading,
+  subheading,
+  image,
+  orientation,
+  circleImg = false,
+}) {
+  const orient = orientation === "left" ? "row" : "row-reverse"
+  const padding = orientation === "left" ? "paddingLeft" : "paddingRight"
   return (
-    <Text
-      as={Link}
-      to={to}
-      sx={{
-        fontWeight: "bold",
-        textDecoration: "underline",
-        textDecorationColor: theme => theme.colors.accent,
-        textDecorationThickness: "0.18rem",
-        "&:hover": {
-          color: "black",
-          textDecorationColor: theme => theme.colors.primary,
-        },
-        transition: "200ms",
-      }}
+    <Flex
+      padding={8}
+      borderRadius={8}
+      backgroundColor="brand.50"
+      width="100%"
+      flexDirection={["column", "column", orient]}
     >
-      {children}
-    </Text>
+      <Flex
+        width={["100%", "100%", "50%"]}
+        flexGrow={0}
+        flexDirection="column"
+        justifyContent="center"
+      >
+        <Heading as="h4" fontSize="2xl" marginBottom={2}>
+          {heading}
+        </Heading>
+        <Text>{subheading}</Text>
+      </Flex>
+      <Box
+        width={["100%", "100%", "50%"]}
+        flexShrink={0}
+        paddingTop={[8, 8, 0]}
+        {...{ [padding]: [0, 0, 8] }}
+      >
+        <Image
+          as={GatsbyImage}
+          boxShadow="lg"
+          borderRadius={circleImg ? "100%" : 20}
+          fluid={image}
+          width="100%"
+        />
+      </Box>
+    </Flex>
   )
 }
 
-export default function Index() {
+export default function Index({ data }) {
   return (
     <Layout>
       <Metadata />
-      <Stack spacing={4}>
-        <Heading>
-          Hello{" "}
-          <span role="img" aria-label="waving hand emoji">
-            &#x1F44B;
-          </span>
-        </Heading>
-        <Text fontSize="xl" lineHeight="tall">
-          Some day soon, on this very page, there will be an application where
-          you'll be able to save, auto-organize, and share{" "}
-          <Text as="span" whiteSpace="nowrap">
-            your links.{" "}
-            <span role="img" aria-label="smiling face emoji">
-              &#x1F642;
-            </span>
-          </Text>
-        </Text>
-        <Text fontSize="xl" lineHeight="tall">
-          Join our waitlist to get an invitation when we're ready to launch.
-        </Text>
-        <Box
-          as="form"
-          name="waitlist"
-          method="POST"
-          data-netlify="true"
-          action="/waitlist"
-          display="flex"
-          flexDirection={["column", "row"]}
-          maxWidth="30rem"
-          py={4}
-        >
-          <input type="hidden" name="form-name" value="waitlist" />
-          <Input
-            type="email"
-            inputMode="email"
-            aria-label="Email"
-            name="email"
-            isRequired
-            size="lg"
-            placeholder="Your email address"
-            borderRightRadius={["md", "none"]}
-            mb={[4, 0]}
-          />
-          <Button
-            type="submit"
-            size="lg"
-            colorScheme="brand"
-            borderLeftRadius={["md", "none"]}
-            flexShrink={0}
+      <Box
+        background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
+        height="80vh"
+        width="100%"
+        paddingTop="7rem"
+      >
+        <Container maxWidth="7xl" centerContent px={6}>
+          <Heading
+            as="h2"
+            color="white"
+            fontWeight="bold"
+            fontSize="2.4rem"
+            letterSpacing="tight"
+            width="100%"
+            textAlign="center"
+            marginBottom={4}
           >
-            Join waitlist
+            Save your links. Close your tabs.
+          </Heading>
+          <Text color="white" marginBottom={4} textAlign="center">
+            Linksort makes saving links and staying organized easy.
+          </Text>
+          <Button colorScheme="whiteAlpha" marginBottom={6} paddingX={10}>
+            Sign Up
           </Button>
-        </Box>
-        <Text fontSize="xl" lineHeight="tall">
-          In the meantime, you can read more about{" "}
-          <ProminentLink to="/blog/idea">the idea</ProminentLink> on our{" "}
-          <ProminentLink to="/blog">blog</ProminentLink>.
-        </Text>
-      </Stack>
+          <Image
+            as={GatsbyImage}
+            fluid={data.hero.childImageSharp.fluid}
+            boxShadow="lg"
+            borderRadius={12}
+            maxWidth="60rem"
+            width="100%"
+            borderStyle="solid"
+            borderWidth="thin"
+            borderColor="gray.100"
+          />
+        </Container>
+      </Box>
+      <Container maxWidth="2xl" px={6} marginTop="calc(20vw + 10vh)">
+        <Stack spacing={4}>
+          <MarketingModule
+            heading="Auto tags."
+            subheading="We magically* organize your links into categories for you—okay, we don't have magic, just the next best thing, machine learning."
+            image={data.autoTags.childImageSharp.fluid}
+            orientation="right"
+          />
+          <MarketingModule
+            heading="Your links will look beautiful."
+            subheading="Whether you choose tiled view, comfy, or condensed, your links will look great."
+            image={data.tilePreview.childImageSharp.fluid}
+            orientation="left"
+          />
+          <MarketingModule
+            heading="One-click to save links."
+            subheading="Use the browser extension to effortlessly save links as you browse."
+            image={data.extension.childImageSharp.fluid}
+            orientation="right"
+            circleImg={true}
+          />
+          <MarketingModule
+            heading="Search, filter, sort, group, and favorite."
+            subheading="All of the tools you'd expect to find things easily and keep things tidy."
+            image={data.filterSort.childImageSharp.fluid}
+            orientation="left"
+          />
+          <MarketingModule
+            heading="Use folders to organize your links."
+            subheading="Sometimes you just need a good old folder."
+            image={data.folders.childImageSharp.fluid}
+            orientation="right"
+          />
+          <Flex
+            padding={8}
+            borderRadius={8}
+            backgroundColor="brand.500"
+            width="100%"
+            flexDirection="column"
+            alignItems="center"
+          >
+            <Heading
+              as="h4"
+              fontSize="2xl"
+              marginBottom={4}
+              color="white"
+              textAlign="center"
+            >
+              Get started
+            </Heading>
+            <Box>
+              <Button colorScheme="whiteAlpha" paddingX={10}>
+                Sign Up
+              </Button>
+            </Box>
+          </Flex>
+        </Stack>
+      </Container>
     </Layout>
   )
 }
