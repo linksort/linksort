@@ -10,6 +10,7 @@ import {
   Button,
   Flex,
   Stack,
+  Link,
 } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
@@ -55,6 +56,13 @@ export const query = graphql`
       }
     }
     folders: file(relativePath: { eq: "folders.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    privacy: file(relativePath: { eq: "privacy.png" }) {
       childImageSharp {
         fluid(maxWidth: 500) {
           ...GatsbyImageSharpFluid
@@ -116,11 +124,22 @@ export default function Index({ data }) {
     <Layout isHomePage>
       <Metadata />
       <Box
-        background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
-        width="100%"
+        position="relative"
+        width="100vw"
+        overflow="hidden"
         paddingTop="7rem"
         paddingBottom="2rem"
       >
+        <Box
+          position="absolute"
+          background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
+          height="110%"
+          width="180%"
+          top="-14rem"
+          left="-10rem"
+          transform="rotate(-5deg)"
+          zIndex="-1"
+        />
         <Container maxWidth="7xl" centerContent px={6}>
           <Heading
             as="h2"
@@ -132,7 +151,10 @@ export default function Index({ data }) {
             textAlign="center"
             marginBottom={4}
           >
-            Save your links. Close your tabs.
+            Save your links. Close{" "}
+            <Text as="span" whiteSpace="nowrap">
+              your tabs.
+            </Text>
           </Heading>
           <Text color="white" marginBottom={4} textAlign="center">
             Linksort makes saving links and staying organized easy.
@@ -169,7 +191,7 @@ export default function Index({ data }) {
           />
           <MarketingModule
             heading="Your links will look beautiful."
-            subheading="Whether you choose tiled view, comfy, or condensed, your links will look great."
+            subheading="Linksort has three ways of displaying your links: tiled view, comfy, or condensed. Whatever you choose, your links will look great."
             image={data.tilePreview.childImageSharp.fluid}
             orientation="left"
           />
@@ -182,7 +204,7 @@ export default function Index({ data }) {
           />
           <MarketingModule
             heading="Search, filter, sort, group, and favorite."
-            subheading="All of the tools you'd expect to find things easily and keep things tidy."
+            subheading="All of the tools you'd expect to help you find things easily and keep things tidy."
             image={data.filterSort.childImageSharp.fluid}
             orientation="left"
           />
@@ -192,34 +214,35 @@ export default function Index({ data }) {
             image={data.folders.childImageSharp.fluid}
             orientation="right"
           />
-          <Flex
+          <MarketingModule
+            heading="Private, safe, and secure."
+            subheading="We encrypt your data in storage and we don't share it with anyone."
+            image={data.privacy.childImageSharp.fluid}
+            orientation="left"
+            circleImg={true}
+          />
+          <Stack
             padding={8}
             borderRadius={8}
             backgroundColor="brand.500"
             width="100%"
-            flexDirection="column"
             alignItems="center"
+            spacing={4}
           >
-            <Heading
-              as="h4"
-              fontSize="2xl"
-              marginBottom={4}
-              color="white"
-              textAlign="center"
-            >
-              Get started
+            <Heading as="h4" fontSize="2xl" color="white" textAlign="center">
+              Get started. It's free.
             </Heading>
+            <Text color="white" textAlign="center">
+              Linksort is being actively developed, with new features coming out
+              at a rapid clip. If you sign up now, it will always be free for
+              you.
+            </Text>
             <Box>
-              <Button
-                as="a"
-                href="/sign-up"
-                colorScheme="whiteAlpha"
-                paddingX={10}
-              >
+              <Button as="a" href="/sign-up" colorScheme="gray" paddingX={10}>
                 Sign Up
               </Button>
             </Box>
-          </Flex>
+          </Stack>
         </Stack>
       </Container>
     </Layout>

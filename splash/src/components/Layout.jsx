@@ -59,7 +59,7 @@ export default function Layout({ children, isHomePage }) {
         position="fixed"
         top={0}
         left={0}
-        width="100%"
+        width="100vw"
         zIndex="100"
         transition="all 0.2s ease"
         {...fixedProps}
@@ -152,11 +152,14 @@ export default function Layout({ children, isHomePage }) {
       </Box>
       <Container maxWidth="7xl" centerContent px={6}>
         <Flex as="footer" height={FOOTER_HEIGHT} alignItems="center">
-          <Text align="center">
+          <Text align="center" color="gray.800">
             Copyright &copy; {new Date().getFullYear()} Linksort LLC &middot;{" "}
             <UnderlineLink to="/terms">Terms of service</UnderlineLink> &middot;{" "}
             <UnderlineLink to="/privacy">Privacy policy</UnderlineLink> &middot;{" "}
-            <UnderlineLink href="/rss.xml">RSS</UnderlineLink>
+            <UnderlineLink href="/rss.xml">RSS</UnderlineLink> &middot;{" "}
+            <UnderlineLink href="https://github.com/linksort/linksort">
+              GitHub
+            </UnderlineLink>
           </Text>
         </Flex>
       </Container>
