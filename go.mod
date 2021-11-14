@@ -13,7 +13,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/linksort/analyze v0.0.0-20211106233431-477272c1b656
+	github.com/linksort/analyze v0.0.0-20211114214327-6035326f6330
 	github.com/mailgun/mailgun-go/v3 v3.6.4
 	github.com/microcosm-cc/bluemonday v1.0.15
 	github.com/rs/zerolog v1.21.0
