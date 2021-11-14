@@ -10,7 +10,6 @@ import {
   Button,
   Flex,
   Stack,
-  Link,
 } from "@chakra-ui/react"
 
 import Layout from "../components/Layout"
