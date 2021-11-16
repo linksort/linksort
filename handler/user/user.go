@@ -49,6 +49,8 @@ func Handler(c *Config) *mux.Router {
 
 	// Always allow users to sign out
 	r.HandleFunc("/api/users/sessions", cc.DeleteSession).Methods("DELETE")
+	// Allow authentication from the Safari extension
+	r.HandleFunc("/api/users/sessions", cc.CreateSession).Methods("POST")
 
 	s := r.NewRoute().Subrouter()
 	s.Use(middleware.WithCSRF(c.CSRF))
@@ -56,7 +58,6 @@ func Handler(c *Config) *mux.Router {
 	s.HandleFunc("/api/users", cc.CreateUser).Methods("POST")
 	s.HandleFunc("/api/users/forgot-password", cc.ForgotPassword).Methods("POST")
 	s.HandleFunc("/api/users/change-password", cc.ChangePassword).Methods("POST")
-	s.HandleFunc("/api/users/sessions", cc.CreateSession).Methods("POST")
 
 	t := r.NewRoute().Subrouter()
 	t.Use(middleware.WithUser(c.AuthController, c.CSRF))
