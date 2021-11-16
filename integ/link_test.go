@@ -57,6 +57,15 @@ func TestCreateLink(t *testing.T) {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   `{"url": "This is not valid."}`,
 		},
+		{
+			Name:           "extension options page",
+			GivenSessionID: existingUser.SessionID,
+			GivenBody: map[string]string{
+				"url": "safari-web-extension://F7067A94-B046-45FC-9245-644E9CCBB4F0/options.html",
+			},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"url": "This is not valid."}`,
+		},
 	}
 
 	for _, tcase := range tests {

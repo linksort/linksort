@@ -35,7 +35,7 @@ func NewMongoClient(
 		return nil
 	}
 
-	return client, closer, errors.Wrap(op, err)
+	return client, closer, nil
 }
 
 func SetupIndexes(ctx context.Context, client *mongo.Client) error {

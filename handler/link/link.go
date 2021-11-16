@@ -49,7 +49,7 @@ func Handler(c *Config) *mux.Router {
 }
 
 type CreateLinkRequest struct {
-	URL         string `json:"url" validate:"required,url,max=2048"`
+	URL         string `json:"url" validate:"required,url,startswith=http,max=2048"`
 	Title       string `json:"title" validate:"omitempty,max=512"`
 	Favicon     string `json:"favicon" validate:"omitempty,url,max=512"`
 	Description string `json:"description" validate:"omitempty,max=2048"`
