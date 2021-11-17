@@ -16,11 +16,11 @@ export const pageQuery = graphql`
   }
 `
 
-export default function PageTemplate({ data }) {
+export default function PageTemplate({ data, location }) {
   const title = data.markdownRemark.frontmatter.title
 
   return (
-    <Layout>
+    <Layout location={location}>
       <Container
         maxWidth="3xl"
         paddingTop={["7rem", "7rem", "8rem"]}

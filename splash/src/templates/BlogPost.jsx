@@ -56,12 +56,12 @@ export const pageQuery = graphql`
     }
   }
 `
-export default function BlogPostTemplate({ data }) {
+export default function BlogPostTemplate({ data, location }) {
   const post = data.markdownRemark
   const { previous, next, other } = data
 
   return (
-    <Layout>
+    <Layout location={location}>
       <Container
         maxWidth="3xl"
         paddingTop={["7rem", "7rem", "8rem"]}

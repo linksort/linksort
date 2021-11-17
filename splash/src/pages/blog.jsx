@@ -26,11 +26,11 @@ export const pageQuery = graphql`
     }
   }
 `
-export default function BlogIndex({ data }) {
+export default function BlogIndex({ data, location }) {
   const posts = data.allMarkdownRemark.nodes
 
   return (
-    <Layout>
+    <Layout location={location}>
       <Container
         maxWidth="3xl"
         paddingTop={["7rem", "7rem", "8rem"]}

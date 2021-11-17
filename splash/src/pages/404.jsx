@@ -5,9 +5,9 @@ import { Link } from "gatsby"
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
 
-export default function NotFoundPage() {
+export default function NotFoundPage({ location }) {
   return (
-    <Layout>
+    <Layout location={location}>
       <Container
         maxWidth="3xl"
         paddingTop={["7rem", "7rem", "8rem"]}

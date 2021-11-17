@@ -118,9 +118,9 @@ function MarketingModule({
   )
 }
 
-export default function Index({ data }) {
+export default function Index({ data, location }) {
   return (
-    <Layout isHomePage>
+    <Layout location={location}>
       <Metadata />
       <Box
         position="relative"
@@ -156,7 +156,7 @@ export default function Index({ data }) {
             </Text>
           </Heading>
           <Text color="white" marginBottom={4} textAlign="center">
-            Linksort makes saving links and staying organized easy.
+            Take back order in your browser and your brain with Linksort.
           </Text>
           <Button
             as="a"

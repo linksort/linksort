@@ -37,7 +37,10 @@ function UnderlineLink({ to, href, children }) {
   )
 }
 
-export default function Layout({ children, isHomePage }) {
+export default function Layout({ children, location }) {
+  const { pathname: pn } = location
+  const pathname = pn.endsWith("/") ? pn.slice(0, pn.length - 1) : pn
+  const isHomePage = pathname === ""
   const { y } = useScrollPosition()
   const showTransparent = y < 80 && isHomePage
   const logoColor = showTransparent ? "#fff" : "#0a52ff"
@@ -84,42 +87,48 @@ export default function Layout({ children, isHomePage }) {
             </Heading>
             <Box as="nav">
               <Stack as={List} direction="row" spacing={1}>
-                <ListItem display={["none", "none", "list-item"]}>
-                  <Button
-                    as={RouterLink}
-                    fontWeight="medium"
-                    to="/"
-                    variant="ghost"
-                    colorScheme={buttonColorscheme}
-                    color={buttonColor}
-                  >
-                    Home
-                  </Button>
-                </ListItem>
-                <ListItem display={["none", "none", "list-item"]}>
-                  <Button
-                    as={RouterLink}
-                    fontWeight="medium"
-                    to="/blog/idea"
-                    variant="ghost"
-                    colorScheme={buttonColorscheme}
-                    color={buttonColor}
-                  >
-                    About
-                  </Button>
-                </ListItem>
-                <ListItem>
-                  <Button
-                    as={RouterLink}
-                    fontWeight="medium"
-                    to="/blog"
-                    variant="ghost"
-                    colorScheme={buttonColorscheme}
-                    color={buttonColor}
-                  >
-                    Blog
-                  </Button>
-                </ListItem>
+                {!isHomePage && (
+                  <ListItem display={["none", "none", "list-item"]}>
+                    <Button
+                      as={RouterLink}
+                      fontWeight="medium"
+                      to="/"
+                      variant="ghost"
+                      colorScheme={buttonColorscheme}
+                      color={buttonColor}
+                    >
+                      Home
+                    </Button>
+                  </ListItem>
+                )}
+                {pathname !== "/blog/about" && (
+                  <ListItem>
+                    <Button
+                      as={RouterLink}
+                      fontWeight="medium"
+                      to="/blog/about"
+                      variant="ghost"
+                      colorScheme={buttonColorscheme}
+                      color={buttonColor}
+                    >
+                      About
+                    </Button>
+                  </ListItem>
+                )}
+                {pathname !== "/blog" && (
+                  <ListItem display={["none", "none", "list-item"]}>
+                    <Button
+                      as={RouterLink}
+                      fontWeight="medium"
+                      to="/blog"
+                      variant={"ghost"}
+                      colorScheme={buttonColorscheme}
+                      color={buttonColor}
+                    >
+                      Blog
+                    </Button>
+                  </ListItem>
+                )}
                 <ListItem display={["none", "none", "list-item"]}>
                   <Button
                     as="a"
