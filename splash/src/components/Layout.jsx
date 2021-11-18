@@ -17,6 +17,11 @@ import useScrollPosition from "../hooks/scroll"
 import { HEADER_HEIGHT, FOOTER_HEIGHT } from "../theme/theme"
 import Logo from "./Logo"
 
+const ACTIVE_NAV_ITEM_PROPS = {
+  textDecoration: "underline",
+  textUnderlineOffset: "2px",
+}
+
 function UnderlineLink({ to, href, children }) {
   const sx = {
     whiteSpace: "nowrap",
@@ -87,48 +92,47 @@ export default function Layout({ children, location }) {
             </Heading>
             <Box as="nav">
               <Stack as={List} direction="row" spacing={1}>
-                {!isHomePage && (
-                  <ListItem display={["none", "none", "list-item"]}>
-                    <Button
-                      as={RouterLink}
-                      fontWeight="medium"
-                      to="/"
-                      variant="ghost"
-                      colorScheme={buttonColorscheme}
-                      color={buttonColor}
-                    >
-                      Home
-                    </Button>
-                  </ListItem>
-                )}
-                {pathname !== "/blog/about" && (
-                  <ListItem>
-                    <Button
-                      as={RouterLink}
-                      fontWeight="medium"
-                      to="/blog/about"
-                      variant="ghost"
-                      colorScheme={buttonColorscheme}
-                      color={buttonColor}
-                    >
-                      About
-                    </Button>
-                  </ListItem>
-                )}
-                {pathname !== "/blog" && (
-                  <ListItem display={["none", "none", "list-item"]}>
-                    <Button
-                      as={RouterLink}
-                      fontWeight="medium"
-                      to="/blog"
-                      variant={"ghost"}
-                      colorScheme={buttonColorscheme}
-                      color={buttonColor}
-                    >
-                      Blog
-                    </Button>
-                  </ListItem>
-                )}
+                <ListItem display={["none", "none", "list-item"]}>
+                  <Button
+                    as={RouterLink}
+                    fontWeight="medium"
+                    to="/"
+                    variant="ghost"
+                    colorScheme={buttonColorscheme}
+                    color={buttonColor}
+                    {...(isHomePage ? ACTIVE_NAV_ITEM_PROPS : {})}
+                  >
+                    Home
+                  </Button>
+                </ListItem>
+                <ListItem>
+                  <Button
+                    as={RouterLink}
+                    fontWeight="medium"
+                    to="/blog/about"
+                    variant="ghost"
+                    colorScheme={buttonColorscheme}
+                    color={buttonColor}
+                    {...(pathname === "/blog/about"
+                      ? ACTIVE_NAV_ITEM_PROPS
+                      : {})}
+                  >
+                    About
+                  </Button>
+                </ListItem>
+                <ListItem display={["none", "none", "list-item"]}>
+                  <Button
+                    as={RouterLink}
+                    fontWeight="medium"
+                    to="/blog"
+                    variant={"ghost"}
+                    colorScheme={buttonColorscheme}
+                    color={buttonColor}
+                    {...(pathname === "/blog" ? ACTIVE_NAV_ITEM_PROPS : {})}
+                  >
+                    Blog
+                  </Button>
+                </ListItem>
                 <ListItem display={["none", "none", "list-item"]}>
                   <Button
                     as="a"

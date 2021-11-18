@@ -76,6 +76,7 @@ function MarketingModule({
   subheading,
   image,
   orientation,
+  noShadow,
   circleImg = false,
 }) {
   const orient = orientation === "left" ? "row" : "row-reverse"
@@ -108,7 +109,7 @@ function MarketingModule({
       >
         <Image
           as={GatsbyImage}
-          boxShadow="lg"
+          boxShadow={noShadow ? "" : "lg"}
           borderRadius={circleImg ? "100%" : 20}
           fluid={image}
           width="100%"
@@ -136,7 +137,13 @@ export default function Index({ data, location }) {
           width="180%"
           top="-14rem"
           left="-10rem"
-          transform="rotate(-5deg)"
+          transform={[
+            "rotate(-5deg)",
+            "rotate(-5deg)",
+            "rotate(-5deg)",
+            "rotate(-5deg)",
+            "rotate(-3deg)",
+          ]}
           zIndex="-1"
         />
         <Container maxWidth="7xl" centerContent px={6}>
@@ -171,7 +178,7 @@ export default function Index({ data, location }) {
             as={GatsbyImage}
             fluid={data.hero.childImageSharp.fluid}
             boxShadow="lg"
-            borderRadius={12}
+            borderRadius={10}
             maxWidth="60rem"
             width="100%"
             borderStyle="solid"
@@ -219,6 +226,7 @@ export default function Index({ data, location }) {
             image={data.privacy.childImageSharp.fluid}
             orientation="left"
             circleImg={true}
+            noShadow
           />
           <Stack
             padding={8}
