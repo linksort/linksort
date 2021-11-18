@@ -95,7 +95,7 @@ export default function TopRightNewLinkPopover({ isMobile }) {
                 type="text"
                 name="url"
                 fontFamily="mono"
-                placeholder="https://my-special-link.com"
+                placeholder="https://zombo.com"
                 onChange={formik.handleChange}
                 value={formik.values.url}
                 ref={focus}

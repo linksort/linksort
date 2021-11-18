@@ -48,9 +48,8 @@ export default function Extensions() {
         Browser Extension
       </Heading>
       <Text>
-        Linksort's browser extension makes it easy to save content as you
-        browse. After installing, click the Linksort icon in your browser's
-        toolbar to save links. Choose any of the following to install.
+        Linksort's browser extension allows you to save webpages to Linksort in
+        one click. Choose any of the following to install.
       </Text>
       <Stack direction={["column", "column", "row"]}>
         <GetExtLink

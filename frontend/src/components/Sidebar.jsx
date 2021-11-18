@@ -83,100 +83,102 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
           <Box marginBottom={6}>
             <TopRightViewPicker isMobile={isMobile} />
           </Box>
-          <List paddingRight={2}>
-            <ListItem marginBottom={8}>
-              <Stack
-                as={List}
-                spacing={1}
-                id={isMobile ? "mobile-filter-controls" : "filter-controls"}
+          <Box as="nav">
+            <List paddingRight={2}>
+              <ListItem marginBottom={8}>
+                <Stack
+                  as={List}
+                  spacing={1}
+                  id={isMobile ? "mobile-filter-controls" : "filter-controls"}
+                >
+                  <ListItem>
+                    <SidebarSearchButton />
+                  </ListItem>
+                  <ListItem>
+                    <SidebarButton
+                      leftIcon={<UpDownIcon />}
+                      onClick={handleToggleSort}
+                    >
+                      <Text as="span">
+                        Sort by{" "}
+                        <Text as="span" color="gray.600">
+                          {sortDirection}
+                        </Text>
+                      </Text>
+                    </SidebarButton>
+                  </ListItem>
+                  <ListItem>
+                    <SidebarButton
+                      leftIcon={<CopyIcon />}
+                      onClick={handleToggleGroup}
+                    >
+                      <Text as="span">
+                        Group by{" "}
+                        <Text as="span" color="gray.600">
+                          {groupName}
+                        </Text>
+                      </Text>
+                    </SidebarButton>
+                  </ListItem>
+                  <ListItem>
+                    <SidebarButton
+                      leftIcon={<StarIcon />}
+                      as={RouterLink}
+                      to={makeToggleFavoritesLink()}
+                      variant={areFavoritesShowing ? "solid" : "ghost"}
+                    >
+                      Favorites
+                    </SidebarButton>
+                  </ListItem>
+                </Stack>
+              </ListItem>
+              <ListItem
+                marginBottom={8}
+                id={isMobile ? "mobile-folder-controls" : "folder-controls"}
               >
-                <ListItem>
-                  <SidebarSearchButton />
-                </ListItem>
-                <ListItem>
-                  <SidebarButton
-                    leftIcon={<UpDownIcon />}
-                    onClick={handleToggleSort}
-                  >
-                    <Text as="span">
-                      Sort by{" "}
-                      <Text as="span" color="gray.600">
-                        {sortDirection}
-                      </Text>
-                    </Text>
+                <SidebarSectionHeader>Folders</SidebarSectionHeader>
+                <SidebarFolderTree />
+              </ListItem>
+              <ListItem
+                id={isMobile ? "mobile-auto-tag-controls" : "auto-tag-controls"}
+              >
+                <SidebarSectionHeader>Auto Tags</SidebarSectionHeader>
+                <SidebarTagTree />
+              </ListItem>
+              <ListItem
+                marginTop={8}
+                display={[
+                  "list-item",
+                  "list-item",
+                  "list-item",
+                  "list-item",
+                  "none",
+                ]}
+              >
+                <GiveFeedbackButton>
+                  <SidebarButton leftIcon={<WarningTwoIcon />}>
+                    Give feedback
                   </SidebarButton>
-                </ListItem>
-                <ListItem>
-                  <SidebarButton
-                    leftIcon={<CopyIcon />}
-                    onClick={handleToggleGroup}
-                  >
-                    <Text as="span">
-                      Group by{" "}
-                      <Text as="span" color="gray.600">
-                        {groupName}
-                      </Text>
-                    </Text>
-                  </SidebarButton>
-                </ListItem>
-                <ListItem>
-                  <SidebarButton
-                    leftIcon={<StarIcon />}
-                    as={RouterLink}
-                    to={makeToggleFavoritesLink()}
-                    variant={areFavoritesShowing ? "solid" : "ghost"}
-                  >
-                    Favorites
-                  </SidebarButton>
-                </ListItem>
-              </Stack>
-            </ListItem>
-            <ListItem
-              marginBottom={8}
-              id={isMobile ? "mobile-folder-controls" : "folder-controls"}
-            >
-              <SidebarSectionHeader>Folders</SidebarSectionHeader>
-              <SidebarFolderTree />
-            </ListItem>
-            <ListItem
-              id={isMobile ? "mobile-auto-tag-controls" : "auto-tag-controls"}
-            >
-              <SidebarSectionHeader>Auto Tags</SidebarSectionHeader>
-              <SidebarTagTree />
-            </ListItem>
-            <ListItem
-              marginTop={8}
-              display={[
-                "list-item",
-                "list-item",
-                "list-item",
-                "list-item",
-                "none",
-              ]}
-            >
-              <GiveFeedbackButton>
-                <SidebarButton leftIcon={<WarningTwoIcon />}>
-                  Give feedback
+                </GiveFeedbackButton>
+              </ListItem>
+              <ListItem
+                display={[
+                  "list-item",
+                  "list-item",
+                  "list-item",
+                  "list-item",
+                  "none",
+                ]}
+              >
+                <SidebarButton
+                  leftIcon={<ArrowBackIcon />}
+                  onClick={signOutMutation.mutate}
+                >
+                  Sign out
                 </SidebarButton>
-              </GiveFeedbackButton>
-            </ListItem>
-            <ListItem
-              display={[
-                "list-item",
-                "list-item",
-                "list-item",
-                "list-item",
-                "none",
-              ]}
-            >
-              <SidebarButton
-                leftIcon={<ArrowBackIcon />}
-                onClick={signOutMutation.mutate}
-              >
-                Sign out
-              </SidebarButton>
-            </ListItem>
-          </List>
+              </ListItem>
+            </List>
+          </Box>
         </Box>
         <Box paddingBottom={[16, 16, 16, 16, 4]} paddingTop={4}>
           <MouseType align="left" color="gray.600" fontSize="xs" />

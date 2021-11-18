@@ -59,8 +59,8 @@ export default function AuthLayout({ children }) {
         <Box as="nav">
           <Stack as={List} direction="row" spacing={1}>
             <ListItem display={["none", "none", "list-item"]}>
-              <NavItem to="https://linksort.com/blog/idea" isExternal>
-                About
+              <NavItem to="https://linksort.com" isExternal>
+                Home
               </NavItem>
             </ListItem>
             <ListItem>
