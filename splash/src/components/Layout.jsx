@@ -109,21 +109,6 @@ export default function Layout({ children, location }) {
                   <Button
                     as={RouterLink}
                     fontWeight="medium"
-                    to="/blog/about"
-                    variant="ghost"
-                    colorScheme={buttonColorscheme}
-                    color={buttonColor}
-                    {...(pathname === "/blog/about"
-                      ? ACTIVE_NAV_ITEM_PROPS
-                      : {})}
-                  >
-                    About
-                  </Button>
-                </ListItem>
-                <ListItem display={["none", "none", "list-item"]}>
-                  <Button
-                    as={RouterLink}
-                    fontWeight="medium"
                     to="/blog"
                     variant={"ghost"}
                     colorScheme={buttonColorscheme}
