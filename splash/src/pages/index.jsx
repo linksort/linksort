@@ -135,7 +135,7 @@ export default function Index({ data, location }) {
           background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
           height="110%"
           width="180%"
-          top="-14rem"
+          top={["-14rem", "-14rem", "-14rem", "-14rem", "-18rem"]}
           left="-10rem"
           transform={[
             "rotate(-5deg)",
@@ -163,7 +163,7 @@ export default function Index({ data, location }) {
             </Text>
           </Heading>
           <Text color="white" marginBottom={4} textAlign="center">
-            Take back order in your browser and your brain with Linksort.
+            Linksort makes saving links and staying organized easy.
           </Text>
           <Button
             as="a"
