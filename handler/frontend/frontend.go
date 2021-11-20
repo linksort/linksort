@@ -28,6 +28,7 @@ var applicationRoutes = map[string]bool{
 	"forgot-password-sent-email": true,
 	"change-password":            true,
 	"links":                      true,
+	"extensions":                 true,
 }
 
 type Config struct {

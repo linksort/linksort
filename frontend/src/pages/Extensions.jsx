@@ -67,6 +67,11 @@ export default function Extensions() {
           imgSrc="/firefox-128x128.png"
           url="https://addons.mozilla.org/en-US/firefox/addon/linksort/"
         />
+        <GetExtLink
+          name="Safari"
+          imgSrc="/safari-128x128.png"
+          url="https://linksort.com/blog/safari"
+        />
       </Stack>
       <Image src="/extensions.png" borderRadius={12} />
       <Box>
