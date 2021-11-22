@@ -15,7 +15,6 @@ import {
   CopyIcon,
   StarIcon,
   UpDownIcon,
-  WarningTwoIcon,
 } from "@chakra-ui/icons";
 
 import Logo from "./Logo";
@@ -25,7 +24,6 @@ import SidebarSearchButton from "./SidebarSearchButton";
 import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
 import TopRightViewPicker from "./TopRightViewPicker";
-import GiveFeedbackButton from "./GiveFeedbackButton";
 import { useFilters } from "../hooks/filters";
 import { useSignOut } from "../hooks/auth";
 
@@ -147,21 +145,6 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
               </ListItem>
               <ListItem
                 marginTop={8}
-                display={[
-                  "list-item",
-                  "list-item",
-                  "list-item",
-                  "list-item",
-                  "none",
-                ]}
-              >
-                <GiveFeedbackButton>
-                  <SidebarButton leftIcon={<WarningTwoIcon />}>
-                    Give feedback
-                  </SidebarButton>
-                </GiveFeedbackButton>
-              </ListItem>
-              <ListItem
                 display={[
                   "list-item",
                   "list-item",
