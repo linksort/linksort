@@ -14,32 +14,12 @@ import {
 } from "@chakra-ui/react"
 
 import useScrollPosition from "../hooks/scroll"
-import { HEADER_HEIGHT, FOOTER_HEIGHT } from "../theme/theme"
+import { HEADER_HEIGHT } from "../theme/theme"
 import Logo from "./Logo"
 
 const ACTIVE_NAV_ITEM_PROPS = {
   textDecoration: "underline",
   textUnderlineOffset: "2px",
-}
-
-function UnderlineLink({ to, href, children }) {
-  const sx = {
-    whiteSpace: "nowrap",
-  }
-
-  if (to) {
-    return (
-      <Link as={RouterLink} to={to} sx={sx}>
-        {children}
-      </Link>
-    )
-  }
-
-  return (
-    <Link href={href} sx={sx} isExternal>
-      {children}
-    </Link>
-  )
 }
 
 export default function Layout({ children, location }) {
@@ -145,22 +125,103 @@ export default function Layout({ children, location }) {
           </Flex>
         </Container>
       </Box>
-      <Box as="main" minHeight={["calc(100vh - 13rem)", "calc(100vh - 13rem)"]}>
+      <Box as="main" minHeight="100vh">
         {children}
       </Box>
-      <Container maxWidth="7xl" centerContent px={6}>
-        <Flex as="footer" height={FOOTER_HEIGHT} alignItems="center">
-          <Text align="center" color="gray.800">
-            Copyright &copy; {new Date().getFullYear()} Linksort LLC &middot;{" "}
-            <UnderlineLink to="/terms">Terms of service</UnderlineLink> &middot;{" "}
-            <UnderlineLink to="/privacy">Privacy policy</UnderlineLink> &middot;{" "}
-            <UnderlineLink href="/rss.xml">RSS</UnderlineLink> &middot;{" "}
-            <UnderlineLink href="https://github.com/linksort/linksort">
-              GitHub
-            </UnderlineLink>
-          </Text>
-        </Flex>
-      </Container>
+      <Box
+        width="100vw"
+        marginTop="6rem"
+        borderTop="1px"
+        borderTopColor="gray.100"
+        backgroundColor="gray.50"
+      >
+        <Container
+          maxWidth="7xl"
+          px={6}
+          paddingBottom={["2rem", "2rem", "8rem"]}
+          paddingTop={["2rem", "2rem", "4rem"]}
+        >
+          <Flex
+            as="footer"
+            width="100%"
+            direction={["column", "column", "row"]}
+            justifyContent="space-around"
+          >
+            <Box marginTop="-0.7rem" paddingBottom="3rem" fontSize="sm">
+              <Logo color="#333" />
+              <Text mb={1}>
+                Copyright &copy; {new Date().getFullYear()} Linksort LLC.
+              </Text>
+              <Text>Made with ❤️ in Seattle, WA.</Text>
+            </Box>
+
+            <Stack
+              direction={["column", "column", "row"]}
+              fontSize="md"
+              spacing={[6, 6, 6, "4rem"]}
+            >
+              <Stack as={List} spacing={2}>
+                <ListItem>
+                  <Heading as="h5" fontSize="md" fontWeight="semibold">
+                    Legal
+                  </Heading>
+                </ListItem>
+                <ListItem>
+                  <Link as={RouterLink} to="/terms">
+                    Terms of service
+                  </Link>
+                </ListItem>
+                <ListItem>
+                  <Link as={RouterLink} to="/privacy">
+                    Privacy policy
+                  </Link>
+                </ListItem>
+              </Stack>
+
+              <Stack as={List} spacing={2}>
+                <ListItem>
+                  <Heading as="h5" fontSize="md" fontWeight="semibold">
+                    Company
+                  </Heading>
+                </ListItem>
+                <ListItem>
+                  <Link as={RouterLink} to="/">
+                    Home
+                  </Link>
+                </ListItem>
+                <ListItem>
+                  <Link as={RouterLink} to="/about">
+                    About
+                  </Link>
+                </ListItem>
+                <ListItem>
+                  <Link as={RouterLink} to="/blog">
+                    Blog
+                  </Link>
+                </ListItem>
+                <ListItem>
+                  <Link href="/rss.xml" isExternal>
+                    RSS
+                  </Link>
+                </ListItem>
+              </Stack>
+
+              <Stack as={List} spacing={2}>
+                <ListItem>
+                  <Heading as="h5" fontSize="md" fontWeight="semibold">
+                    Open Source
+                  </Heading>
+                </ListItem>
+                <ListItem>
+                  <Link href="https://github.com/linksort/linksort" isExternal>
+                    GitHub
+                  </Link>
+                </ListItem>
+              </Stack>
+            </Stack>
+          </Flex>
+        </Container>
+      </Box>
     </>
   )
 }

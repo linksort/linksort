@@ -7,8 +7,6 @@ import {
   Container,
   Wrap,
   Image,
-  Button,
-  Flex,
   Stack,
   WrapItem,
 } from "@chakra-ui/react"

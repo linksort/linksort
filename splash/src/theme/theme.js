@@ -1,9 +1,8 @@
-const sans = `"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif`;
-const serif = `Georgia, "Source Serif Pro", serif`;
-const mono = `SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace`;
+const sans = `"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif`
+const serif = `Georgia, "Source Serif Pro", serif`
+const mono = `SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace`
 
-export const HEADER_HEIGHT = "5rem";
-export const FOOTER_HEIGHT = "8rem";
+export const HEADER_HEIGHT = "5rem"
 
 const theme = {
   breakpoints: {
@@ -213,6 +212,6 @@ const theme = {
       900: "#7d0053",
     },
   },
-};
+}
 
-export default theme;
+export default theme
