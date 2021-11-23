@@ -125,11 +125,9 @@ export default function Layout({ children, location }) {
           </Flex>
         </Container>
       </Box>
-      <Box as="main" minHeight="100vh">
-        {children}
-      </Box>
+      <Box as="main">{children}</Box>
       <Box
-        width="100vw"
+        width="100%"
         marginTop="6rem"
         borderTop="1px"
         borderTopColor="gray.100"
