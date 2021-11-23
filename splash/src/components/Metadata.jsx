@@ -30,6 +30,69 @@ export default function Metadata({ description = "", title = "" }) {
   const metaTitle = title || defaultTitle
   const metaDescription = description || site.siteMetadata.description
 
+  let meta = [
+    {
+      name: `description`,
+      content: metaDescription,
+    },
+    {
+      property: `og:title`,
+      content: metaTitle,
+    },
+    {
+      property: `og:description`,
+      content: metaDescription,
+    },
+    {
+      property: `og:type`,
+      content: `website`,
+    },
+    {
+      name: `twitter:creator`,
+      content: site.siteMetadata?.social?.twitter || ``,
+    },
+    {
+      name: `twitter:title`,
+      content: metaTitle,
+    },
+    {
+      name: `twitter:description`,
+      content: metaDescription,
+    },
+  ]
+
+  if (title === "") {
+    meta = meta.concat([
+      {
+        property: `og:image`,
+        content: `https://linksort.com/social-img-2x1-1.jpeg`,
+      },
+      {
+        property: `og:image:width`,
+        content: `1200`,
+      },
+      {
+        property: `og:image:height`,
+        content: `600`,
+      },
+      {
+        name: `twitter:card`,
+        content: `summary_large_image`,
+      },
+      {
+        name: `twitter:image`,
+        content: `https://linksort.com/social-img-2x1-1.jpeg`,
+      },
+    ])
+  } else {
+    meta = meta.concat([
+      {
+        name: `twitter:card`,
+        content: `summary`,
+      },
+    ])
+  }
+
   return (
     <Helmet
       htmlAttributes={{
@@ -37,40 +100,7 @@ export default function Metadata({ description = "", title = "" }) {
       }}
       title={metaTitle}
       titleTemplate={!title ? null : `%s | ${defaultTitle}`}
-      meta={[
-        {
-          name: `description`,
-          content: metaDescription,
-        },
-        {
-          property: `og:title`,
-          content: metaTitle,
-        },
-        {
-          property: `og:description`,
-          content: metaDescription,
-        },
-        {
-          property: `og:type`,
-          content: `website`,
-        },
-        {
-          name: `twitter:card`,
-          content: `summary`,
-        },
-        {
-          name: `twitter:creator`,
-          content: site.siteMetadata?.social?.twitter || ``,
-        },
-        {
-          name: `twitter:title`,
-          content: metaTitle,
-        },
-        {
-          name: `twitter:description`,
-          content: metaDescription,
-        },
-      ]}
+      meta={meta}
     />
   )
 }

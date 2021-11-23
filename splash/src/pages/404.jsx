@@ -13,7 +13,7 @@ export default function NotFoundPage({ location }) {
         paddingTop={["7rem", "7rem", "8rem"]}
         paddingX={6}
       >
-        <Metadata title="404: Not Found" />
+        <Metadata title="Not Found" />
         <Box textAlign="center">
           <Heading as="h2" textAlign="center" mb={4}>
             Not Found

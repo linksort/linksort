@@ -150,7 +150,13 @@ export default function Layout({ children, location }) {
               <Text mb={1}>
                 Copyright &copy; {new Date().getFullYear()} Linksort LLC.
               </Text>
-              <Text>Made with ❤️ in Seattle, WA.</Text>
+              <Text>
+                Made with{" "}
+                <span role="img" aria-label="heart">
+                  ❤️
+                </span>{" "}
+                in Seattle, WA.
+              </Text>
             </Box>
 
             <Stack

@@ -1,3 +1,5 @@
+const description = `Linksort makes it effortless to save and organize your links to content around the web.`
+
 module.exports = {
   flags: {
     DEV_SSR: false,
@@ -8,7 +10,7 @@ module.exports = {
       name: `Alexander Richey`,
       summary: `Founder of Linksort.`,
     },
-    description: `Save your links with Linksort.`,
+    description: description,
     siteUrl: `https://linksort.com/`,
     social: {
       twitter: `AlexanderRichey`,
@@ -120,7 +122,7 @@ module.exports = {
       options: {
         name: `Linksort`,
         short_name: `Linksort`,
-        description: "Save your links with Linksort.",
+        description: description,
         start_url: `/`,
         background_color: `#ffffff`,
         theme_color: `#0052ff`,
