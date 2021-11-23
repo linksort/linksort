@@ -125,7 +125,7 @@ export default function Index({ data, location }) {
       <Metadata />
       <Box
         position="relative"
-        width="100vw"
+        width="100%"
         overflow="hidden"
         paddingTop="7rem"
         paddingBottom="2rem"
