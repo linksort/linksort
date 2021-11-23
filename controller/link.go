@@ -31,7 +31,9 @@ func (l *Link) CreateLink(
 	op := errors.Op("controller.CreateLink")
 
 	dat, err := l.Analyzer.Do(ctx, &analyze.Request{
-		URL: req.URL,
+		Title:   req.Title,
+		URL:     req.URL,
+		Favicon: req.Favicon,
 	})
 	if err != nil {
 		return nil, nil, errors.E(op, err)
