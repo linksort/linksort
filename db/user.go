@@ -36,7 +36,7 @@ func (s *UserStore) CreateUser(ctx context.Context, usr *model.User) (*model.Use
 					return nil, errors.E(
 						op,
 						errors.M{"email": "This email has already been registered."},
-						errors.Str("duplicate email"),
+						err,
 						http.StatusBadRequest)
 				}
 			}
@@ -130,7 +130,7 @@ func (s *UserStore) UpdateUser(ctx context.Context, u *model.User) (*model.User,
 					return nil, errors.E(
 						op,
 						errors.M{"email": "This email has already been registered."},
-						errors.Str("duplicate email"),
+						err,
 						http.StatusBadRequest)
 				}
 			}

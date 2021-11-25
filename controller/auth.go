@@ -76,7 +76,10 @@ func (a *Auth) WithCredentials(ctx context.Context, email, password string) (*mo
 				op,
 				err,
 				http.StatusBadRequest,
-				errors.M{"message": "Invalid credentials given."})
+				errors.M{
+					"message": "Invalid credentials given.",
+					"email":   "This email address is not in our records.",
+				})
 		}
 
 		return nil, errors.E(op, err)

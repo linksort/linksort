@@ -4,7 +4,9 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
+	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/testutil"
 	"github.com/steinfletcher/apitest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
@@ -13,17 +15,22 @@ import (
 func TestCreateSession(t *testing.T) {
 	ctx := context.Background()
 	usr, pw := testutil.NewUser(t, ctx)
+	usr2, pw2 := testutil.NewUser(t, ctx)
+	usr2.SessionExpiry = time.Now().Add(-time.Duration(time.Hour * 24 * 40))
+	usr2 = testutil.UpdateUser(t, ctx, usr2)
 
 	tests := []struct {
 		Name         string
 		GivenBody    map[string]string
 		ExpectStatus int
 		ExpectBody   string
+		ExpectUser   *model.User
 	}{
 		{
 			Name:         "success",
 			GivenBody:    map[string]string{"email": usr.Email, "password": pw},
 			ExpectStatus: http.StatusCreated,
+			ExpectUser:   usr,
 		},
 		{
 			Name:         "wrong password",
@@ -35,7 +42,7 @@ func TestCreateSession(t *testing.T) {
 			Name:         "wrong email",
 			GivenBody:    map[string]string{"email": "martha_nussbaum@law.uchicago.edu", "password": "1234567890"},
 			ExpectStatus: http.StatusBadRequest,
-			ExpectBody:   `{"message":"Invalid credentials given."}`,
+			ExpectBody:   `{"message":"Invalid credentials given.", "email":"This email address is not in our records."}`,
 		},
 
 		{
@@ -56,6 +63,13 @@ func TestCreateSession(t *testing.T) {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   `{"password":"This field is required."}`,
 		},
+		{
+			Name:         "old session works",
+			GivenBody:    map[string]string{"email": usr2.Email, "password": pw2},
+			ExpectStatus: http.StatusCreated,
+			ExpectBody:   `{"password":"This field is required."}`,
+			ExpectUser:   usr2,
+		},
 	}
 
 	for _, tcase := range tests {
@@ -69,10 +83,10 @@ func TestCreateSession(t *testing.T) {
 
 			if tcase.ExpectStatus < http.StatusBadRequest {
 				tt.CookiePresent("session_id")
-				tt.Assert(jsonpath.Equal("$.user.id", usr.ID))
-				tt.Assert(jsonpath.Equal("$.user.email", usr.Email))
-				tt.Assert(jsonpath.Equal("$.user.firstName", usr.FirstName))
-				tt.Assert(jsonpath.Equal("$.user.lastName", usr.LastName))
+				tt.Assert(jsonpath.Equal("$.user.id", tcase.ExpectUser.ID))
+				tt.Assert(jsonpath.Equal("$.user.email", tcase.ExpectUser.Email))
+				tt.Assert(jsonpath.Equal("$.user.firstName", tcase.ExpectUser.FirstName))
+				tt.Assert(jsonpath.Equal("$.user.lastName", tcase.ExpectUser.LastName))
 			} else {
 				tt.CookieNotPresent("session_id")
 				tt.Body(tcase.ExpectBody)
