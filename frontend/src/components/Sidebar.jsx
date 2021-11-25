@@ -13,6 +13,7 @@ import {
 import {
   ArrowBackIcon,
   CopyIcon,
+  PlusSquareIcon,
   StarIcon,
   UpDownIcon,
 } from "@chakra-ui/icons";
@@ -153,12 +154,25 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                   "none",
                 ]}
               >
-                <SidebarButton
-                  leftIcon={<ArrowBackIcon />}
-                  onClick={signOutMutation.mutate}
-                >
-                  Sign out
-                </SidebarButton>
+                <Stack as={List} spacing={1}>
+                  <ListItem>
+                    <SidebarButton
+                      leftIcon={<PlusSquareIcon />}
+                      as={RouterLink}
+                      to="/extensions"
+                    >
+                      Extensions
+                    </SidebarButton>
+                  </ListItem>
+                  <ListItem>
+                    <SidebarButton
+                      leftIcon={<ArrowBackIcon />}
+                      onClick={signOutMutation.mutate}
+                    >
+                      Sign out
+                    </SidebarButton>
+                  </ListItem>
+                </Stack>
               </ListItem>
             </List>
           </Box>
