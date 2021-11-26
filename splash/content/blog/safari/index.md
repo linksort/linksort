@@ -5,9 +5,12 @@ author: Alex Richey
 ---
 To have the best experience with the Safai extension, there is some additional setup after installation.
 
-First, <a href="https://apps.apple.com/app/save-to-linksort/id1595764443" target="_blank">**install the extension from the Mac App Store**</a>.
+- First, <a href="https://apps.apple.com/app/save-to-linksort/id1595764443" target="_blank">**install the extension from the App Store**</a>.
+- Next, follow instructions for [**Desktop**](#Desktop) or [**Mobile**](#Mobile) (iPhone & iPad).
 
-Next, open Safari and press `Command + ,` to open Safari's settings. Choose **Extensions** among the options on the top nav bar, and then make sure Linksort is checked.
+<h2 id="Desktop">Desktop</h2>
+
+Open Safari and press `Command + ,` to open Safari's settings. Choose **Extensions** among the options on the top nav bar, and then make sure Linksort is checked.
 
 ![Safari Preferences](safari-desktop-prefs.png)
 
@@ -32,3 +35,55 @@ After your done, the page should look like this:
 Close the options page and **you're done**. You can now click the Linksort button in the browser's toolbar to save links as your browse.
 
 ![Example of saving a link](safari-desktop-done.png)
+
+<h2 id="Mobile">Mobile</h2>
+
+Open the **Settings** app.
+
+![Safari mobile system settings](safari-mobile-sys-prefs.png)
+
+Under Settings, Choose **Safari**.
+
+![Safari settings](safari-mobile-sys-prefs-safari.png)
+
+Under Safai's settings, choose **Extensions**.
+
+![Safari extension settings](safari-mobile-safari-prefs-exts.png)
+
+Under extensions, choose **Linksort**.
+
+![Choosing Linksort's settings](safari-mobile-safari-prefs-exts-ls.png)
+
+Make sure the extension is **enabled**.
+
+Next, under the permissions section, make sure that *linksort.com* and *Other websites* are set to **Allow**.
+
+The only thing the extension reads is the URL of the site you want to save and its title and favicon image.
+
+![Linksort's settings](safari-mobile-ls-prefs.png)
+
+Now choose **Extension Settings**. This will open a new tab in Safari.
+
+![Choosing Extension Settings](safari-mobile-ls-prefs-ext-settings.png)
+
+Sign into Linksort with your email address and password.
+
+![Signing in](safari-mobile-sign-in.png)
+
+When you're done, it should look like this:
+
+![Signed in](safari-mobile-signed-in.png)
+
+Now you're ready to use the extension. When you want to save a link, choose the **puzzle-piece icon** in the URL bar.
+
+![Puzzle-piece in Safai's URL bar](safari-mobile-puzzle-piece.png)
+
+Choose **Linksort**.
+
+![Choose Linksort](safari-mobile-puzzle-ls.png)
+
+And you link is saved!
+
+![Link saved](safari-mobile-link-saved.png)
+
+
