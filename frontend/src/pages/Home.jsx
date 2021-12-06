@@ -113,6 +113,7 @@ export default function Home() {
       paddingLeft={[0, 0, 0, 0, 6]}
       paddingBottom={6}
       marginBottom="5.5rem"
+      overflow="hidden"
     >
       <ScrollToTop />
       <Box marginBottom={8}>
