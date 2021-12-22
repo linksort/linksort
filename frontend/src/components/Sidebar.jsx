@@ -4,7 +4,6 @@ import {
   Flex,
   List,
   ListItem,
-  Heading,
   Box,
   VisuallyHidden,
   Text,
@@ -21,28 +20,13 @@ import {
 import Logo from "./Logo";
 import MouseType from "./MouseType";
 import SidebarButton from "./SidebarButton";
+import SidebarCollapsableSection from "./SidebarCollapsableSection";
 import SidebarSearchButton from "./SidebarSearchButton";
 import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
 import TopRightViewPicker from "./TopRightViewPicker";
 import { useFilters } from "../hooks/filters";
 import { useSignOut } from "../hooks/auth";
-
-function SidebarSectionHeader({ children, ...rest }) {
-  return (
-    <Heading
-      as="h4"
-      fontSize="0.7rem"
-      fontWeight="bold"
-      color="gray.600"
-      textTransform="uppercase"
-      marginBottom={4}
-      {...rest}
-    >
-      {children}
-    </Heading>
-  );
-}
 
 export default function Sidebar({ width = "18rem", isMobile = false }) {
   const signOutMutation = useSignOut();
@@ -135,14 +119,16 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                 marginBottom={8}
                 id={isMobile ? "mobile-folder-controls" : "folder-controls"}
               >
-                <SidebarSectionHeader>Folders</SidebarSectionHeader>
-                <SidebarFolderTree />
+                <SidebarCollapsableSection title="Folders">
+                  <SidebarFolderTree />
+                </SidebarCollapsableSection>
               </ListItem>
               <ListItem
                 id={isMobile ? "mobile-auto-tag-controls" : "auto-tag-controls"}
               >
-                <SidebarSectionHeader>Auto Tags</SidebarSectionHeader>
-                <SidebarTagTree />
+                <SidebarCollapsableSection title="Auto Tags">
+                  <SidebarTagTree />
+                </SidebarCollapsableSection>
               </ListItem>
               <ListItem
                 marginTop={8}

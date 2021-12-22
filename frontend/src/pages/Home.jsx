@@ -112,7 +112,7 @@ export default function Home() {
       paddingTop={6}
       paddingLeft={[0, 0, 0, 0, 6]}
       paddingBottom={6}
-      marginBottom="5.5rem"
+      marginBottom={6}
       overflow="hidden"
     >
       <ScrollToTop />
@@ -143,7 +143,7 @@ export default function Home() {
           <Button onClick={() => handleSearch("")}>Clear search</Button>
         </Box>
       ) : (
-        <HStack position="absolute" bottom={0} left={[0, 0, 0, 0, 6]}>
+        <HStack position="absolute" bottom={1} left={[1, 1, 1, 1, 6]}>
           <Button
             isDisabled={pageNumber === "0"}
             onClick={handleGoToPrevPage}
