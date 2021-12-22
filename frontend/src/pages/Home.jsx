@@ -130,8 +130,8 @@ export default function Home() {
                 </Heading>
               )}
               <LinkList viewSetting={viewSetting}>
-                {list.map((link) => (
-                  <LinkItem key={link.id} link={link} />
+                {list.map((link, idx) => (
+                  <LinkItem key={link.id} idx={idx} link={link} />
                 ))}
               </LinkList>
             </Box>

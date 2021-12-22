@@ -1,5 +1,6 @@
 import React from "react";
 import { ListItem, useToast } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 
 import { useDeleteLink, useUpdateLink } from "../hooks/links";
 import { useFolders } from "../hooks/folders";
@@ -13,7 +14,7 @@ import LinkItemCondensed from "./LinkItemCondensed";
 import LinkItemTall from "./LinkItemTall";
 import LinkItemTile from "./LinkItemTile";
 
-export default function LinkItem({ link }) {
+export default function LinkItem({ link, idx = 0 }) {
   const toast = useToast();
   const { setting: viewSetting } = useViewSetting();
   const deleteMutation = useDeleteLink(link.id);
@@ -59,46 +60,60 @@ export default function LinkItem({ link }) {
 
   return (
     <ListItem minWidth={0}>
-      {
+      <motion.div
+        key={link.id}
+        variants={{
+          hidden: { opacity: 0 },
+          show: (i) => ({
+            opacity: 1,
+            transition: { delay: i * 0.01 },
+          }),
+        }}
+        custom={idx}
+        initial="hidden"
+        animate="show"
+      >
         {
-          [VIEW_SETTING_CONDENSED]: (
-            <LinkItemCondensed
-              link={link}
-              folderTree={folderTree}
-              isLinkInFolder={isLinkInFolder}
-              currentFolderName={currentFolderName}
-              onDeleteLink={handleDeleteLink}
-              onToggleIsFavorite={handleToggleIsFavorite}
-              onMoveToFolder={handleMoveToFolder}
-              onCopyLink={handleCopyLink}
-            />
-          ),
-          [VIEW_SETTING_TALL]: (
-            <LinkItemTall
-              link={link}
-              folderTree={folderTree}
-              isLinkInFolder={isLinkInFolder}
-              currentFolderName={currentFolderName}
-              onDeleteLink={handleDeleteLink}
-              onToggleIsFavorite={handleToggleIsFavorite}
-              onMoveToFolder={handleMoveToFolder}
-              onCopyLink={handleCopyLink}
-            />
-          ),
-          [VIEW_SETTING_TILES]: (
-            <LinkItemTile
-              link={link}
-              folderTree={folderTree}
-              isLinkInFolder={isLinkInFolder}
-              currentFolderName={currentFolderName}
-              onDeleteLink={handleDeleteLink}
-              onToggleIsFavorite={handleToggleIsFavorite}
-              onMoveToFolder={handleMoveToFolder}
-              onCopyLink={handleCopyLink}
-            />
-          ),
-        }[viewSetting]
-      }
+          {
+            [VIEW_SETTING_CONDENSED]: (
+              <LinkItemCondensed
+                link={link}
+                folderTree={folderTree}
+                isLinkInFolder={isLinkInFolder}
+                currentFolderName={currentFolderName}
+                onDeleteLink={handleDeleteLink}
+                onToggleIsFavorite={handleToggleIsFavorite}
+                onMoveToFolder={handleMoveToFolder}
+                onCopyLink={handleCopyLink}
+              />
+            ),
+            [VIEW_SETTING_TALL]: (
+              <LinkItemTall
+                link={link}
+                folderTree={folderTree}
+                isLinkInFolder={isLinkInFolder}
+                currentFolderName={currentFolderName}
+                onDeleteLink={handleDeleteLink}
+                onToggleIsFavorite={handleToggleIsFavorite}
+                onMoveToFolder={handleMoveToFolder}
+                onCopyLink={handleCopyLink}
+              />
+            ),
+            [VIEW_SETTING_TILES]: (
+              <LinkItemTile
+                link={link}
+                folderTree={folderTree}
+                isLinkInFolder={isLinkInFolder}
+                currentFolderName={currentFolderName}
+                onDeleteLink={handleDeleteLink}
+                onToggleIsFavorite={handleToggleIsFavorite}
+                onMoveToFolder={handleMoveToFolder}
+                onCopyLink={handleCopyLink}
+              />
+            ),
+          }[viewSetting]
+        }
+      </motion.div>
     </ListItem>
   );
 }
