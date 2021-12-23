@@ -66,7 +66,7 @@ export default function LinkItem({ link, idx = 0 }) {
           hidden: { opacity: 0 },
           show: (i) => ({
             opacity: 1,
-            transition: { delay: i * 0.01 },
+            transition: { delay: i * 0.03 },
           }),
         }}
         custom={idx}

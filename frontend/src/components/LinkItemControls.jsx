@@ -52,6 +52,7 @@ export default function LinkItemControls({
               overflow="hidden"
               whiteSpace="nowrap"
               textOverflow="ellipsis"
+              _focus="none"
               {...folderIconProps}
             >
               <Text
@@ -71,6 +72,7 @@ export default function LinkItemControls({
                 size="sm"
                 icon={<FolderIcon />}
                 backgroundColor={buttonColor}
+                _focus="none"
               />
             </Tooltip>
           )
@@ -84,6 +86,7 @@ export default function LinkItemControls({
           icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
           size="sm"
           onClick={onToggleIsFavorite}
+          _focus="none"
         />
       </Tooltip>
       <Tooltip label="Copy link">
@@ -92,6 +95,7 @@ export default function LinkItemControls({
           icon={<LinkIcon />}
           size="sm"
           onClick={onCopyLink}
+          _focus="none"
         />
       </Tooltip>
       <Tooltip label="Edit link">
@@ -101,6 +105,7 @@ export default function LinkItemControls({
           icon={<EditIcon />}
           to={`/links/${link.id}`}
           size="sm"
+          _focus="none"
         />
       </Tooltip>
       <Tooltip label="Delete link">
@@ -109,6 +114,7 @@ export default function LinkItemControls({
           icon={<DeleteIcon />}
           size="sm"
           onClick={onDeleteLink}
+          _focus="none"
         />
       </Tooltip>
     </HStack>

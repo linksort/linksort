@@ -57,6 +57,7 @@ function SidebarFolderItem({ folder, selectedFolderId, makeFolderLink }) {
                 padding={0}
                 aria-label="Folder options"
                 icon={<DotDotDotVert />}
+                _focus="none"
               />
               <MenuList color="gray.800">
                 <MenuItem icon={<EditIcon />} onClick={onOpen}>

@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Flex, Text, Link, GridItem, Image } from "@chakra-ui/react";
+import { Box, Flex, Text, Link, GridItem } from "@chakra-ui/react";
 
+import FadeInImage from "./FadeInImage";
 import LinkItemControls from "./LinkItemControls";
 
 const COLORS = [
@@ -46,7 +47,7 @@ export default function LinkItemTile({
     >
       <Box>
         <Box height="10rem">
-          <Image
+          <FadeInImage
             src={link.image}
             width="full"
             height="10rem"

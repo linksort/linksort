@@ -44,10 +44,14 @@ export default function LinkItemCondensed({
       width="100%"
       flexGrow={0}
       overflow="hidden"
+      transition="ease 200ms"
+      borderLeft="3px solid transparent"
+      _focusWithin={{
+        borderLeft: "3px solid #80a9ff",
+      }}
       _hover={{
         backgroundColor: "gray.100",
       }}
-      transition="ease 200ms"
     >
       <Flex overflow="hidden">
         <LinkItemFavicon favicon={link.favicon} />
@@ -57,6 +61,7 @@ export default function LinkItemCondensed({
           overflow="hidden"
           whiteSpace="nowrap"
           textOverflow="ellipsis"
+          _focus="none"
           isExternal
         >
           {link.title}
