@@ -17,6 +17,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/errors"
+	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
 )
@@ -31,13 +32,15 @@ var applicationRoutes = map[string]bool{
 	"extensions":                 true,
 }
 
+var staticExts = []string{".js", ".css", ".png", ".jpg", ".jpeg"}
+
 type Config struct {
 	FrontendProxyHostname string
 	FrontendProxyPort     string
+	Magic                 *magic.Client
 	AuthController        interface {
 		WithCookie(context.Context, string) (*model.User, error)
 	}
-	Magic *magic.Client
 }
 
 func Server(c *Config) http.Handler {
@@ -101,7 +104,8 @@ func (c *Config) withIndexHandler() mux.MiddlewareFunc {
 			if isAppRoute := isApplicationRoute(r.URL.Path); isIndexRoute(r.URL.Path) || isAppRoute {
 				d, found, err := c.getUserData(r)
 				if err != nil {
-					panic(err)
+					log.FromRequest(r).Print(err)
+					http.Error(w, "Uh oh!", http.StatusInternalServerError)
 				}
 
 				if found || isAppRoute {
@@ -115,7 +119,8 @@ func (c *Config) withIndexHandler() mux.MiddlewareFunc {
 
 					_, err = w.Write(b)
 					if err != nil {
-						panic(err)
+						log.FromRequest(r).Print(err)
+						http.Error(w, "Uh oh!", http.StatusInternalServerError)
 					}
 
 					return
@@ -142,7 +147,8 @@ func with404Handler(assetsPath, notFoundPath string) mux.MiddlewareFunc {
 			if err != nil {
 				// if we failed to get the absolute path respond with a 400 bad request
 				// and stop
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				log.FromRequest(r).Print(err)
+				http.Error(w, "Uh oh!", http.StatusBadRequest)
 
 				return
 			}
@@ -160,9 +166,17 @@ func with404Handler(assetsPath, notFoundPath string) mux.MiddlewareFunc {
 			} else if err != nil {
 				// if we got an error (that wasn't that the file doesn't exist) stating the
 				// file, return a 500 internal server error and stop
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.FromRequest(r).Print(err)
+				http.Error(w, "Uh oh!", http.StatusInternalServerError)
 
 				return
+			}
+
+			// at this point, anything being served should be static
+			for _, ext := range staticExts {
+				if strings.HasSuffix(path, ext) {
+					w.Header().Add("Cache-Control", "max-age=31536000")
+				}
 			}
 
 			next.ServeHTTP(w, r)
