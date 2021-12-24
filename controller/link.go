@@ -35,7 +35,7 @@ func (l *Link) CreateLink(
 		URL:     req.URL,
 		Favicon: req.Favicon,
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, analyze.ErrNoClassify) {
 		return nil, nil, errors.E(op, err)
 	}
 

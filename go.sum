@@ -270,6 +270,8 @@ github.com/linksort/analyze v0.0.0-20211114214327-6035326f6330 h1:L+htB8a6FzoQNf
 github.com/linksort/analyze v0.0.0-20211114214327-6035326f6330/go.mod h1:LojxD+7mdZLl+6KlEZR/jcOcC69f3KzVBsWpafl/NJA=
 github.com/linksort/analyze v0.0.0-20211224165002-c881606d1d17 h1:vSr2KePtFlman8zhTOkqd7cld3yTgGjVnrjs+Gl2r1k=
 github.com/linksort/analyze v0.0.0-20211224165002-c881606d1d17/go.mod h1:LojxD+7mdZLl+6KlEZR/jcOcC69f3KzVBsWpafl/NJA=
+github.com/linksort/analyze v0.0.0-20211224173342-9e40514f8ee8 h1:ySOKoD4QkPzT7vDgusQhVaRK14jQtmgHYRqswtpxqK4=
+github.com/linksort/analyze v0.0.0-20211224173342-9e40514f8ee8/go.mod h1:aCx4kNfi2r99oN346RKTvlrGYcIOKSaK2bY4FBtHdV8=
 github.com/mailgun/mailgun-go/v3 v3.6.4 h1:+cvbZRgLSHivbz/w1iWLmxVl6Bqf4geD2D7QMj4+8PE=
 github.com/mailgun/mailgun-go/v3 v3.6.4/go.mod h1:ZjVnH8S0dR2BLjvkZc/rxwerdcirzlA12LQDuGAadR0=
 github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329 h1:2gxZ0XQIU/5z3Z3bUBu+FXuk2pFbkN6tcwi/pjyaDic=
