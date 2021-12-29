@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Heading, Box, Collapse } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 

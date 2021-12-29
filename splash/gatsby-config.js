@@ -125,7 +125,7 @@ module.exports = {
         description: description,
         start_url: `/`,
         background_color: `#ffffff`,
-        theme_color: `#0052ff`,
+        theme_color: `#ffffff`,
         display: `minimal-ui`,
         icon: `content/assets/favicon512.png`,
       },

@@ -151,11 +151,7 @@ export default function Home() {
           >
             Prevous
           </Button>
-          <Button
-            isDisabled={linksCount < 20}
-            onClick={handleGoToNextPage}
-            rightIcon={<ChevronRightIcon />}
-          >
+          <Button onClick={handleGoToNextPage} rightIcon={<ChevronRightIcon />}>
             Next
           </Button>
         </HStack>
