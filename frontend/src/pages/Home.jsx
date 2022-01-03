@@ -78,7 +78,14 @@ function LinkList({ viewSetting, children }) {
 
 export default function Home() {
   const { setting: viewSetting } = useViewSetting();
-  const { data: links, isError, error, isLoading, isFetching } = useLinks();
+  const {
+    data: links,
+    isError,
+    error,
+    isLoading,
+    isFetching,
+    failureCount,
+  } = useLinks();
   const {
     handleGoToNextPage,
     handleGoToPrevPage,
@@ -97,7 +104,7 @@ export default function Home() {
     return <ErrorScreen error={error} />;
   }
 
-  if (isLoading) {
+  if (isLoading || failureCount > 0) {
     return <LoadingScreen />;
   }
 
