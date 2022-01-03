@@ -63,34 +63,48 @@ func (s *LinkStore) GetLinksByUser(
 		f(m)
 	}
 
-	sort := bson.M{"createdat": -1}
-	if val, ok := m["sort"]; ok {
-		sort["createdat"] = val.(int64)
+	projection := bson.D{
+		primitive.E{Key: "_id", Value: 1},
+		primitive.E{Key: "id", Value: 1},
+		primitive.E{Key: "userid", Value: 1},
+		primitive.E{Key: "createdat", Value: 1},
+		primitive.E{Key: "updatedat", Value: 1},
+		primitive.E{Key: "tagpaths", Value: 1},
+		primitive.E{Key: "tagdetails", Value: 1},
+		primitive.E{Key: "isfavorite", Value: 1},
+		primitive.E{Key: "folderid", Value: 1},
+		primitive.E{Key: "url", Value: 1},
+		primitive.E{Key: "title", Value: 1},
+		primitive.E{Key: "description", Value: 1},
+		primitive.E{Key: "favicon", Value: 1},
+		primitive.E{Key: "image", Value: 1},
+		primitive.E{Key: "site", Value: 1},
+	}
 
+	var sort bson.M
+	if _, ok := m["$text"]; ok {
+		// if we're searching...
+		sort = bson.M{"score": bson.M{"$meta": "textScore"}}
+		projection = append(projection, primitive.E{
+			Key: "score",
+			Value: primitive.E{
+				Key:   "$meta",
+				Value: " textScore",
+			},
+		})
 		delete(m, "sort")
+	} else if val, ok := m["sort"]; ok {
+		sort = bson.M{"createdat": val.(int64)}
+		delete(m, "sort")
+	} else {
+		sort = bson.M{"createdat": -1}
 	}
 
 	cur, err := s.col.Find(ctx, bson.M(m), options.Find().
-		SetSort(sort).
 		SetLimit(int64(p.Limit())).
 		SetSkip(int64(p.Offset())).
-		SetProjection(bson.D{
-			primitive.E{Key: "_id", Value: 1},
-			primitive.E{Key: "id", Value: 1},
-			primitive.E{Key: "userid", Value: 1},
-			primitive.E{Key: "createdat", Value: 1},
-			primitive.E{Key: "updatedat", Value: 1},
-			primitive.E{Key: "tagpaths", Value: 1},
-			primitive.E{Key: "tagdetails", Value: 1},
-			primitive.E{Key: "isfavorite", Value: 1},
-			primitive.E{Key: "folderid", Value: 1},
-			primitive.E{Key: "url", Value: 1},
-			primitive.E{Key: "title", Value: 1},
-			primitive.E{Key: "description", Value: 1},
-			primitive.E{Key: "favicon", Value: 1},
-			primitive.E{Key: "image", Value: 1},
-			primitive.E{Key: "site", Value: 1},
-		}))
+		SetProjection(projection).
+		SetSort(sort))
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
