@@ -3,3 +3,4 @@ linters:
     - exhaustivestruct
     - gci
     - paralleltest
+    - wsl
