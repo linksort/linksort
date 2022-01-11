@@ -37,7 +37,7 @@ export default function LinkItemTile({
     <GridItem
       height="18rem"
       borderRadius="xl"
-      boxShadow="lg"
+      boxShadow="sm"
       border="thin"
       borderStyle="solid"
       borderColor="gray.100"

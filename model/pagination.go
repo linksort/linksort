@@ -7,17 +7,19 @@ import (
 
 const (
 	_defaultPageNum  = 0
-	_defaultPageSize = 20
+	_defaultPageSize = 18
 )
 
-// Pagination captures all info needed for pagination.
-// If Size is negative, the result is an unlimited size.
 type Pagination struct {
 	Page int
 	Size int
 }
 
 func (p *Pagination) Offset() int {
+	if p.Page < 0 {
+		p.Page = _defaultPageNum
+	}
+
 	if p.Limit() < 0 {
 		return p.Page
 	}
@@ -26,7 +28,7 @@ func (p *Pagination) Offset() int {
 }
 
 func (p *Pagination) Limit() int {
-	if p.Size == 0 {
+	if p.Size <= 0 {
 		return _defaultPageSize
 	}
 
