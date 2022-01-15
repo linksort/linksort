@@ -36,8 +36,8 @@ export default function LinkItemTall({
         width="full"
         direction={["column", "column", "row", "row"]}
       >
-        <Box marginLeft={[0, 0, 2, 2]}>
-          <Link href={link.url} isExternal>
+        <Box marginLeft={[0, 0, 2, 2]} marginRight={[2, 2, 0, 0]}>
+          <Link href={link.url} isExternal _focus={{ boxShadow: "none" }}>
             <Text as="span" fontWeight="semibold">
               {link.title}
             </Text>

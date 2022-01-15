@@ -68,7 +68,7 @@ export default function LinkItemTile({
           borderTopStyle="solid"
         >
           <Box overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-            <Link href={link.url} isExternal>
+            <Link href={link.url} isExternal _focus={{ boxShadow: "none" }}>
               <Text as="span" fontWeight="semibold" title={link.title}>
                 {link.title}
               </Text>
