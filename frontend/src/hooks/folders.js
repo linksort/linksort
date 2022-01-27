@@ -41,8 +41,11 @@ export function useUpdateFolder(folder) {
     {
       onSuccess: (data, payload) => {
         queryClient.setQueryData("user", data?.user);
+        const title = payload.parentId
+          ? `Moved folder`
+          : `Folder "${payload.name}" renamed`;
         toast({
-          title: `Folder "${payload.name}" renamed`,
+          title: title,
           status: "success",
           duration: 9000,
           isClosable: true,
