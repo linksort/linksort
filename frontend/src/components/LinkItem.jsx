@@ -1,4 +1,5 @@
 import React from "react";
+import { useDrag } from "react-dnd";
 import { ListItem, useToast } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
@@ -58,8 +59,20 @@ export default function LinkItem({ link, idx = 0 }) {
     }
   }
 
+  const [, dragRef] = useDrag(() => ({
+    type: "LINK",
+    item: link,
+    options: { dropEffect: "move" },
+    end: (_, monitor) => {
+      if (monitor.didDrop()) {
+        const { parent } = monitor.getDropResult();
+        handleMoveToFolder(parent.id);
+      }
+    },
+  }));
+
   return (
-    <ListItem minWidth={0}>
+    <ListItem minWidth={0} ref={dragRef}>
       <motion.div
         key={link.id}
         variants={{

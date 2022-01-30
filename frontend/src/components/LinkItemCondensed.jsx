@@ -8,6 +8,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Portal,
 } from "@chakra-ui/react";
 import {
   DeleteIcon,
@@ -71,47 +72,49 @@ export default function LinkItemCondensed({
         <MenuButton>
           <DotDotDotVert />
         </MenuButton>
-        <MenuList>
-          <MenuItem
-            icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
-            onClick={onToggleIsFavorite}
-          >
-            Favorite
-          </MenuItem>
-          <MenuItem icon={<LinkIcon />} onClick={onCopyLink}>
-            Copy link
-          </MenuItem>
-          <MenuItem
-            icon={<EditIcon />}
-            as={RouterLink}
-            to={`/links/${link.id}`}
-          >
-            Edit
-          </MenuItem>
-          <MenuItem icon={<DeleteIcon />} onClick={onDeleteLink}>
-            Delete
-          </MenuItem>
-          <MenuDivider />
-          {folderTree.children.map((folder) => (
+        <Portal>
+          <MenuList>
             <MenuItem
-              key={folder.id}
-              onClick={() => onMoveToFolder(folder.id)}
-              icon={<FolderIcon />}
+              icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
+              onClick={onToggleIsFavorite}
             >
-              {folder.name}{" "}
-              {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
+              Favorite
             </MenuItem>
-          ))}
-          {isLinkInFolder && (
+            <MenuItem icon={<LinkIcon />} onClick={onCopyLink}>
+              Copy link
+            </MenuItem>
             <MenuItem
-              key="none"
-              onClick={() => onMoveToFolder("root")}
-              icon={<CloseIcon />}
+              icon={<EditIcon />}
+              as={RouterLink}
+              to={`/links/${link.id}`}
             >
-              Remove from folder
+              Edit
             </MenuItem>
-          )}
-        </MenuList>
+            <MenuItem icon={<DeleteIcon />} onClick={onDeleteLink}>
+              Delete
+            </MenuItem>
+            <MenuDivider />
+            {folderTree.children.map((folder) => (
+              <MenuItem
+                key={folder.id}
+                onClick={() => onMoveToFolder(folder.id)}
+                icon={<FolderIcon />}
+              >
+                {folder.name}{" "}
+                {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
+              </MenuItem>
+            ))}
+            {isLinkInFolder && (
+              <MenuItem
+                key="none"
+                onClick={() => onMoveToFolder("root")}
+                icon={<CloseIcon />}
+              >
+                Remove from folder
+              </MenuItem>
+            )}
+          </MenuList>
+        </Portal>
       </Menu>
     </Flex>
   );

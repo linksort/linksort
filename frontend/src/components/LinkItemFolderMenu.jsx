@@ -1,41 +1,54 @@
 import React, { useState } from "react";
-import { Menu, MenuList, MenuItem, MenuDivider, Box } from "@chakra-ui/react";
-import { CloseIcon, CheckCircleIcon } from "@chakra-ui/icons";
+import {
+  Menu,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  Portal,
+  Text,
+} from "@chakra-ui/react";
+import {
+  CloseIcon,
+  CheckCircleIcon,
+  ArrowBackIcon,
+  AddIcon,
+} from "@chakra-ui/icons";
 
 import { FolderIcon } from "./CustomIcons";
 
-function RecursiveMenuItem({ folder, onMoveToFolder, link, depth = 0 }) {
-  const [isHovering, setIsHovering] = useState(false);
-  const paddingLeft = depth === 0 ? "default" : depth * 10;
+function bfs(folderTree, defaultReturn, cb) {
+  const queue = [...folderTree.children];
 
-  return (
-    <Box
-      onMouseEnter={() => setIsHovering(true)}
-      key={`enclosing-box-${folder.id}`}
-    >
-      <MenuItem
-        onClick={() => onMoveToFolder(folder.id)}
-        icon={<FolderIcon />}
-        paddingLeft={paddingLeft}
-      >
-        {folder.name}{" "}
-        {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
-      </MenuItem>
-      {isHovering && folder.children.length > 0 && (
-        <MenuList border="none" boxShadow="none" paddingY="none">
-          {folder.children.map((child) => (
-            <RecursiveMenuItem
-              key={child.id}
-              folder={child}
-              onMoveToFolder={onMoveToFolder}
-              link={link}
-              depth={depth + 1}
-            />
-          ))}
-        </MenuList>
-      )}
-    </Box>
-  );
+  while (queue.length > 0) {
+    let node = queue.shift();
+
+    let found = cb(node);
+    if (found) {
+      return found;
+    }
+
+    queue.push(...node.children);
+  }
+
+  return defaultReturn;
+}
+
+function findParent(folderTree, target) {
+  return bfs(folderTree, folderTree, (node) => {
+    for (let i = 0; i < node.children.length; i++) {
+      if (node.children[i].id === target.id) {
+        return node;
+      }
+    }
+  });
+}
+
+function findFolderName(folderTree, id) {
+  return bfs(folderTree, "root", (node) => {
+    if (node.id === id) {
+      return node.name;
+    }
+  });
 }
 
 export default function LinkItemFolderMenu({
@@ -45,31 +58,86 @@ export default function LinkItemFolderMenu({
   isLinkInFolder,
   onMoveToFolder,
 }) {
+  const [selectedFolder, setSelectedFolder] = useState(folderTree);
+  const isSelectedFolderRoot = selectedFolder.id === "root";
+  const currentFolderName = isLinkInFolder
+    ? findFolderName(folderTree, link.folderId)
+    : "";
+
+  function handleClick(folder) {
+    if (folder.children.length > 0) {
+      setSelectedFolder(folder);
+    } else {
+      onMoveToFolder(folder.id);
+    }
+  }
+
+  function handleBackClick() {
+    setSelectedFolder(findParent(folderTree, selectedFolder));
+  }
+
   return (
     <Menu>
       {buttonSlot}
-      <MenuList>
-        {folderTree.children.map((folder) => (
-          <RecursiveMenuItem
-            key={folder.id}
-            folder={folder}
-            onMoveToFolder={onMoveToFolder}
-            link={link}
-          />
-        ))}
-        {isLinkInFolder && (
-          <>
-            <MenuDivider />
+      <Portal>
+        <MenuList>
+          {!isSelectedFolderRoot && (
+            <>
+              <MenuItem
+                onClick={() => onMoveToFolder(selectedFolder.id)}
+                icon={<AddIcon />}
+              >
+                Add to Folder:{" "}
+                <Text as="span" fontWeight="medium">
+                  {selectedFolder.name}
+                </Text>
+              </MenuItem>
+              <MenuDivider />
+            </>
+          )}
+
+          {selectedFolder.children.map((folder) => (
             <MenuItem
-              key="none"
-              onClick={() => onMoveToFolder("root")}
-              icon={<CloseIcon />}
+              key={folder.id}
+              onClick={() => handleClick(folder)}
+              icon={<FolderIcon />}
+              closeOnSelect={false}
             >
-              Remove from folder
+              {folder.name}{" "}
+              {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
             </MenuItem>
-          </>
-        )}
-      </MenuList>
+          ))}
+
+          {!isSelectedFolderRoot && (
+            <>
+              <MenuDivider />
+              <MenuItem
+                onClick={handleBackClick}
+                icon={<ArrowBackIcon />}
+                closeOnSelect={false}
+              >
+                Back
+              </MenuItem>
+            </>
+          )}
+
+          {isLinkInFolder && isSelectedFolderRoot && (
+            <>
+              <MenuDivider />
+              <MenuItem
+                key="none"
+                onClick={() => onMoveToFolder("root")}
+                icon={<CloseIcon />}
+              >
+                Remove from Folder:{" "}
+                <Text as="span" fontWeight="medium">
+                  {currentFolderName}
+                </Text>
+              </MenuItem>
+            </>
+          )}
+        </MenuList>
+      </Portal>
     </Menu>
   );
 }

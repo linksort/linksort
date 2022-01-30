@@ -69,7 +69,7 @@ function SidebarFolderItem({ folder, selectedFolderId, makeFolderLink }) {
 
   const [dropProps, dropRef] = useDrop(
     () => ({
-      accept: SIDEBAR_FOLDER,
+      accept: [SIDEBAR_FOLDER, "LINK"],
       drop: () => ({
         parent: folder,
       }),
