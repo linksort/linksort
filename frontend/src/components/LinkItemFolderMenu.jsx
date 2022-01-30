@@ -80,7 +80,7 @@ export default function LinkItemFolderMenu({
     <Menu>
       {buttonSlot}
       <Portal>
-        <MenuList>
+        <MenuList maxWidth="90vw">
           {!isSelectedFolderRoot && (
             <>
               <MenuItem
