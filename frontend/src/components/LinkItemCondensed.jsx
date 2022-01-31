@@ -1,25 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Flex,
   Link,
   Menu,
   MenuButton,
-  MenuDivider,
   MenuItem,
   MenuList,
   Portal,
 } from "@chakra-ui/react";
-import {
-  DeleteIcon,
-  EditIcon,
-  StarIcon,
-  CloseIcon,
-  CheckCircleIcon,
-  LinkIcon,
-} from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, StarIcon, LinkIcon } from "@chakra-ui/icons";
 
 import LinkItemFavicon from "./LinkItemFavicon";
+import LinkItemFolderMenuList from "./LinkItemFolderMenuList";
 import { DotDotDotVert, FolderIcon, StarBorderIcon } from "./CustomIcons";
 
 export default function LinkItemCondensed({
@@ -31,6 +24,8 @@ export default function LinkItemCondensed({
   onMoveToFolder,
   onCopyLink,
 }) {
+  const [isInFolderMode, setIsInFolderMode] = useState(false);
+
   return (
     <Flex
       alignItems="center"
@@ -73,47 +68,44 @@ export default function LinkItemCondensed({
           <DotDotDotVert />
         </MenuButton>
         <Portal>
-          <MenuList>
-            <MenuItem
-              icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
-              onClick={onToggleIsFavorite}
-            >
-              Favorite
-            </MenuItem>
-            <MenuItem icon={<LinkIcon />} onClick={onCopyLink}>
-              Copy link
-            </MenuItem>
-            <MenuItem
-              icon={<EditIcon />}
-              as={RouterLink}
-              to={`/links/${link.id}`}
-            >
-              Edit
-            </MenuItem>
-            <MenuItem icon={<DeleteIcon />} onClick={onDeleteLink}>
-              Delete
-            </MenuItem>
-            <MenuDivider />
-            {folderTree.children.map((folder) => (
+          {isInFolderMode ? (
+            <LinkItemFolderMenuList
+              link={link}
+              folderTree={folderTree}
+              isLinkInFolder={isLinkInFolder}
+              onMoveToFolder={onMoveToFolder}
+              onBack={() => setIsInFolderMode(false)}
+            />
+          ) : (
+            <MenuList>
               <MenuItem
-                key={folder.id}
-                onClick={() => onMoveToFolder(folder.id)}
+                icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
+                onClick={onToggleIsFavorite}
+              >
+                Favorite
+              </MenuItem>
+              <MenuItem icon={<LinkIcon />} onClick={onCopyLink}>
+                Copy link
+              </MenuItem>
+              <MenuItem
+                icon={<EditIcon />}
+                as={RouterLink}
+                to={`/links/${link.id}`}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem icon={<DeleteIcon />} onClick={onDeleteLink}>
+                Delete
+              </MenuItem>
+              <MenuItem
                 icon={<FolderIcon />}
+                onClick={() => setIsInFolderMode(true)}
+                closeOnSelect={false}
               >
-                {folder.name}{" "}
-                {folder.id === link.folderId && <CheckCircleIcon ml={2} />}
+                Folders
               </MenuItem>
-            ))}
-            {isLinkInFolder && (
-              <MenuItem
-                key="none"
-                onClick={() => onMoveToFolder("root")}
-                icon={<CloseIcon />}
-              >
-                Remove from folder
-              </MenuItem>
-            )}
-          </MenuList>
+            </MenuList>
+          )}
         </Portal>
       </Menu>
     </Flex>
