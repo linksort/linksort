@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MenuList, MenuItem, MenuDivider, Text } from "@chakra-ui/react";
 import {
-  CloseIcon,
   CheckCircleIcon,
   ArrowBackIcon,
   AddIcon,
@@ -58,6 +57,10 @@ export default function LinkItemFolderMenuList({
     ? findFolderName(folderTree, link.folderId)
     : "";
 
+  useEffect(() => {
+    setSelectedFolder(folderTree);
+  }, [folderTree]);
+
   function handleClick(folder) {
     if (folder.children.length > 0) {
       setSelectedFolder(folder);
@@ -77,6 +80,7 @@ export default function LinkItemFolderMenuList({
           <MenuItem
             onClick={() => onMoveToFolder(selectedFolder.id)}
             icon={<AddIcon />}
+            closeOnSelect={false}
           >
             Add to Folder:{" "}
             <Text as="span" fontWeight="medium">
@@ -99,13 +103,14 @@ export default function LinkItemFolderMenuList({
         </MenuItem>
       ))}
 
-      {isLinkInFolder && isSelectedFolderRoot && (
+      {isLinkInFolder && isSelectedFolderRoot && currentFolderName !== "root" && (
         <>
           <MenuDivider />
           <MenuItem
             key="none"
             onClick={() => onMoveToFolder("root")}
             icon={<SmallCloseIcon />}
+            closeOnSelect={false}
           >
             Remove from Folder:{" "}
             <Text as="span" fontWeight="medium">
