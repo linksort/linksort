@@ -4,16 +4,7 @@ import { Box, Flex, Text, Link, GridItem } from "@chakra-ui/react";
 import CoverImage from "./CoverImage";
 import LinkItemControls from "./LinkItemControls";
 
-export default function LinkItemTile({
-  link,
-  folderTree,
-  isLinkInFolder,
-  currentFolderName,
-  onDeleteLink,
-  onToggleIsFavorite,
-  onMoveToFolder,
-  onCopyLink,
-}) {
+export default function LinkItemTile({ link }) {
   return (
     <GridItem
       height="18rem"
@@ -53,16 +44,7 @@ export default function LinkItemTile({
               {link.site}
             </Text>
           </Box>
-          <LinkItemControls
-            link={link}
-            folderTree={folderTree}
-            isLinkInFolder={isLinkInFolder}
-            currentFolderName={currentFolderName}
-            onDeleteLink={onDeleteLink}
-            onToggleIsFavorite={onToggleIsFavorite}
-            onMoveToFolder={onMoveToFolder}
-            onCopyLink={onCopyLink}
-          />
+          <LinkItemControls link={link} />
         </Flex>
       </Box>
     </GridItem>

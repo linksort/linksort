@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useToast } from "@chakra-ui/react";
 import pick from "lodash/pick";
@@ -157,4 +158,76 @@ export function useDeleteLink(linkId) {
       },
     }
   );
+}
+
+export function useLinkOperations(link) {
+  const toast = useToast();
+  const deleteMutation = useDeleteLink(link.id);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const updateMutation = useUpdateLink(link.id);
+  const [isFavoriting, setIsFavoriting] = useState(false);
+  const [isMovingFolders, setIsMovingFolders] = useState(false);
+
+  return useMemo(() => {
+    async function handleDeleteLink() {
+      setIsDeleting(true);
+      await deleteMutation.mutateAsync();
+      setIsDeleting(false);
+    }
+
+    async function handleToggleIsFavorite() {
+      setIsFavoriting(true);
+      const toast = link.isFavorite
+        ? "Link removed from favorites"
+        : "Link added to favorites";
+      await updateMutation.mutateAsync({ isFavorite: !link.isFavorite, toast });
+      setIsFavoriting(false);
+    }
+
+    function handleMoveToFolder(folderId) {
+      setIsMovingFolders(true);
+      const toast =
+        folderId === "root"
+          ? "Link removed from folder"
+          : "Link added to folder";
+      updateMutation.mutate({ folderId, toast });
+      setIsMovingFolders(false);
+    }
+
+    function handleCopyLink() {
+      const input = document.createElement("input");
+      input.setAttribute("type", "text");
+      input.setAttribute("value", link.url);
+      document.body.appendChild(input);
+      input.select();
+      const isSuccess = document.execCommand("copy");
+      document.body.removeChild(input);
+      if (isSuccess) {
+        toast({
+          title: "Copied URL to clipboard",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    }
+
+    return {
+      handleDeleteLink,
+      isDeleting,
+      handleToggleIsFavorite,
+      isFavoriting,
+      handleMoveToFolder,
+      isMovingFolders,
+      handleCopyLink,
+    };
+  }, [
+    link,
+    deleteMutation,
+    isDeleting,
+    isFavoriting,
+    isMovingFolders,
+    toast,
+    updateMutation,
+  ]);
 }

@@ -14,16 +14,18 @@ import { DeleteIcon, StarIcon, LinkIcon, ViewIcon } from "@chakra-ui/icons";
 import LinkItemFavicon from "./LinkItemFavicon";
 import LinkItemFolderMenuList from "./LinkItemFolderMenuList";
 import { DotDotDotVert, FolderIcon, StarBorderIcon } from "./CustomIcons";
+import { useFolders } from "../hooks/folders";
+import { useLinkOperations } from "../hooks/links";
 
-export default function LinkItemCondensed({
-  link,
-  folderTree,
-  isLinkInFolder,
-  onDeleteLink,
-  onToggleIsFavorite,
-  onMoveToFolder,
-  onCopyLink,
-}) {
+export default function LinkItemCondensed({ link }) {
+  const {
+    handleDeleteLink,
+    handleToggleIsFavorite,
+    handleMoveToFolder,
+    handleCopyLink,
+  } = useLinkOperations(link);
+  const { folderTree } = useFolders();
+  const isLinkInFolder = link.folderId !== "root" && link.folderId.length > 0;
   const [isInFolderMode, setIsInFolderMode] = useState(false);
 
   return (
@@ -73,18 +75,18 @@ export default function LinkItemCondensed({
               link={link}
               folderTree={folderTree}
               isLinkInFolder={isLinkInFolder}
-              onMoveToFolder={onMoveToFolder}
+              onMoveToFolder={handleMoveToFolder}
               onBack={() => setIsInFolderMode(false)}
             />
           ) : (
             <MenuList>
               <MenuItem
                 icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
-                onClick={onToggleIsFavorite}
+                onClick={handleToggleIsFavorite}
               >
                 Favorite
               </MenuItem>
-              <MenuItem icon={<LinkIcon />} onClick={onCopyLink}>
+              <MenuItem icon={<LinkIcon />} onClick={handleCopyLink}>
                 Copy link
               </MenuItem>
               <MenuItem
@@ -94,7 +96,7 @@ export default function LinkItemCondensed({
               >
                 View
               </MenuItem>
-              <MenuItem icon={<DeleteIcon />} onClick={onDeleteLink}>
+              <MenuItem icon={<DeleteIcon />} onClick={handleDeleteLink}>
                 Delete
               </MenuItem>
               <MenuItem

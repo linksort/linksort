@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, Link as RouterLink, useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import {
   Box,
   Button,
@@ -198,7 +198,7 @@ export default function LinkUpdate() {
           </Button>
         </HStack>
         <HStack spacing={4}>
-          <Button as={RouterLink} to={`/links/${link.id}`}>
+          <Button onClick={() => history.replace(`/links/${link.id}`)}>
             Cancel
           </Button>
 

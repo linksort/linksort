@@ -4,16 +4,7 @@ import { Box, Flex, Text, Link } from "@chakra-ui/react";
 import LinkItemFavicon from "./LinkItemFavicon";
 import LinkItemControls from "./LinkItemControls";
 
-export default function LinkItemTall({
-  link,
-  folderTree,
-  isLinkInFolder,
-  currentFolderName,
-  onDeleteLink,
-  onToggleIsFavorite,
-  onMoveToFolder,
-  onCopyLink,
-}) {
+export default function LinkItemTall({ link }) {
   return (
     <Flex
       padding={4}
@@ -56,16 +47,7 @@ export default function LinkItemTall({
             favicon={link.favicon}
             display={["flex", "flex", "none", "none"]}
           />
-          <LinkItemControls
-            link={link}
-            folderTree={folderTree}
-            isLinkInFolder={isLinkInFolder}
-            currentFolderName={currentFolderName}
-            onDeleteLink={onDeleteLink}
-            onToggleIsFavorite={onToggleIsFavorite}
-            onMoveToFolder={onMoveToFolder}
-            onCopyLink={onCopyLink}
-          />
+          <LinkItemControls link={link} />
         </Flex>
       </Flex>
     </Flex>

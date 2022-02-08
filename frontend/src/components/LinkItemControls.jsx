@@ -12,21 +12,28 @@ import { DeleteIcon, LinkIcon, StarIcon, ViewIcon } from "@chakra-ui/icons";
 
 import { FolderIcon, StarBorderIcon } from "./CustomIcons";
 import LinkItemFolderMenu from "./LinkItemFolderMenu";
+import { useFolders } from "../hooks/folders";
+import { useLinkOperations } from "../hooks/links";
 
 export default function LinkItemControls({
   link,
-  folderTree,
-  isLinkInFolder,
-  currentFolderName,
-  onDeleteLink,
-  onToggleIsFavorite,
-  onMoveToFolder,
-  onCopyLink,
   buttonSpacing = 2,
   buttonColor = "gray.100",
   buttonFolderIconPlacement = "left",
   ...rest
 }) {
+  const {
+    handleDeleteLink,
+    isDeleting,
+    handleToggleIsFavorite,
+    isFavoriting,
+    handleMoveToFolder,
+    handleCopyLink,
+  } = useLinkOperations(link);
+  const { folderTree, resolveFolderName } = useFolders();
+  const isLinkInFolder = link.folderId !== "root" && link.folderId.length > 0;
+  const currentFolderName = resolveFolderName(link.folderId, "");
+
   const folderIconProps =
     buttonFolderIconPlacement === "left"
       ? {
@@ -78,14 +85,15 @@ export default function LinkItemControls({
           )
         }
         folderTree={folderTree}
-        onMoveToFolder={onMoveToFolder}
+        onMoveToFolder={handleMoveToFolder}
       />
       <Tooltip label="Favorite link">
         <IconButton
           backgroundColor={buttonColor}
           icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
           size="sm"
-          onClick={onToggleIsFavorite}
+          onClick={handleToggleIsFavorite}
+          isLoading={isFavoriting}
           _focus="none"
         />
       </Tooltip>
@@ -94,7 +102,7 @@ export default function LinkItemControls({
           backgroundColor={buttonColor}
           icon={<LinkIcon />}
           size="sm"
-          onClick={onCopyLink}
+          onClick={handleCopyLink}
           _focus="none"
         />
       </Tooltip>
@@ -113,7 +121,8 @@ export default function LinkItemControls({
           backgroundColor={buttonColor}
           icon={<DeleteIcon />}
           size="sm"
-          onClick={onDeleteLink}
+          onClick={handleDeleteLink}
+          isLoading={isDeleting}
           _focus="none"
         />
       </Tooltip>
