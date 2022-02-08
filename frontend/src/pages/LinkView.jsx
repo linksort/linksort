@@ -13,18 +13,25 @@ import {
   Link,
   IconButton,
 } from "@chakra-ui/react";
+import {
+  StarIcon,
+  ArrowBackIcon,
+  EditIcon,
+  ExternalLinkIcon,
+} from "@chakra-ui/icons";
 
-import { useLink } from "../hooks/links";
+import { useLink, useLinkOperations } from "../hooks/links";
 import LoadingScreen from "../components/LoadingScreen";
 import ErrorScreen from "../components/ErrorScreen";
 import LinkItemFavicon from "../components/LinkItemFavicon";
 import CoverImage from "../components/CoverImage";
-import { ArrowBackIcon, EditIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { StarBorderIcon } from "../components/CustomIcons";
 
 export default function LinkView() {
   const history = useHistory();
   const { linkId } = useParams();
   const { data: link, isLoading, isError, error } = useLink(linkId);
+  const { handleToggleIsFavorite, isFavoriting } = useLinkOperations(link);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -44,6 +51,13 @@ export default function LinkView() {
     >
       <HStack>
         <IconButton onClick={() => history.goBack()} icon={<ArrowBackIcon />} />
+        <Button
+          onClick={handleToggleIsFavorite}
+          leftIcon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
+          isLoading={isFavoriting}
+        >
+          Favorite
+        </Button>
         <Button
           onClick={() => history.replace(`/links/${link.id}/update`)}
           leftIcon={<EditIcon />}
