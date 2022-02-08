@@ -9,7 +9,7 @@ import {
   MenuList,
   Portal,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon, StarIcon, LinkIcon } from "@chakra-ui/icons";
+import { DeleteIcon, StarIcon, LinkIcon, ViewIcon } from "@chakra-ui/icons";
 
 import LinkItemFavicon from "./LinkItemFavicon";
 import LinkItemFolderMenuList from "./LinkItemFolderMenuList";
@@ -88,11 +88,11 @@ export default function LinkItemCondensed({
                 Copy link
               </MenuItem>
               <MenuItem
-                icon={<EditIcon />}
+                icon={<ViewIcon />}
                 as={RouterLink}
                 to={`/links/${link.id}`}
               >
-                Edit
+                View
               </MenuItem>
               <MenuItem icon={<DeleteIcon />} onClick={onDeleteLink}>
                 Delete

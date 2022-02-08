@@ -18,7 +18,8 @@ import ForgotPassword from "../pages/ForgotPassword";
 import ForgotPasswordSentEmail from "../pages/ForgotPasswordSentEmail";
 import ChangePassword from "../pages/ChangePassword";
 import Home from "../pages/Home";
-import Link from "../pages/Link";
+import LinkUpdate from "../pages/LinkUpdate";
+import LinkView from "../pages/LinkView";
 import Extensions from "../pages/Extensions";
 import { ViewSettingProvider } from "../hooks/views";
 import { GlobalFiltersProvider } from "../hooks/filters";
@@ -72,8 +73,14 @@ export default function App() {
                   <AuthRoute
                     isAuthRequired={true}
                     redirectTo="/sign-in"
+                    path="/links/:linkId/update"
+                    component={LinkUpdate}
+                  />
+                  <AuthRoute
+                    isAuthRequired={true}
+                    redirectTo="/sign-in"
                     path="/links/:linkId"
-                    component={Link}
+                    component={LinkView}
                   />
                   <AuthRoute
                     isAuthRequired={true}

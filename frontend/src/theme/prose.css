@@ -306,6 +306,10 @@
   font-size: 1.25rem;
 }
 
+.prose p:first-child {
+  margin-top: 0;
+}
+
 .prose img {
   margin-top: 2em;
   margin-bottom: 2em;

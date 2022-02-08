@@ -1,17 +1,8 @@
 import React from "react";
 import { Box, Flex, Text, Link, GridItem } from "@chakra-ui/react";
 
-import FadeInImage from "./FadeInImage";
+import CoverImage from "./CoverImage";
 import LinkItemControls from "./LinkItemControls";
-
-const COLORS = ["red", "blue", "cyan", "purple", "pink", "orange"];
-
-function Color({ id }) {
-  const idx = id.charCodeAt(1) % 6;
-  const color = COLORS[idx];
-
-  return <Box width="100%" height="100%" backgroundColor={`${color}.300`} />;
-}
 
 export default function LinkItemTile({
   link,
@@ -38,13 +29,7 @@ export default function LinkItemTile({
     >
       <Box>
         <Box height="10rem">
-          <FadeInImage
-            src={link.image}
-            width="full"
-            height="10rem"
-            objectFit="cover"
-            fallback={<Color id={link.title} />}
-          />
+          <CoverImage link={link} width="full" height="10rem" />
         </Box>
         <Flex
           direction="column"

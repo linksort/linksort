@@ -8,7 +8,7 @@ import {
   Button,
   MenuButton,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon, LinkIcon, StarIcon } from "@chakra-ui/icons";
+import { DeleteIcon, LinkIcon, StarIcon, ViewIcon } from "@chakra-ui/icons";
 
 import { FolderIcon, StarBorderIcon } from "./CustomIcons";
 import LinkItemFolderMenu from "./LinkItemFolderMenu";
@@ -98,11 +98,11 @@ export default function LinkItemControls({
           _focus="none"
         />
       </Tooltip>
-      <Tooltip label="Edit link">
+      <Tooltip label="View details">
         <IconButton
           backgroundColor={buttonColor}
           as={RouterLink}
-          icon={<EditIcon />}
+          icon={<ViewIcon />}
           to={`/links/${link.id}`}
           size="sm"
           _focus="none"

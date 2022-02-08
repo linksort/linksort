@@ -25,7 +25,7 @@ import { suppressMutationErrors } from "../utils/mutations";
 import LoadingScreen from "../components/LoadingScreen";
 import ErrorScreen from "../components/ErrorScreen";
 
-export default function Link() {
+export default function LinkUpdate() {
   const history = useHistory();
   const { linkId } = useParams();
   const { data: link, isLoading, isError, error } = useLink(linkId);
@@ -198,7 +198,7 @@ export default function Link() {
           </Button>
         </HStack>
         <HStack spacing={4}>
-          <Button as={RouterLink} to="/">
+          <Button as={RouterLink} to={`/links/${link.id}`}>
             Cancel
           </Button>
 
