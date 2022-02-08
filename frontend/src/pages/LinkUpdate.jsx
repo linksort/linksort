@@ -58,7 +58,7 @@ export default function LinkUpdate() {
           ])
         )
         .then(() => {
-          history.goBack();
+          history.replace(`/links/${link.id}`);
         })
     ),
   });

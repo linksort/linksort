@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, Link as RouterLink } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import {
   Heading,
   Box,
@@ -22,6 +22,7 @@ import CoverImage from "../components/CoverImage";
 import { ArrowBackIcon, EditIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 
 export default function LinkView() {
+  const history = useHistory();
   const { linkId } = useParams();
   const { data: link, isLoading, isError, error } = useLink(linkId);
 
@@ -42,10 +43,9 @@ export default function LinkView() {
       maxWidth="70ch"
     >
       <HStack>
-        <IconButton as={RouterLink} to="/" icon={<ArrowBackIcon />} />
+        <IconButton onClick={() => history.goBack()} icon={<ArrowBackIcon />} />
         <Button
-          as={RouterLink}
-          to={`/links/${link.id}/update`}
+          onClick={() => history.replace(`/links/${link.id}/update`)}
           leftIcon={<EditIcon />}
         >
           Edit
