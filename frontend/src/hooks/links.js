@@ -160,7 +160,7 @@ export function useDeleteLink(linkId) {
   );
 }
 
-export function useLinkOperations(link) {
+export function useLinkOperations(link = {}) {
   const toast = useToast();
   const deleteMutation = useDeleteLink(link.id);
   const [isDeleting, setIsDeleting] = useState(false);
