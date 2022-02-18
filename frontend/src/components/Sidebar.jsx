@@ -10,11 +10,9 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import {
-  ArrowBackIcon,
   ArrowDownIcon,
   ArrowUpIcon,
   CopyIcon,
-  PlusSquareIcon,
   StarIcon,
 } from "@chakra-ui/icons";
 
@@ -25,13 +23,10 @@ import SidebarCollapsableSection from "./SidebarCollapsableSection";
 import SidebarSearchButton from "./SidebarSearchButton";
 import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
-import TopRightViewPicker from "./TopRightViewPicker";
 import { useFilters } from "../hooks/filters";
-import { useSignOut } from "../hooks/auth";
 import { StarBorderIcon } from "./CustomIcons";
 
 export default function Sidebar({ width = "18rem", isMobile = false }) {
-  const signOutMutation = useSignOut();
   const {
     handleToggleSort,
     handleToggleGroup,
@@ -58,16 +53,13 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
             height="5rem"
             justifyContent="flex-start"
             alignItems="center"
-            marginBottom={[2, 2, 2, 2, 4]}
+            marginBottom={2}
           >
             <RouterLink to="/">
               <Logo />
               <VisuallyHidden>Linksort</VisuallyHidden>
             </RouterLink>
           </Flex>
-          <Box marginBottom={6}>
-            <TopRightViewPicker isMobile={isMobile} />
-          </Box>
           <Box as="nav">
             <List paddingRight={2}>
               <ListItem marginBottom={8}>
@@ -140,40 +132,10 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                   <SidebarTagTree />
                 </SidebarCollapsableSection>
               </ListItem>
-              <ListItem
-                marginTop={8}
-                display={[
-                  "list-item",
-                  "list-item",
-                  "list-item",
-                  "list-item",
-                  "none",
-                ]}
-              >
-                <Stack as={List} spacing={1}>
-                  <ListItem>
-                    <SidebarButton
-                      leftIcon={<PlusSquareIcon />}
-                      as={RouterLink}
-                      to="/extensions"
-                    >
-                      Extensions
-                    </SidebarButton>
-                  </ListItem>
-                  <ListItem>
-                    <SidebarButton
-                      leftIcon={<ArrowBackIcon />}
-                      onClick={signOutMutation.mutate}
-                    >
-                      Sign out
-                    </SidebarButton>
-                  </ListItem>
-                </Stack>
-              </ListItem>
             </List>
           </Box>
         </Box>
-        <Box paddingBottom={[16, 16, 16, 16, 4]} paddingTop={4}>
+        <Box paddingBottom={[16, 16, 4, 4, 4]} paddingTop={10}>
           <MouseType align="left" color="gray.600" fontSize="xs" />
         </Box>
       </Flex>

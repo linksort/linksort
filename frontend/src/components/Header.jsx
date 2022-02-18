@@ -10,6 +10,7 @@ import {
   DrawerOverlay,
   DrawerContent,
   Button,
+  HStack,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 
@@ -23,12 +24,8 @@ import GiveFeedbackButton from "./GiveFeedbackButton";
 export default function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = useRef();
-  const {
-    folderName,
-    areFavoritesShowing,
-    searchQuery,
-    tagPath,
-  } = useFilters();
+  const { folderName, areFavoritesShowing, searchQuery, tagPath } =
+    useFilters();
   const isSearching = searchQuery && searchQuery.length > 0;
   const isViewingTag = tagPath.length > 0;
 
@@ -56,16 +53,29 @@ export default function Header() {
         alignItems="center"
         backgroundColor="white"
       >
-        <Heading
-          as="h2"
-          size="md"
-          textOverflow="ellipsis"
-          maxWidth="60%"
-          overflow="hidden"
-          whiteSpace="nowrap"
-        >
-          {heading}
-        </Heading>
+        <HStack maxWidth="60%">
+          <IconButton
+            id="mobile-nav"
+            display={["flex", "flex", "flex", "flex", "none"]}
+            variant="outline"
+            ref={buttonRef}
+            onClick={onOpen}
+            aria-label="nav"
+            icon={<HamburgerIcon />}
+          />
+
+          <Heading
+            as="h2"
+            size="md"
+            textOverflow="ellipsis"
+            maxWidth="100%"
+            overflow="hidden"
+            whiteSpace="nowrap"
+          >
+            {heading}
+          </Heading>
+        </HStack>
+
         <Stack
           direction="row"
           as="nav"
@@ -85,14 +95,7 @@ export default function Header() {
           display={["flex", "flex", "flex", "flex", "none"]}
         >
           <TopRightNewLinkPopover isMobile={true} />
-          <IconButton
-            id="mobile-nav"
-            borderLeftRadius="none"
-            ref={buttonRef}
-            onClick={onOpen}
-            aria-label="nav"
-            icon={<HamburgerIcon />}
-          />
+          <TopRightUserMenu isMobile={true} />
         </Stack>
       </Flex>
       <Drawer

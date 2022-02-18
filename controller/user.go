@@ -15,7 +15,10 @@ import (
 )
 
 type User struct {
-	Store model.UserStore
+	Store     model.UserStore
+	LinkStore interface {
+		DeleteAllLinksByUser(ctx context.Context, u *model.User) error
+	}
 	Email interface {
 		SendForgotPassword(context.Context, *model.User, string) error
 	}
@@ -116,7 +119,12 @@ func (u *User) UpdateUser(ctx context.Context, usr *model.User, req *handler.Upd
 func (u *User) DeleteUser(ctx context.Context, usr *model.User) error {
 	op := errors.Opf("controller.DeleteUser(%q)", usr.Email)
 
-	err := u.Store.DeleteUser(ctx, usr)
+	err := u.LinkStore.DeleteAllLinksByUser(ctx, usr)
+	if err != nil {
+		return errors.E(op, err)
+	}
+
+	err = u.Store.DeleteUser(ctx, usr)
 	if err != nil {
 		return errors.E(op, err)
 	}

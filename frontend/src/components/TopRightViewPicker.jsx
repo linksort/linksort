@@ -9,11 +9,11 @@ import {
   VIEW_SETTING_TILES,
 } from "../hooks/views";
 
-export default function TopRightViewPicker({ isMobile }) {
+export default function TopRightViewPicker() {
   const { setting, setSetting } = useViewSetting();
 
   return (
-    <Flex id={isMobile ? "mobile-view-setting" : "view-setting"}>
+    <Flex id="view-setting">
       <Tooltip label="Condensed view">
         <IconButton
           zIndex={1}

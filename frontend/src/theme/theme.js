@@ -31,6 +31,11 @@ const theme = {
         focusBorderColor: "accent",
       },
     },
+    Button: {
+      baseStyle: {
+        borderRadius: "lg",
+      },
+    },
   },
 
   colors: {

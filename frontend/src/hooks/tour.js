@@ -15,8 +15,7 @@ function tour() {
 
   t.addStep({
     id: "welcome",
-    text:
-      "Welcome to Linksort! Use this button to save new links. It's most useful when you have a URL that your're ready to copy-paste in.",
+    text: "Welcome to Linksort! Use this button to save new links. It's most useful when you have a URL that your're ready to copy-paste in.",
     attachTo: {
       element: isMobile ? "#mobile-new-link" : "#new-link",
       on: "bottom",
@@ -50,25 +49,8 @@ function tour() {
   }
 
   t.addStep({
-    id: "view-setting",
-    text:
-      "There are three view settings—condensed, comfy, and tiled—which you can toggle here.",
-    attachTo: {
-      element: isMobile ? "#mobile-view-setting" : "#view-setting",
-      on: isMobile ? "bottom" : "right",
-    },
-    buttons: [
-      {
-        text: "Next",
-        action: t.next,
-      },
-    ],
-  });
-
-  t.addStep({
     id: "filter-controls",
-    text:
-      "You can search, sort, group, and filter your links with these controls.",
+    text: "You can search, sort, group, and filter your links with these controls.",
     attachTo: {
       element: isMobile ? "#mobile-filter-controls" : "#filter-controls",
       on: isMobile ? "bottom" : "right",
@@ -83,8 +65,7 @@ function tour() {
 
   t.addStep({
     id: "auto-tag-controls",
-    text:
-      "As you save links, they will be automatically tagged based on their content and organized for you here.",
+    text: "As you save links, they will be automatically tagged based on their content and organized for you here.",
     attachTo: {
       element: isMobile ? "#mobile-auto-tag-controls" : "#auto-tag-controls",
       on: isMobile ? "top" : "right",

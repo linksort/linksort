@@ -10,7 +10,7 @@ function SidebarSectionHeader({ children, ...rest }) {
       as="h4"
       fontSize="0.7rem"
       fontWeight="bold"
-      color="gray.600"
+      color="gray.700"
       textTransform="uppercase"
       marginBottom={4}
       position="relative"

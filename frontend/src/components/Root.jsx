@@ -21,6 +21,7 @@ import Home from "../pages/Home";
 import LinkUpdate from "../pages/LinkUpdate";
 import LinkView from "../pages/LinkView";
 import Extensions from "../pages/Extensions";
+import Account from "../pages/Account";
 import { ViewSettingProvider } from "../hooks/views";
 import { GlobalFiltersProvider } from "../hooks/filters";
 
@@ -87,6 +88,12 @@ export default function App() {
                     redirectTo="/sign-in"
                     path="/extensions"
                     component={Extensions}
+                  />
+                  <AuthRoute
+                    isAuthRequired={true}
+                    redirectTo="/sign-in"
+                    path="/account"
+                    component={Account}
                   />
                   <AuthRoute
                     isAuthRequired={true}

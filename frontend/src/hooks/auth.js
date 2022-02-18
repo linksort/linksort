@@ -150,3 +150,23 @@ export function useUpdateUser() {
     }
   );
 }
+
+export function useDeleteUser() {
+  const history = useHistory();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    () =>
+      apiFetch(`/api/users`, {
+        method: "DELETE",
+      }),
+    {
+      onSuccess: () => {
+        window.__SERVER_DATA__ = {};
+        queryClient.setQueryData("user", USER_SHAPE);
+        history.push("/sign-in");
+        window.location.reload();
+      },
+    }
+  );
+}

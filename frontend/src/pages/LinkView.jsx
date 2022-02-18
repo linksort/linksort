@@ -83,7 +83,13 @@ export default function LinkView() {
       </VStack>
 
       {link.image && (
-        <Box height="22rem" borderRadius="lg" overflow="hidden">
+        <Box
+          height="22rem"
+          borderRadius="lg"
+          overflow="hidden"
+          borderColor="gray.100"
+          borderWidth="thin"
+        >
           <CoverImage
             link={link}
             width="100%"
@@ -93,12 +99,14 @@ export default function LinkView() {
         </Box>
       )}
 
-      <VStack align="left">
-        <Heading as="h6" fontSize="sm">
-          Description
-        </Heading>
-        <Text>{link.description}</Text>
-      </VStack>
+      {link.description.length > 0 && (
+        <VStack align="left">
+          <Heading as="h6" fontSize="sm">
+            Description
+          </Heading>
+          <Text>{link.description}</Text>
+        </VStack>
+      )}
 
       <VStack align="left">
         <Heading as="h6" fontSize="sm">

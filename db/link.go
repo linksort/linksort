@@ -182,6 +182,17 @@ func (s *LinkStore) DeleteLink(ctx context.Context, l *model.Link) error {
 	return nil
 }
 
+func (s *LinkStore) DeleteAllLinksByUser(ctx context.Context, u *model.User) error {
+	op := errors.Opf("LinkStore.DeleteAllLinks(%q)", u.Email)
+
+	_, err := s.col.DeleteMany(ctx, bson.M{"userid": u.ID})
+	if err != nil {
+		return errors.E(op, err)
+	}
+
+	return nil
+}
+
 func GetLinksSort(val string) model.GetLinksOption {
 	return func(m map[string]interface{}) {
 		if len(val) > 0 && (val == "1" || val == "-1") {

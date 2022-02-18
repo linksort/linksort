@@ -44,9 +44,10 @@ func New(c *Config) http.Handler {
 
 	// Controllers
 	userC := &controller.User{
-		Store: c.UserStore,
-		Magic: c.Magic,
-		Email: c.Email,
+		Store:     c.UserStore,
+		LinkStore: c.LinkStore,
+		Magic:     c.Magic,
+		Email:     c.Email,
 	}
 	authC := &controller.Auth{Store: c.UserStore}
 	linkC := &controller.Link{

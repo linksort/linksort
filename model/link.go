@@ -34,4 +34,5 @@ type LinkStore interface {
 	CreateLink(context.Context, *Link) (*Link, error)
 	UpdateLink(context.Context, *Link) (*Link, error)
 	DeleteLink(context.Context, *Link) error
+	DeleteAllLinksByUser(ctx context.Context, u *User) error
 }
