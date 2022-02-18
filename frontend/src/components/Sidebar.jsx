@@ -11,10 +11,11 @@ import {
 } from "@chakra-ui/react";
 import {
   ArrowBackIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
   CopyIcon,
   PlusSquareIcon,
   StarIcon,
-  UpDownIcon,
 } from "@chakra-ui/icons";
 
 import Logo from "./Logo";
@@ -27,6 +28,7 @@ import SidebarTagTree from "./SidebarTagTree";
 import TopRightViewPicker from "./TopRightViewPicker";
 import { useFilters } from "../hooks/filters";
 import { useSignOut } from "../hooks/auth";
+import { StarBorderIcon } from "./CustomIcons";
 
 export default function Sidebar({ width = "18rem", isMobile = false }) {
   const signOutMutation = useSignOut();
@@ -79,7 +81,13 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                   </ListItem>
                   <ListItem>
                     <SidebarButton
-                      leftIcon={<UpDownIcon />}
+                      leftIcon={
+                        sortDirection === "newest first" ? (
+                          <ArrowDownIcon />
+                        ) : (
+                          <ArrowUpIcon />
+                        )
+                      }
                       onClick={handleToggleSort}
                     >
                       <Text as="span">
@@ -105,7 +113,9 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                   </ListItem>
                   <ListItem>
                     <SidebarButton
-                      leftIcon={<StarIcon />}
+                      leftIcon={
+                        areFavoritesShowing ? <StarIcon /> : <StarBorderIcon />
+                      }
                       as={RouterLink}
                       to={makeToggleFavoritesLink()}
                       variant={areFavoritesShowing ? "solid" : "ghost"}
