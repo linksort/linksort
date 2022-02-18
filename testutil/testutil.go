@@ -58,7 +58,13 @@ func Handler() http.Handler {
 			log.Print(errors.E(op, err))
 		}
 
-		_closer = closer
+		_closer = func() error {
+			if err := mongo.Database("test").Drop(ctx); err != nil {
+				return err
+			}
+
+			return closer()
+		}
 		_txnClient = db.NewTxnClient(mongo)
 		_userStore = db.NewUserStore(mongo)
 		_linkStore = db.NewLinkStore(mongo)

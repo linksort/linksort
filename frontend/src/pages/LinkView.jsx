@@ -99,14 +99,17 @@ export default function LinkView() {
         </Box>
       )}
 
-      {link.description.length > 0 && (
-        <VStack align="left">
-          <Heading as="h6" fontSize="sm">
-            Description
-          </Heading>
+      <VStack align="left">
+        <Heading as="h6" fontSize="sm">
+          Description
+        </Heading>
+
+        {link.description.length > 0 ? (
           <Text>{link.description}</Text>
-        </VStack>
-      )}
+        ) : (
+          <Text color="gray.600">No description was found for this link.</Text>
+        )}
+      </VStack>
 
       <VStack align="left">
         <Heading as="h6" fontSize="sm">
@@ -136,19 +139,23 @@ export default function LinkView() {
         <Heading as="h6" fontSize="sm">
           Corpus
         </Heading>
-        <Box
-          className="prose"
-          width="70ch"
-          dangerouslySetInnerHTML={{
-            __html: link.corpus
-              .replaceAll("<html>", "")
-              .replaceAll("<head>", "")
-              .replaceAll("<body>", "")
-              .replaceAll("</head>", "")
-              .replaceAll("</html>", "")
-              .replaceAll("</body>", ""),
-          }}
-        />
+        {link.corpus.length > 512 ? (
+          <Box
+            className="prose"
+            width="70ch"
+            dangerouslySetInnerHTML={{
+              __html: link.corpus
+                .replaceAll("<html>", "")
+                .replaceAll("<head>", "")
+                .replaceAll("<body>", "")
+                .replaceAll("</head>", "")
+                .replaceAll("</html>", "")
+                .replaceAll("</body>", ""),
+            }}
+          />
+        ) : (
+          <Text color="gray.600">No corpus was gathered this link.</Text>
+        )}
       </VStack>
     </VStack>
   );
