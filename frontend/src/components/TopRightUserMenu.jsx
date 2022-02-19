@@ -26,6 +26,9 @@ export default function TopRightUserMenu({ isMobile }) {
         icon={<SettingsIcon />}
         variant="solid"
         borderLeftRadius={isMobile ? "none" : "default"}
+        borderLeftColor={isMobile ? "gray.200" : "none"}
+        borderLeftWidth={isMobile ? "thin" : "none"}
+        _focus={{ boxShadow: "none" }}
       />
       <MenuList>
         <MenuItem

@@ -135,7 +135,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
             </List>
           </Box>
         </Box>
-        <Box paddingBottom={[16, 16, 4, 4, 4]} paddingTop={10}>
+        <Box paddingBottom={4} paddingTop={10}>
           <MouseType align="left" color="gray.600" fontSize="xs" />
         </Box>
       </Flex>

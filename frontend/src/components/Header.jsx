@@ -54,16 +54,6 @@ export default function Header() {
         backgroundColor="white"
       >
         <HStack maxWidth="60%">
-          <IconButton
-            id="mobile-nav"
-            display={["flex", "flex", "flex", "flex", "none"]}
-            variant="outline"
-            ref={buttonRef}
-            onClick={onOpen}
-            aria-label="nav"
-            icon={<HamburgerIcon />}
-          />
-
           <Heading
             as="h2"
             size="md"
@@ -95,6 +85,16 @@ export default function Header() {
           display={["flex", "flex", "flex", "flex", "none"]}
         >
           <TopRightNewLinkPopover isMobile={true} />
+          <IconButton
+            id="mobile-nav"
+            display={["flex", "flex", "flex", "flex", "none"]}
+            borderRadius="none"
+            ref={buttonRef}
+            onClick={onOpen}
+            aria-label="nav"
+            zIndex={10}
+            icon={<HamburgerIcon />}
+          />
           <TopRightUserMenu isMobile={true} />
         </Stack>
       </Flex>
