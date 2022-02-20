@@ -376,6 +376,7 @@ function NullScreenHelper({
 export default function NullScreen() {
   const {
     areFavoritesShowing,
+    areAnnotationsShowing,
     pageNumber,
     folderName,
     tagPath,
@@ -434,6 +435,16 @@ export default function NullScreen() {
         imageSlot={<Beach />}
         headingText="Nope."
         detailText="There don't seem to be any links here."
+      />
+    );
+  }
+
+  if (areAnnotationsShowing) {
+    return (
+      <NullScreenHelper
+        imageSlot={<Beach />}
+        headingText="You haven't added any notes yet."
+        detailText="When you add a note to a link, it will appear here."
       />
     );
   }

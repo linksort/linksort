@@ -13,6 +13,7 @@ import {
   FILTER_KEY_PAGE,
   FILTER_KEY_FOLDER,
   FILTER_KEY_TAG,
+  FILTER_KEY_ANNOTATED,
 } from "./filters";
 
 const REFETCH_FILTERS = [
@@ -22,6 +23,7 @@ const REFETCH_FILTERS = [
   FILTER_KEY_PAGE,
   FILTER_KEY_FOLDER,
   FILTER_KEY_TAG,
+  FILTER_KEY_ANNOTATED,
 ];
 
 function useForceRefetchFilterParams() {

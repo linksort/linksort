@@ -13,6 +13,7 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   CopyIcon,
+  EditIcon,
   StarIcon,
 } from "@chakra-ui/icons";
 
@@ -31,9 +32,11 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
     handleToggleSort,
     handleToggleGroup,
     makeToggleFavoritesLink,
+    makeToggleAnnotationsLink,
     sortDirection,
     groupName,
     areFavoritesShowing,
+    areAnnotationsShowing,
   } = useFilters();
 
   return (
@@ -113,6 +116,16 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                       variant={areFavoritesShowing ? "solid" : "ghost"}
                     >
                       Favorites
+                    </SidebarButton>
+                  </ListItem>
+                  <ListItem>
+                    <SidebarButton
+                      leftIcon={<EditIcon />}
+                      as={RouterLink}
+                      to={makeToggleAnnotationsLink()}
+                      variant={areAnnotationsShowing ? "solid" : "ghost"}
+                    >
+                      Notes
                     </SidebarButton>
                   </ListItem>
                 </Stack>

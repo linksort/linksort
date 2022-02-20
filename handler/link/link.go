@@ -107,12 +107,13 @@ func (s *config) GetLink(w http.ResponseWriter, r *http.Request) {
 }
 
 type GetLinksRequest struct {
-	Sort       string
-	Search     string
-	Favorites  string
-	FolderID   string
-	TagPath    string
-	Pagination *model.Pagination
+	Sort        string
+	Search      string
+	Favorites   string
+	Annotations string
+	FolderID    string
+	TagPath     string
+	Pagination  *model.Pagination
 }
 
 type GetLinksResponse struct {
@@ -135,12 +136,13 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	l, err := s.LinkController.GetLinks(ctx, u, &GetLinksRequest{
-		Sort:       q.Get("sort"),
-		Search:     q.Get("search"),
-		Favorites:  q.Get("favorite"),
-		FolderID:   q.Get("folder"),
-		TagPath:    tagPath,
-		Pagination: model.GetPagination(r),
+		Sort:        q.Get("sort"),
+		Search:      q.Get("search"),
+		Favorites:   q.Get("favorite"),
+		Annotations: q.Get("annotated"),
+		FolderID:    q.Get("folder"),
+		TagPath:     tagPath,
+		Pagination:  model.GetPagination(r),
 	})
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))

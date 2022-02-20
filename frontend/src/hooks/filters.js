@@ -15,6 +15,7 @@ export const FILTER_KEY_GROUP = "group";
 export const FILTER_KEY_FAVORITE = "favorite";
 export const FILTER_KEY_FOLDER = "folder";
 export const FILTER_KEY_TAG = "tag";
+export const FILTER_KEY_ANNOTATED = "annotated";
 
 const LOCALSTORAGE_FILTER_KEYS = [FILTER_KEY_SORT, FILTER_KEY_GROUP];
 const QUERY_FILTER_KEYS = [
@@ -23,6 +24,7 @@ const QUERY_FILTER_KEYS = [
   FILTER_KEY_FAVORITE,
   FILTER_KEY_SEARCH,
   FILTER_KEY_TAG,
+  FILTER_KEY_ANNOTATED,
 ];
 
 const DEFAULT_FILTER_PARAMS = Object.freeze({
@@ -31,6 +33,7 @@ const DEFAULT_FILTER_PARAMS = Object.freeze({
   [FILTER_KEY_SORT]: { root: "-1" },
   [FILTER_KEY_GROUP]: { root: "none" },
   [FILTER_KEY_FAVORITE]: "0",
+  [FILTER_KEY_ANNOTATED]: "0",
   [FILTER_KEY_FOLDER]: "root",
   [FILTER_KEY_TAG]: "",
 });
@@ -120,6 +123,7 @@ export function useFilters() {
       filterParams.sort > 0 ? "oldest first" : "newest first";
     const groupName = filterParams.group;
     const areFavoritesShowing = filterParams.favorite === "1";
+    const areAnnotationsShowing = filterParams.annotated === "1";
     const pageNumber = filterParams.page;
     const searchQuery = filterParams.search;
     const folderName = resolveFolderName(filterParams.folder);
@@ -138,6 +142,12 @@ export function useFilters() {
     function makeToggleFavoritesLink() {
       return mergeParamAndStringify({
         favorite: filterParams.favorite === "0" ? "1" : "0",
+      });
+    }
+
+    function makeToggleAnnotationsLink() {
+      return mergeParamAndStringify({
+        annotated: filterParams.annotated === "0" ? "1" : "0",
       });
     }
 
@@ -190,6 +200,10 @@ export function useFilters() {
       history.push(makeToggleFavoritesLink());
     }
 
+    function handleToggleAnnotations() {
+      history.push(makeToggleAnnotationsLink());
+    }
+
     function handleGoToNextPage() {
       history.push(makeNextPageLink());
     }
@@ -220,6 +234,7 @@ export function useFilters() {
       makePrevPageLink,
       makeFolderLink,
       makeTagLink,
+      makeToggleAnnotationsLink,
       handleToggleSort,
       handleToggleGroup,
       handleToggleFavorites,
@@ -228,9 +243,11 @@ export function useFilters() {
       handleGoToPrevPage,
       handleGoToFolder,
       handleGoToTag,
+      handleToggleAnnotations,
       sortDirection,
       groupName,
       areFavoritesShowing,
+      areAnnotationsShowing,
       searchQuery,
       pageNumber,
       folderName,
