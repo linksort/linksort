@@ -77,7 +77,7 @@ export function useLink(linkId) {
   );
 }
 
-export function useUpdateLink(linkId) {
+export function useUpdateLink(linkId, { supressToast = false } = {}) {
   const queryClient = useQueryClient();
   const toast = useToast();
   const filterParams = useForceRefetchFilterParams();
@@ -94,25 +94,26 @@ export function useUpdateLink(linkId) {
           "site",
           "isFavorite",
           "folderId",
+          "annotation",
         ]),
         method: "PATCH",
       }),
     {
       onSuccess: (data, payload) => {
         queryClient.setQueryData(["links", "detail", linkId], () => data.link);
+
         queryClient.setQueryData(["links", "list", filterParams], (old = []) =>
           old.map((l) => (l.id === data.link.id ? data.link : l))
         );
-        queryClient.invalidateQueries({
-          queryKey: ["links", "list"],
-          refetchActive: false,
-        });
-        toast({
-          title: payload?.toast || "Link updated",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        });
+
+        if (!supressToast) {
+          toast({
+            title: payload?.toast || "Link updated",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
       },
     }
   );
@@ -162,36 +163,65 @@ export function useDeleteLink(linkId) {
 
 export function useLinkOperations(link = {}) {
   const toast = useToast();
-  const deleteMutation = useDeleteLink(link.id);
+  const { mutateAsync: deleteLink } = useDeleteLink(link.id);
   const [isDeleting, setIsDeleting] = useState(false);
-  const updateMutation = useUpdateLink(link.id);
+  const { mutateAsync: updateLink } = useUpdateLink(link.id, {
+    supressToast: true,
+  });
   const [isFavoriting, setIsFavoriting] = useState(false);
   const [isMovingFolders, setIsMovingFolders] = useState(false);
+  const [isSavingAnnotation, setIsSavingAnnotation] = useState(false);
 
   return useMemo(() => {
     async function handleDeleteLink() {
       setIsDeleting(true);
-      await deleteMutation.mutateAsync();
+      await deleteLink();
       setIsDeleting(false);
     }
 
     async function handleToggleIsFavorite() {
       setIsFavoriting(true);
-      const toast = link.isFavorite
+
+      const toastMessage = link.isFavorite
         ? "Link removed from favorites"
         : "Link added to favorites";
-      await updateMutation.mutateAsync({ isFavorite: !link.isFavorite, toast });
+
+      await updateLink({ isFavorite: !link.isFavorite });
+
       setIsFavoriting(false);
+
+      toast({
+        title: toastMessage,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+
+    async function handleSaveAnnotation(annotation) {
+      setIsSavingAnnotation(true);
+      await updateLink({ annotation });
+      setIsSavingAnnotation(false);
     }
 
     function handleMoveToFolder(folderId) {
       setIsMovingFolders(true);
-      const toast =
+
+      const toastMessage =
         folderId === "root"
           ? "Link removed from folder"
           : "Link added to folder";
-      updateMutation.mutate({ folderId, toast });
+
+      updateLink({ folderId });
+
       setIsMovingFolders(false);
+
+      toast({
+        title: toastMessage,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     }
 
     function handleCopyLink() {
@@ -219,15 +249,18 @@ export function useLinkOperations(link = {}) {
       isFavoriting,
       handleMoveToFolder,
       isMovingFolders,
+      handleSaveAnnotation,
+      isSavingAnnotation,
       handleCopyLink,
     };
   }, [
     link,
-    deleteMutation,
     isDeleting,
     isFavoriting,
     isMovingFolders,
+    isSavingAnnotation,
     toast,
-    updateMutation,
+    updateLink,
+    deleteLink,
   ]);
 }

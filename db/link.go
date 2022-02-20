@@ -154,6 +154,7 @@ func (s *LinkStore) UpdateLink(ctx context.Context, l *model.Link) (*model.Link,
 	op := errors.Opf("LinkStore.UpdateLink(%q)", l.ID)
 
 	l.UpdatedAt = time.Now()
+	l.IsAnnotated = len(l.Annotation) > 0
 
 	res, err := s.col.ReplaceOne(ctx, bson.M{"_id": l.Key}, l)
 	if err != nil {
@@ -230,6 +231,14 @@ func GetLinksTag(val string) model.GetLinksOption {
 	return func(m map[string]interface{}) {
 		if len(val) > 0 && val != "root" {
 			m["tagpaths"] = val
+		}
+	}
+}
+
+func GetLinksAnnotated(val string) model.GetLinksOption {
+	return func(m map[string]interface{}) {
+		if val == "1" {
+			m["isannotated"] = true
 		}
 	}
 }

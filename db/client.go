@@ -89,6 +89,9 @@ func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 		{
 			Keys: bson.D{primitive.E{Key: "tagpaths", Value: 1}},
 		},
+		{
+			Keys: bson.D{primitive.E{Key: "isannotated", Value: 1}},
+		},
 	})
 
 	return errors.Wrap(op, err)

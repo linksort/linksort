@@ -24,6 +24,8 @@ type Link struct {
 	Favicon     string             `json:"favicon"`
 	Image       string             `json:"image"`
 	Site        string             `json:"site"`
+	Annotation  string             `json:"annotation"`
+	IsAnnotated bool               `json:"isAnnotated"`
 }
 
 type GetLinksOption func(map[string]interface{})

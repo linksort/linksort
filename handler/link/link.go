@@ -161,6 +161,7 @@ type UpdateLinkRequest struct {
 	Description *string `json:"description" validate:"omitempty,max=2048"`
 	Image       *string `json:"image" validate:"omitempty,len=0|url,max=512"`
 	Site        *string `json:"site" validate:"omitempty,max=512"`
+	Annotation  *string `json:"annotation"`
 }
 
 type UpdateLinkResponse struct {
