@@ -10,11 +10,12 @@ import {
   Stack,
   WrapItem,
 } from "@chakra-ui/react"
+import GatsbyImage from "gatsby-image"
+import { graphql } from "gatsby"
 
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
 import FloatingPill from "../components/FloatingPill"
-import GatsbyImage from "gatsby-image"
 
 function Bio({ name, blurb, imageSrc }) {
   return (

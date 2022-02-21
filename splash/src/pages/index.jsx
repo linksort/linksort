@@ -68,8 +68,66 @@ export const query = graphql`
         }
       }
     }
+    notes: file(relativePath: { eq: "notes.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    reader: file(relativePath: { eq: "reader-view.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
   }
 `
+
+function CenteredMarketingModule({
+  heading,
+  subheading,
+  image,
+  imageWidth = "80%",
+}) {
+  return (
+    <Flex
+      padding={8}
+      borderRadius={8}
+      backgroundColor="brand.50"
+      width="100%"
+      flexDirection="column"
+    >
+      <Flex
+        width="100%"
+        flexGrow={0}
+        flexDirection="column"
+        justifyContent="center"
+      >
+        <Heading as="h4" fontSize="2xl" marginBottom={2} align="center">
+          {heading}
+        </Heading>
+        <Text align="center">{subheading}</Text>
+      </Flex>
+
+      <Box
+        width={["100%", imageWidth, imageWidth]}
+        flexShrink={0}
+        paddingTop={8}
+        margin="auto"
+      >
+        <Image
+          as={GatsbyImage}
+          boxShadow="lg"
+          borderRadius={10}
+          fluid={image}
+          width="100%"
+        />
+      </Box>
+    </Flex>
+  )
+}
 
 function MarketingModule({
   heading,
@@ -110,7 +168,7 @@ function MarketingModule({
         <Image
           as={GatsbyImage}
           boxShadow={noShadow ? "" : "lg"}
-          borderRadius={circleImg ? "100%" : 20}
+          borderRadius={circleImg ? "100%" : 10}
           fluid={image}
           width="100%"
         />
@@ -195,39 +253,59 @@ export default function Index({ data, location }) {
             image={data.autoTags.childImageSharp.fluid}
             orientation="right"
           />
+
           <MarketingModule
             heading="Your links will look beautiful."
             subheading="Linksort has three ways of displaying your links: tiled view, comfy, or condensed. Whatever you choose, your links will look great."
             image={data.tilePreview.childImageSharp.fluid}
             orientation="left"
           />
-          <MarketingModule
-            heading="One-click to save links."
-            subheading="Use the browser extension to effortlessly save links as you browse."
-            image={data.extension.childImageSharp.fluid}
-            orientation="right"
-            circleImg={true}
-          />
+
           <MarketingModule
             heading="Search, filter, sort, group, and favorite."
             subheading="All of the tools you'd expect to help you find things easily and keep things tidy."
             image={data.filterSort.childImageSharp.fluid}
-            orientation="left"
+            orientation="right"
           />
+
+          <MarketingModule
+            heading="One-click to save links."
+            subheading="Use the browser extension to effortlessly save links as you browse."
+            image={data.extension.childImageSharp.fluid}
+            orientation="left"
+            circleImg={true}
+          />
+
+          <CenteredMarketingModule
+            heading="Reader view."
+            subheading="Cut out the cruft and focus with reader view (experimental)."
+            image={data.reader.childImageSharp.fluid}
+            imageWidth="80%"
+          />
+
+          <MarketingModule
+            heading="Add notes."
+            subheading="Jot down your thoughts as you read."
+            image={data.notes.childImageSharp.fluid}
+            orientation="right"
+          />
+
           <MarketingModule
             heading="Use folders to organize your links."
             subheading="Sometimes you just need a good old folder."
             image={data.folders.childImageSharp.fluid}
-            orientation="right"
+            orientation="left"
           />
+
           <MarketingModule
             heading="Private, safe, and secure."
             subheading="We encrypt your data in storage and we don't share it with anyone."
             image={data.privacy.childImageSharp.fluid}
-            orientation="left"
+            orientation="right"
             circleImg={true}
             noShadow
           />
+
           <Stack
             padding={8}
             borderRadius={8}
