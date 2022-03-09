@@ -117,6 +117,14 @@ export function useUpdateLink(linkId, { supressToast = false } = {}) {
           });
         }
       },
+      onError: (error) => {
+        toast({
+          title: error.toString(),
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      },
     }
   );
 }

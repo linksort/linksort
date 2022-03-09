@@ -2,6 +2,7 @@ package link
 
 import (
 	"context"
+	"html"
 	"net/http"
 	"net/url"
 	"time"
@@ -74,6 +75,8 @@ func (s *config) CreateLink(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	req.URL = html.UnescapeString(req.URL)
 
 	l, u, err := s.LinkController.CreateLink(ctx, u, req)
 	if err != nil {

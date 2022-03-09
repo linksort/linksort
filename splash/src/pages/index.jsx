@@ -255,10 +255,11 @@ export default function Index({ data, location }) {
           />
 
           <MarketingModule
-            heading="Your links will look beautiful."
-            subheading="Linksort has three ways of displaying your links: tiled view, comfy, or condensed. Whatever you choose, your links will look great."
-            image={data.tilePreview.childImageSharp.fluid}
+            heading="One-click to save links."
+            subheading="Use the browser extension to effortlessly save links as you browse."
+            image={data.extension.childImageSharp.fluid}
             orientation="left"
+            circleImg={true}
           />
 
           <MarketingModule
@@ -266,14 +267,6 @@ export default function Index({ data, location }) {
             subheading="All of the tools you'd expect to help you find things easily and keep things tidy."
             image={data.filterSort.childImageSharp.fluid}
             orientation="right"
-          />
-
-          <MarketingModule
-            heading="One-click to save links."
-            subheading="Use the browser extension to effortlessly save links as you browse."
-            image={data.extension.childImageSharp.fluid}
-            orientation="left"
-            circleImg={true}
           />
 
           <CenteredMarketingModule
@@ -291,17 +284,24 @@ export default function Index({ data, location }) {
           />
 
           <MarketingModule
+            heading="Your links will look beautiful."
+            subheading="Linksort has three ways of displaying your links: tiled view, comfy, or condensed. Whatever you choose, your links will look great."
+            image={data.tilePreview.childImageSharp.fluid}
+            orientation="left"
+          />
+
+          <MarketingModule
             heading="Use folders to organize your links."
             subheading="Sometimes you just need a good old folder."
             image={data.folders.childImageSharp.fluid}
-            orientation="left"
+            orientation="right"
           />
 
           <MarketingModule
             heading="Private, safe, and secure."
             subheading="We encrypt your data in storage and we don't share it with anyone."
             image={data.privacy.childImageSharp.fluid}
-            orientation="right"
+            orientation="left"
             circleImg={true}
             noShadow
           />
