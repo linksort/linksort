@@ -118,7 +118,12 @@ func Valid(dst interface{}) error {
 			continue
 		}
 
-		if rv.Type().Field(i).Name != "Password" {
+		switch rv.Type().Field(i).Name {
+		case "Password":
+			// Do nothing.
+		case "Corpus":
+			val = html.UnescapeString(bluemonday.UGCPolicy().Sanitize(val))
+		default:
 			val = strings.TrimSpace(val)
 			val = html.UnescapeString(bluemonday.StrictPolicy().Sanitize(val))
 		}

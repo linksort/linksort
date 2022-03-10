@@ -221,7 +221,7 @@ export default function LinkView() {
         {link.corpus.length > 1024 ? (
           <Box
             className="prose"
-            width="70ch"
+            width="43rem"
             dangerouslySetInnerHTML={{
               __html: link.corpus
                 .replaceAll("<html>", "")

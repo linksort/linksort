@@ -56,7 +56,7 @@ type CreateLinkRequest struct {
 	Description string `json:"description" validate:"omitempty,max=2048"`
 	Image       string `json:"image" validate:"omitempty,url,max=512"`
 	Site        string `json:"site" validate:"omitempty,max=512"`
-	Corpus      string `json:"corpus" validate:"omitempty,max=100000"`
+	Corpus      string `json:"corpus" validate:"omitempty,max=500000"`
 }
 
 type CreateLinkResponse struct {

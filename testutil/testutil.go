@@ -16,7 +16,7 @@ import (
 
 	"github.com/icrowley/fake"
 
-	"github.com/linksort/analyze"
+	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/email"

@@ -6,8 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/linksort/analyze"
-
+	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/errors"
 	handler "github.com/linksort/linksort/handler/link"

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/linksort/analyze"
+	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/errors"
 )
 

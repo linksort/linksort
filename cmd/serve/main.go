@@ -9,8 +9,8 @@ import (
 	"syscall"
 
 	"github.com/getsentry/raven-go"
-	"github.com/linksort/analyze"
 
+	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/email"
 	"github.com/linksort/linksort/errors"

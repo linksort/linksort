@@ -14,7 +14,7 @@
 .prose {
   color: var(--color-text);
   max-width: calc(100vw - 3rem);
-  font-size: 1rem;
+  font-size: 1.25rem;
   line-height: 1.5;
   font-family: var(--font-serif);
 }
@@ -143,14 +143,6 @@
   margin-top: 1.6em;
   margin-bottom: 1.6em;
   padding-left: 1em;
-}
-
-.prose blockquote p:first-of-type::before {
-  content: open-quote;
-}
-
-.prose blockquote p:last-of-type::after {
-  content: close-quote;
 }
 
 .prose h1 {
@@ -303,7 +295,6 @@
 .prose p {
   margin-top: 1.25em;
   margin-bottom: 1.25em;
-  font-size: 1.25rem;
 }
 
 .prose p:first-child {
