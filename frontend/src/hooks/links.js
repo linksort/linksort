@@ -70,7 +70,7 @@ export function useLinks(
   const filterParamsWithOverrides = { ...filterParams, ...options.overrides };
 
   return useQuery(
-    ["links", "list", filterParams],
+    ["links", "list", filterParamsWithOverrides],
     () =>
       apiFetch(
         `/api/links?${queryString.stringify(filterParamsWithOverrides)}`

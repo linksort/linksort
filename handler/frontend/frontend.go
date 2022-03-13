@@ -30,6 +30,7 @@ var applicationRoutes = map[string]bool{
 	"change-password":            true,
 	"links":                      true,
 	"extensions":                 true,
+	"graph":                      true,
 }
 
 var staticExts = []string{".js", ".css", ".png", ".jpg", ".jpeg"}
