@@ -303,7 +303,6 @@ func getCorpus(reqCorpus, parsedBody, description string) string {
 	}
 
 	doc.WhitelistTags = []string{
-		"h1",
 		"h2",
 		"h3",
 		"h4",

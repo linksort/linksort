@@ -84,6 +84,8 @@ export default function Home() {
     error,
     isLoading,
     isFetching,
+    isFetched,
+    isStale,
     failureCount,
   } = useLinks();
   const {
@@ -104,7 +106,7 @@ export default function Home() {
     return <ErrorScreen error={error} />;
   }
 
-  if (isLoading || failureCount > 0) {
+  if (isLoading || failureCount > 0 || (isFetching && isStale && !isFetched)) {
     return <LoadingScreen />;
   }
 
