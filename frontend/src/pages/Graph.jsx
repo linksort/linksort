@@ -133,6 +133,7 @@ export default function Graph() {
             },
           },
           edges: {
+            width: 0.15,
             color: { inherit: "from" },
             smooth: {
               type: "continuous",
@@ -141,9 +142,9 @@ export default function Graph() {
           physics: {
             stabilization: false,
             barnesHut: {
-              gravitationalConstant: -10000,
+              gravitationalConstant: nodes.length > 300 ? -40000 : -10000,
               springConstant: 0.001,
-              springLength: 100,
+              springLength: 1,
             },
           },
         }
