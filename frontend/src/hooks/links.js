@@ -15,6 +15,7 @@ import {
   FILTER_KEY_TAG,
   FILTER_KEY_ANNOTATED,
 } from "./filters";
+import { omit } from "lodash";
 
 const REFETCH_FILTERS = [
   FILTER_KEY_SORT,
@@ -58,9 +59,15 @@ export function useCreateLink() {
   );
 }
 
-export function useLinks(overrides = {}) {
+export function useLinks(
+  options = {
+    keepPreviousData: true,
+    initialData: () => [],
+    overrides: {},
+  }
+) {
   const filterParams = useForceRefetchFilterParams();
-  const filterParamsWithOverrides = { ...filterParams, ...overrides };
+  const filterParamsWithOverrides = { ...filterParams, ...options.overrides };
 
   return useQuery(
     ["links", "list", filterParams],
@@ -68,15 +75,15 @@ export function useLinks(overrides = {}) {
       apiFetch(
         `/api/links?${queryString.stringify(filterParamsWithOverrides)}`
       ).then((response) => response.links),
-    { keepPreviousData: true, initialData: () => [] }
+    omit(options, ["overrides"])
   );
 }
 
-export function useLink(linkId) {
+export function useLink(linkId, options = {}) {
   return useQuery(
     ["links", "detail", linkId],
     () => apiFetch(`/api/links/${linkId}`).then((response) => response.link),
-    {}
+    options
   );
 }
 
