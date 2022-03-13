@@ -58,15 +58,16 @@ export function useCreateLink() {
   );
 }
 
-export function useLinks() {
+export function useLinks(overrides = {}) {
   const filterParams = useForceRefetchFilterParams();
+  const filterParamsWithOverrides = { ...filterParams, ...overrides };
 
   return useQuery(
     ["links", "list", filterParams],
     () =>
-      apiFetch(`/api/links?${queryString.stringify(filterParams)}`).then(
-        (response) => response.links
-      ),
+      apiFetch(
+        `/api/links?${queryString.stringify(filterParamsWithOverrides)}`
+      ).then((response) => response.links),
     { keepPreviousData: true, initialData: () => [] }
   );
 }

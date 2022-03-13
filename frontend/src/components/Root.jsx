@@ -22,6 +22,7 @@ import LinkUpdate from "../pages/LinkUpdate";
 import LinkView from "../pages/LinkView";
 import Extensions from "../pages/Extensions";
 import Account from "../pages/Account";
+import Graph from "../pages/Graph";
 import { ViewSettingProvider } from "../hooks/views";
 import { GlobalFiltersProvider } from "../hooks/filters";
 
@@ -82,6 +83,12 @@ export default function App() {
                     redirectTo="/sign-in"
                     path="/links/:linkId"
                     component={LinkView}
+                  />
+                  <AuthRoute
+                    isAuthRequired={true}
+                    redirectTo="/sign-in"
+                    path="/graph"
+                    component={Graph}
                   />
                   <AuthRoute
                     isAuthRequired={true}

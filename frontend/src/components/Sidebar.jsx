@@ -1,5 +1,5 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import {
   Flex,
   List,
@@ -8,6 +8,7 @@ import {
   VisuallyHidden,
   Text,
   Stack,
+  Badge,
 } from "@chakra-ui/react";
 import {
   ArrowDownIcon,
@@ -25,7 +26,7 @@ import SidebarSearchButton from "./SidebarSearchButton";
 import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
 import { useFilters } from "../hooks/filters";
-import { StarBorderIcon } from "./CustomIcons";
+import { GraphIcon, StarBorderIcon } from "./CustomIcons";
 
 export default function Sidebar({ width = "18rem", isMobile = false }) {
   const {
@@ -38,6 +39,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
     areFavoritesShowing,
     areAnnotationsShowing,
   } = useFilters();
+  const isGraphPage = useRouteMatch("/graph");
 
   return (
     <Box
@@ -126,6 +128,19 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                       variant={areAnnotationsShowing ? "solid" : "ghost"}
                     >
                       Notes
+                    </SidebarButton>
+                  </ListItem>
+                  <ListItem>
+                    <SidebarButton
+                      leftIcon={<GraphIcon />}
+                      as={RouterLink}
+                      to="/graph"
+                      variant={isGraphPage ? "solid" : "ghost"}
+                    >
+                      Graph{" "}
+                      <Badge ml={2} colorScheme="brand">
+                        Experimental
+                      </Badge>
                     </SidebarButton>
                   </ListItem>
                 </Stack>
