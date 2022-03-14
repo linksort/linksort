@@ -1,7 +1,16 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Button, Text, HStack, VStack, Skeleton } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
+import {
+  Link,
+  Box,
+  Button,
+  Text,
+  HStack,
+  VStack,
+  Skeleton,
+  ButtonGroup,
+} from "@chakra-ui/react";
+import { ViewIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 
 import LinkItemFavicon from "./LinkItemFavicon";
 import CoverImage from "./CoverImage";
@@ -84,14 +93,25 @@ export default function GraphInfoPanel({ linkId }) {
           <Text fontSize="sm">{link.site}</Text>
         </HStack>
 
-        <Button
-          as={RouterLink}
-          to={`/links/${link.id}`}
-          leftIcon={<ViewIcon />}
-          width="100%"
-        >
-          View
-        </Button>
+        <ButtonGroup>
+          <Button
+            as={RouterLink}
+            to={`/links/${link.id}`}
+            leftIcon={<ViewIcon />}
+            width="60%"
+          >
+            View
+          </Button>
+          <Button
+            as={Link}
+            isExternal={true}
+            href={link.url}
+            leftIcon={<ExternalLinkIcon />}
+            width="40%"
+          >
+            Visit
+          </Button>
+        </ButtonGroup>
       </VStack>
     </Panel>
   );

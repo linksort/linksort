@@ -139,6 +139,9 @@ export default function Graph() {
               type: "continuous",
             },
           },
+          layout: {
+            improvedLayout: nodes.length < 300,
+          },
           physics: {
             stabilization: nodes.length > 100,
             barnesHut: {
