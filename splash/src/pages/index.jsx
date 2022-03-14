@@ -21,7 +21,7 @@ export const query = graphql`
       childImageSharp {
         # Specify the image processing specifications right in the query.
         # Makes it trivial to update as your page's design changes.
-        fluid(maxWidth: 900) {
+        fluid(maxWidth: 1100) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -76,6 +76,13 @@ export const query = graphql`
       }
     }
     reader: file(relativePath: { eq: "reader-view.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 500) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    graph: file(relativePath: { eq: "graph-view.png" }) {
       childImageSharp {
         fluid(maxWidth: 500) {
           ...GatsbyImageSharpFluid
@@ -271,7 +278,7 @@ export default function Index({ data, location }) {
 
           <CenteredMarketingModule
             heading="Reader view."
-            subheading="Cut out the cruft and focus with reader view (experimental)."
+            subheading="Cut out the cruft and focus with reader view."
             image={data.reader.childImageSharp.fluid}
             imageWidth="80%"
           />
@@ -281,6 +288,13 @@ export default function Index({ data, location }) {
             subheading="Jot down your thoughts as you read."
             image={data.notes.childImageSharp.fluid}
             orientation="right"
+          />
+
+          <CenteredMarketingModule
+            heading="Graph view."
+            subheading="Explore relationships among your links and their topics with network graph view (experimental)."
+            image={data.graph.childImageSharp.fluid}
+            imageWidth="100%"
           />
 
           <MarketingModule
