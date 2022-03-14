@@ -140,9 +140,9 @@ export default function Graph() {
             },
           },
           physics: {
-            stabilization: false,
+            stabilization: nodes.length > 400,
             barnesHut: {
-              gravitationalConstant: nodes.length > 300 ? -40000 : -10000,
+              gravitationalConstant: -10000,
               springConstant: 0.001,
               springLength: 1,
             },
