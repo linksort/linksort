@@ -8,7 +8,6 @@ import {
   VisuallyHidden,
   Text,
   Stack,
-  Badge,
 } from "@chakra-ui/react";
 import {
   ArrowDownIcon,
@@ -137,10 +136,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                       to="/graph"
                       variant={isGraphPage ? "solid" : "ghost"}
                     >
-                      Graph{" "}
-                      <Badge ml={2} colorScheme="brand">
-                        Experimental
-                      </Badge>
+                      Graph
                     </SidebarButton>
                   </ListItem>
                 </Stack>
