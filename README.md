@@ -39,6 +39,19 @@ yarn start
 
 Go to [http://localhost:8080](http://localhost:8080).
 
+### Running Tests
+
+```bash
+# Build the mongo image.
+docker build -f docker/mongo.Dockerfile -t mongo-rs .
+
+# Run it. Note db-data2 and db2.
+docker run -p 27017:27017 -v db-data2:/data/db2 -d mongo-rs
+
+# Run tests. No need to repeat the previous steps for subsequent runs.
+go test ./...
+```
+
 ## Running in Prod Mode Locally
 
 ```bash

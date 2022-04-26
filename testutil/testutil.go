@@ -45,7 +45,7 @@ func Handler() http.Handler {
 		op := errors.Op("testutil.Handler")
 		ctx := context.Background()
 
-		mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost:27017"))
+		mongo, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost:27017"))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -63,7 +63,7 @@ func Handler() http.Handler {
 				return err
 			}
 
-			return closer()
+			return mongo.Disconnect(ctx)
 		}
 		_txnClient = db.NewTxnClient(mongo)
 		_userStore = db.NewUserStore(mongo)
