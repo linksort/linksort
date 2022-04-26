@@ -1,6 +1,6 @@
 # Linksort
 
-## Development
+## Setup
 
 ### Short Way
 
@@ -39,7 +39,7 @@ yarn start
 
 Go to [http://localhost:8080](http://localhost:8080).
 
-### Running Tests
+## Running Tests
 
 ```bash
 # Build the mongo image.

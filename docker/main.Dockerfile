@@ -19,9 +19,6 @@ RUN yarn build
 FROM golang:1.17 AS api-builder
 WORKDIR /opt/linksort/
 RUN mkdir build
-COPY ./.netrc /root/.netrc
-RUN chmod 600 /root/.netrc
-ENV GOPRIVATE=github.com/linksort/*
 COPY ./go.mod ./go.sum ./
 RUN go mod download
 COPY . .
