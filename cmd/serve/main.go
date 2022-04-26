@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 
 	"github.com/getsentry/raven-go"
 
@@ -20,71 +19,45 @@ import (
 )
 
 func main() {
-	raven.SetDSN(getenv("SENTRY_DSN", ""))
-
 	ctx := context.Background()
 
-	mongo, closer, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	raven.SetDSN(getenv("SENTRY_DSN", ""))
 
-	err = db.SetupIndexes(ctx, mongo)
+	mongo, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost"))
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer mongo.Disconnect(ctx)
 
 	analyzer, err := analyze.New(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	h := handler.New(&handler.Config{
-		Transactor:            db.NewTxnClient(mongo),
-		UserStore:             db.NewUserStore(mongo),
-		LinkStore:             db.NewLinkStore(mongo),
-		Magic:                 magic.New(getenv("APP_SECRET", "")),
-		Email:                 email.New(getenv("MAILGUN_KEY", "")),
-		Analyzer:              analyzer,
-		FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
-		FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
-		IsProd:                getenv("PRODUCTION", "1"),
-	})
+	defer analyzer.Close()
 
 	port := getenv("PORT", "8080")
-	srv := http.Server{Handler: h, Addr: fmt.Sprintf(":%s", port)}
-
-	idleConnsClosed := make(chan struct{})
+	srv := http.Server{
+		Handler: handler.New(&handler.Config{
+			Transactor:            db.NewTxnClient(mongo),
+			UserStore:             db.NewUserStore(mongo),
+			LinkStore:             db.NewLinkStore(mongo),
+			Magic:                 magic.New(getenv("APP_SECRET", "")),
+			Email:                 email.New(getenv("MAILGUN_KEY", "")),
+			Analyzer:              analyzer,
+			FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
+			FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
+			IsProd:                getenv("PRODUCTION", "1"),
+		}),
+		Addr: fmt.Sprintf(":%s", port),
+	}
 
 	go func() {
-		signalChan := make(chan os.Signal, 1)
+		signalC := make(chan os.Signal, 1)
+		signal.Notify(signalC, os.Interrupt)
+		defer signal.Stop(signalC)
 
-		signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
-		defer signal.Stop(signalChan)
-
-		<-signalChan // Signal: clean up and exit gracefully
-		log.Print("Signal detected, cleaning up...")
-
-		if err := srv.Shutdown(ctx); err != nil {
-			// Error from closing listeners or context timeout
-			log.Printf("HTTP server shutdown error: %v", err)
-		} else {
-			log.Print("HTTP server shutdown")
-		}
-
-		if err := closer(); err != nil {
-			log.Printf("MongoDB shutdown error: %v", err)
-		} else {
-			log.Print("MongoDB connection closed")
-		}
-
-		if err := analyzer.Close(); err != nil {
-			log.Printf("Analyzer shutdown error: %v", err)
-		} else {
-			log.Print("Analyzer connections closed")
-		}
-
-		close(idleConnsClosed)
+		<-signalC
+		srv.Shutdown(ctx)
 	}()
 
 	log.Printf("Listening on port :%s", port)
@@ -94,7 +67,7 @@ func main() {
 		log.Panicf("ListenAndServe: %v", err)
 	}
 
-	<-idleConnsClosed
+	log.Print("Bye")
 }
 
 func getenv(name, fallback string) string {

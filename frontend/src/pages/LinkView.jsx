@@ -262,7 +262,7 @@ export default function LinkView() {
           <Box
             maxHeight={notePanelMaxHeight}
             height={notePanelHeight}
-            overflow="scroll"
+            overflowY="scroll"
           >
             <Textarea
               cols={[40, 50, 70, 70]}

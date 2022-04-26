@@ -14,28 +14,24 @@ import (
 func NewMongoClient(
 	ctx context.Context,
 	uri string,
-) (*mongo.Client, func() error, error) {
+) (*mongo.Client, error) {
 	op := errors.Op("db.NewMongoClient()")
 
 	client, err := mongo.NewClient(options.Client().
 		ApplyURI(uri))
 	if err != nil {
-		return nil, nil, errors.E(op, err)
+		return nil, errors.E(op, err)
 	}
 
 	if err := client.Connect(ctx); err != nil {
-		return nil, nil, errors.E(op, err)
+		return nil, errors.E(op, err)
 	}
 
-	closer := func() error {
-		if err = client.Disconnect(ctx); err != nil {
-			return errors.E(op, err)
-		}
-
-		return nil
+	if err := SetupIndexes(ctx, client); err != nil {
+		return nil, errors.E(op, err)
 	}
 
-	return client, closer, nil
+	return client, nil
 }
 
 func SetupIndexes(ctx context.Context, client *mongo.Client) error {

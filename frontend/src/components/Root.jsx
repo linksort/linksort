@@ -25,10 +25,33 @@ import Account from "../pages/Account";
 import Graph from "../pages/Graph";
 import { ViewSettingProvider } from "../hooks/views";
 import { GlobalFiltersProvider } from "../hooks/filters";
+import { getScrollbarWidth } from "../utils/styles";
 
 const chakraTheme = extendTheme({
   ...theme,
   breakpoints: createBreakpoints(theme.breakpoints),
+  styles: {
+    global: () => {
+      // Make scrollbars look less bad when shown.
+      if (getScrollbarWidth() > 0) {
+        return {
+          "::-webkit-scrollbar": {
+            background: "transparent",
+            width: "10px",
+            height: "10px",
+          },
+          "::-webkit-scrollbar-thumb": {
+            background: "#ccc",
+          },
+          "::-webkit-scrollbar-track": {
+            background: "#eee;",
+          },
+        };
+      }
+
+      return {};
+    },
+  },
 });
 
 const queryClient = new QueryClient();

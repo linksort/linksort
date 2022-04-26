@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  db:
+    build:
+      dockerfile: "docker/mongo.Dockerfile"
+      context: "."
+    restart: "always"
+    volumes:
+      - "db-data:/data/db"
+    ports:
+      - "27017"
+
+  frontend:
+    build:
+      dockerfile: "docker/frontend.Dockerfile"
+      context: "."
+    volumes:
+      - "./frontend:/opt/linksort/"
+    ports:
+      - "3000"
+
+  api:
+    build:
+      dockerfile: "docker/backend.Dockerfile"
+      context: "."
+    volumes:
+      - ".:/opt/linksort/"
+    ports:
+      - "8000:8000"
+    environment:
+      - "PRODUCTION=0"
+      - "DB_CONNECTION=mongodb://db/?connect=direct"
+      - "PORT=8000"
+      - "FRONTEND_HOSTNAME=frontend"
+      - "FRONTEND_PORT=3000"
+      - "ANALYZER_KEY=${ANALYZER_KEY}"
+    links:
+      - "db"
+      - "frontend"
+
+volumes:
+  db-data:
