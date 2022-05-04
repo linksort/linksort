@@ -65,9 +65,9 @@ func (n *gcpBackend) Close() error {
 }
 
 func trim(s string) string {
-	if len(s) < 1000000 {
+	if len(s) < 100000 {
 		return s
 	}
 
-	return s[:1000000]
+	return s[:100000]
 }
