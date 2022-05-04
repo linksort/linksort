@@ -15,7 +15,6 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import {
-  StarIcon,
   ArrowBackIcon,
   EditIcon,
   ExternalLinkIcon,
@@ -24,16 +23,17 @@ import {
 } from "@chakra-ui/icons";
 
 import { useLink, useLinkOperations } from "../hooks/links";
-import { useDebounce } from "../hooks/utils";
+import { useDebounce, useScrollDirection } from "../hooks/utils";
 import Textarea from "../components/Textarea";
 import LoadingScreen from "../components/LoadingScreen";
 import ErrorScreen from "../components/ErrorScreen";
 import LinkItemFavicon from "../components/LinkItemFavicon";
 import CoverImage from "../components/CoverImage";
+import LinkControlsMenu from "../components/LinkControlsMenu";
 import {
+  DotDotDotVert,
   MaximizeIcon,
   MinimizeIcon,
-  StarBorderIcon,
 } from "../components/CustomIcons";
 
 const NOTE_PANEL_NORMAL = "normal";
@@ -74,17 +74,13 @@ export default function LinkView() {
     error,
     isFetched,
   } = useLink(linkId);
-  const {
-    handleToggleIsFavorite,
-    isFavoriting,
-    handleSaveAnnotation,
-    isSavingAnnotation,
-  } = useLinkOperations(link);
+  const { handleSaveAnnotation, isSavingAnnotation } = useLinkOperations(link);
   const [annotation, setAnnotation] = useState("");
   const debouncedAnnotation = useDebounce(annotation, 1000);
   const [notePanelState, setNotePanelState] = useState(NOTE_PANEL_NORMAL);
   const notePanelMaxHeight = getNotePanelMaxHeight(notePanelState);
   const notePanelHeight = getNotePanelHeight(notePanelState);
+  const scrollDirection = useScrollDirection();
 
   // Handle initial retrieval of annotation...
   useEffect(() => {
@@ -128,30 +124,46 @@ export default function LinkView() {
       maxWidth="70ch"
       position="relative"
     >
-      <HStack>
-        <IconButton onClick={() => history.goBack()} icon={<ArrowBackIcon />} />
-        <Button
-          onClick={handleToggleIsFavorite}
-          leftIcon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
-          isLoading={isFavoriting}
-        >
-          Favorite
-        </Button>
-        <Button
-          onClick={() => history.replace(`/links/${link.id}/update`)}
-          leftIcon={<EditIcon />}
-        >
-          Edit
-        </Button>
-        <Button
-          as={Link}
-          isExternal={true}
-          href={link.url}
-          leftIcon={<ExternalLinkIcon />}
-        >
-          Visit
-        </Button>
-      </HStack>
+      <Box
+        position="fixed"
+        padding={6}
+        marginLeft="-1.55rem"
+        marginTop="-1.55rem"
+        borderWidth="thin"
+        borderColor="gray.100"
+        backgroundColor="white"
+        width="100%"
+        translateY={scrollDirection === "DOWN" ? "-6rem" : "0"}
+        transform="auto"
+        transition="transform ease 0.2s"
+      >
+        <HStack>
+          <IconButton
+            onClick={() => history.goBack()}
+            icon={<ArrowBackIcon />}
+          />
+          <Button
+            onClick={() => history.replace(`/links/${link.id}/update`)}
+            leftIcon={<EditIcon />}
+          >
+            Edit
+          </Button>
+          <Button
+            as={Link}
+            isExternal={true}
+            href={link.url}
+            leftIcon={<ExternalLinkIcon />}
+          >
+            Visit
+          </Button>
+          <LinkControlsMenu
+            link={link}
+            buttonSlot={<IconButton as={Box} icon={<DotDotDotVert />} />}
+          />
+        </HStack>
+      </Box>
+
+      <Box height="2.4rem" />
 
       <VStack align="left">
         <HStack spacing={0}>
