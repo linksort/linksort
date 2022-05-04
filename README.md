@@ -1,5 +1,7 @@
 # Linksort
 
+[![CircleCI](https://circleci.com/gh/linksort/linksort/tree/main.svg?style=shield)](https://circleci.com/gh/linksort/linksort/tree/main)
+
 ## Setup
 
 ### Short Way

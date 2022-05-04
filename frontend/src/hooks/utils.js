@@ -50,5 +50,5 @@ export function useScrollDirection() {
     lastPosition.current = position;
   }, [position]);
 
-  return lastPosition.current >= position ? "UP" : "DOWN";
+  return lastPosition.current >= position || position === 0 ? "UP" : "DOWN";
 }
