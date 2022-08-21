@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/getsentry/raven-go"
+	"github.com/rs/zerolog"
 
 	"github.com/linksort/linksort/cookie"
 	"github.com/linksort/linksort/errors"
@@ -78,6 +79,11 @@ func WithUser(auth interface {
 				}
 			}
 
+			log := zerolog.Ctx(ctx)
+			log.UpdateContext(func(c zerolog.Context) zerolog.Context {
+				return c.Str("UserID", user.ID)
+			})
+
 			next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, _userKey, user)))
 		})
 	}
@@ -113,7 +119,13 @@ func WithCSRF(m interface {
 // UserFromContext returns the User object that was added to the context via
 // WithUser middleware.
 func UserFromContext(ctx context.Context) *model.User {
-	return ctx.Value(_userKey).(*model.User)
+	got := ctx.Value(_userKey)
+
+	if u, ok := got.(*model.User); ok {
+		return u
+	}
+
+	return &model.User{ID: "Anonymous"}
 }
 
 // GetAuthBearerToken extracts the Authorization Bearer token from request

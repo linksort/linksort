@@ -60,5 +60,5 @@ func (u *User) IsSessionExpired() bool {
 
 func (u *User) RefreshSession() {
 	u.SessionID = random.Token()
-	u.SessionExpiry = time.Now().Add(time.Hour * time.Duration(24*30))
+	u.SessionExpiry = time.Now().Add(time.Hour * time.Duration(24*180))
 }
