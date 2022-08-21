@@ -110,7 +110,8 @@ export default function Layout({ children, location }) {
                     Sign in
                   </Button>
                 </ListItem>
-                <ListItem>
+
+                <ListItem display={["none", "none", "list-item"]}>
                   <Button
                     as="a"
                     fontWeight="medium"
@@ -118,6 +119,17 @@ export default function Layout({ children, location }) {
                     colorScheme={signInButtonColorscheme}
                   >
                     Sign up
+                  </Button>
+                </ListItem>
+
+                <ListItem display={["list-item", "list-item", "none", "none"]}>
+                  <Button
+                    as="a"
+                    fontWeight="medium"
+                    href="/sign-up"
+                    colorScheme={signInButtonColorscheme}
+                  >
+                    Sign up or in
                   </Button>
                 </ListItem>
               </Stack>

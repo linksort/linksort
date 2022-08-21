@@ -133,7 +133,7 @@ export default function LinkItemFolderMenuList({
         </>
       )}
 
-      {onBack && isSelectedFolderRoot && selectedFolder.children.length === 0 && (
+      {isSelectedFolderRoot && selectedFolder.children.length === 0 && (
         <MenuItem disabled>
           <Text color="gray.700" fontSize="sm">
             You haven't added any folders yet

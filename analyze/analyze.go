@@ -17,7 +17,7 @@ import (
 	"github.com/dyatlov/go-readability"
 )
 
-const defaultHTTPRequestTimeoutSeconds = 5
+const defaultHTTPRequestTimeoutSeconds = 10
 
 var (
 	ErrUnparsableURI            = errors.New("unparsable URI")

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import {
   IconButton,
   Tooltip,
@@ -7,10 +7,20 @@ import {
   HStack,
   Button,
   MenuButton,
+  Menu,
+  Portal,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
-import { DeleteIcon, LinkIcon, StarIcon, ViewIcon } from "@chakra-ui/icons";
+import {
+  DeleteIcon,
+  EditIcon,
+  LinkIcon,
+  StarIcon,
+  ViewIcon,
+} from "@chakra-ui/icons";
 
-import { FolderIcon, StarBorderIcon } from "./CustomIcons";
+import { DotDotDotVert, FolderIcon, StarBorderIcon } from "./CustomIcons";
 import LinkItemFolderMenu from "./LinkItemFolderMenu";
 import { useFolders } from "../hooks/folders";
 import { useLinkOperations } from "../hooks/links";
@@ -22,9 +32,9 @@ export default function LinkItemControls({
   buttonFolderIconPlacement = "left",
   ...rest
 }) {
+  const history = useHistory();
   const {
     handleDeleteLink,
-    isDeleting,
     handleToggleIsFavorite,
     isFavoriting,
     handleMoveToFolder,
@@ -97,15 +107,6 @@ export default function LinkItemControls({
           _focus="none"
         />
       </Tooltip>
-      <Tooltip label="Copy link">
-        <IconButton
-          backgroundColor={buttonColor}
-          icon={<LinkIcon />}
-          size="sm"
-          onClick={handleCopyLink}
-          _focus="none"
-        />
-      </Tooltip>
       <Tooltip label="View details">
         <IconButton
           backgroundColor={buttonColor}
@@ -116,16 +117,34 @@ export default function LinkItemControls({
           _focus="none"
         />
       </Tooltip>
-      <Tooltip label="Delete link">
-        <IconButton
-          backgroundColor={buttonColor}
-          icon={<DeleteIcon />}
-          size="sm"
-          onClick={handleDeleteLink}
-          isLoading={isDeleting}
-          _focus="none"
-        />
-      </Tooltip>
+      <Menu isLazy>
+        <Tooltip label="More">
+          <MenuButton>
+            <IconButton
+              backgroundColor={buttonColor}
+              icon={<DotDotDotVert />}
+              size="sm"
+              _focus="none"
+            />
+          </MenuButton>
+        </Tooltip>
+        <Portal>
+          <MenuList>
+            <MenuItem icon={<LinkIcon />} onClick={handleCopyLink}>
+              Copy link
+            </MenuItem>
+            <MenuItem
+              icon={<EditIcon />}
+              onClick={() => history.push(`/links/${link.id}/update`)}
+            >
+              Edit
+            </MenuItem>
+            <MenuItem icon={<DeleteIcon />} onClick={handleDeleteLink}>
+              Delete
+            </MenuItem>
+          </MenuList>
+        </Portal>
+      </Menu>
     </HStack>
   );
 }

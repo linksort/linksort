@@ -233,11 +233,12 @@ export default function Index({ data, location }) {
           <Button
             as="a"
             href="/sign-up"
-            colorScheme="gray"
             marginBottom={6}
             paddingX={10}
+            background="white"
+            boxShadow="md"
           >
-            Sign Up
+            Sign up
           </Button>
           <Image
             as={GatsbyImage}
@@ -337,8 +338,8 @@ export default function Index({ data, location }) {
               you.
             </Text>
             <Box>
-              <Button as="a" href="/sign-up" colorScheme="gray" paddingX={10}>
-                Sign Up
+              <Button as="a" href="/sign-up" paddingX={10} background="white">
+                Sign up
               </Button>
             </Box>
           </Stack>
