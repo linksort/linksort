@@ -132,6 +132,7 @@ export default function LinkView() {
         borderWidth="thin"
         borderColor="gray.100"
         backgroundColor="white"
+        zIndex={1}
         width="100%"
         translateY={scrollDirection === "DOWN" ? "-6rem" : "0"}
         transform="auto"

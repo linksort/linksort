@@ -37,6 +37,7 @@ export function useScrollPosition() {
     return () => {
       window.removeEventListener("scroll", onScroll);
     };
+    // eslint-disable-next-line
   }, []);
 
   return position;

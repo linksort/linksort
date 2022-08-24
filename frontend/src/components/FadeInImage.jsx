@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Image } from "@chakra-ui/react";
 
-export default function FadeInImage({ src, ...rest }) {
+export default function FadeInImage({ src, fallback, ...rest }) {
   const isMountedRef = useRef();
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -26,6 +26,7 @@ export default function FadeInImage({ src, ...rest }) {
       src={src}
       opacity={isLoaded ? 1 : 0}
       transition="0.4s opacity"
+      fallback={src.length > 0 ? null : fallback}
       {...rest}
     />
   );

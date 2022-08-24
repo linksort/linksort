@@ -193,7 +193,11 @@ export default function LinkUpdate() {
 
       <Flex justifyContent="space-between">
         <HStack spacing={4}>
-          <Button colorScheme="red" onClick={handleDelete}>
+          <Button
+            colorScheme="red"
+            onClick={handleDelete}
+            isLoading={deleteMutation.isLoading}
+          >
             Delete
           </Button>
         </HStack>

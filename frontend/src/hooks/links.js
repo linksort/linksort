@@ -16,6 +16,7 @@ import {
   FILTER_KEY_ANNOTATED,
 } from "./filters";
 import { omit } from "lodash";
+import { useHistory } from "react-router-dom";
 
 const REFETCH_FILTERS = [
   FILTER_KEY_SORT,
@@ -180,9 +181,11 @@ export function useDeleteLink(linkId) {
 }
 
 export function useLinkOperations(link = {}) {
+  const history = useHistory();
   const toast = useToast();
-  const { mutateAsync: deleteLink } = useDeleteLink(link.id);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const { mutateAsync: deleteLink, isLoading: isDeleting } = useDeleteLink(
+    link.id
+  );
   const { mutateAsync: updateLink } = useUpdateLink(link.id, {
     supressToast: true,
   });
@@ -192,9 +195,11 @@ export function useLinkOperations(link = {}) {
 
   return useMemo(() => {
     async function handleDeleteLink() {
-      setIsDeleting(true);
       await deleteLink();
-      setIsDeleting(false);
+
+      if (history.location.pathname.endsWith(link.id)) {
+        history.push("/");
+      }
     }
 
     async function handleToggleIsFavorite() {

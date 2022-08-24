@@ -121,6 +121,7 @@ export default function LinkItemControls({
         <Tooltip label="More">
           <MenuButton>
             <IconButton
+              as="div"
               backgroundColor={buttonColor}
               icon={<DotDotDotVert />}
               size="sm"
