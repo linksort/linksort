@@ -43,7 +43,7 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 		SessionID:      random.Token(),
-		SessionExpiry:  time.Now().Add(time.Hour * time.Duration(24*180)),
+		SessionExpiry:  time.Now().Add(time.Hour * time.Duration(24*90)),
 		PasswordDigest: digest,
 		Token:          random.Token(),
 		FolderTree: &model.Folder{
