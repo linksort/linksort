@@ -125,7 +125,7 @@ export function useFilters() {
     const areFavoritesShowing = filterParams.favorite === "1";
     const areAnnotationsShowing = filterParams.annotated === "1";
     const pageNumber = filterParams.page;
-    const searchQuery = filterParams.search;
+    const searchQuery = unescape(filterParams.search);
     const folderName = resolveFolderName(filterParams.folder);
     const folderId = filterParams.folder;
     const tagPath = unescape(filterParams.tag);

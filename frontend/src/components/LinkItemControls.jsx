@@ -65,7 +65,7 @@ export default function LinkItemControls({
               backgroundColor={buttonColor}
               size="sm"
               maxWidth={[24, 24, 48, 48]}
-              width="100%"
+              width="auto"
               overflow="hidden"
               whiteSpace="nowrap"
               textOverflow="ellipsis"
