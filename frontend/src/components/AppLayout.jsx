@@ -20,6 +20,13 @@ export default function AppLayout({ children }) {
           borderRight="1px"
           borderRightColor="gray.100"
         >
+          <Box
+            position="fixed"
+            left={0}
+            height="100vh"
+            width="calc(50vw - 40rem)"
+            backgroundColor="gray.50"
+          />
           <Sidebar />
         </GridItem>
         <GridItem
