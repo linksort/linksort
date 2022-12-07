@@ -46,9 +46,12 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
       minHeight="100vh"
       height="100%"
       width={width}
-      paddingLeft={4}
+      paddingLeft={6}
       zIndex={2}
       overflowY="scroll"
+      backgroundColor="gray.50"
+      borderRightColor="gray.100"
+      borderRightWidth="thin"
     >
       <Flex direction="column" justifyContent="space-between" minHeight="100vh">
         <Box>

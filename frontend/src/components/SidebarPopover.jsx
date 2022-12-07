@@ -39,7 +39,7 @@ export default function SidebarPopover({
     <>
       <SidebarButton
         variant={isOpen ? "solid" : "ghost"}
-        leftIcon={<ButtonIcon />}
+        leftIcon={<ButtonIcon boxSize={3} />}
         onClick={handleOpen}
       >
         {buttonText}

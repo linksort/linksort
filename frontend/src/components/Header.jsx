@@ -44,8 +44,8 @@ export default function Header() {
       <Flex
         paddingLeft={6}
         paddingRight={[6, 6, 6, 6, 0]}
-        marginLeft={["0rem", "0rem", "0rem", "0rem", "18rem"]}
-        width={["100%", "100%", "100%", "100%", "calc(100% - 18rem)"]}
+        marginLeft={["0rem", "0rem", "0rem", "0rem", "16.5rem"]}
+        width={["100%", "100%", "100%", "100%", "calc(100% - 16.5rem)"]}
         height={HEADER_HEIGHT}
         borderBottom="1px"
         borderBottomColor="gray.100"

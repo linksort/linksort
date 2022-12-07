@@ -8,11 +8,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import LinkItem from "../components/LinkItem";
 import ScrollToTop from "../components/ScrollToTop";
 import { useLinks } from "../hooks/links";
-import {
-  useFilters,
-  GROUP_BY_OPTION_DAY,
-  GROUP_BY_OPTION_SITE,
-} from "../hooks/filters";
+import { useFilters, GROUP_BY_OPTION_DAY } from "../hooks/filters";
 import { isoDateToHeading } from "../utils/time";
 import {
   useViewSetting,
@@ -31,15 +27,6 @@ function linksBy(grouping, links) {
           acc[date].push(cur);
         } else {
           acc[date] = [cur];
-        }
-        return acc;
-      }, {});
-    case GROUP_BY_OPTION_SITE:
-      return links.reduce((acc, cur) => {
-        if (acc[cur.site]) {
-          acc[cur.site].push(cur);
-        } else {
-          acc[cur.site] = [cur];
         }
         return acc;
       }, {});
@@ -118,9 +105,8 @@ export default function Home() {
     <Box
       minHeight="calc(100vh - 6.5rem)"
       position="relative"
-      paddingTop={6}
-      paddingLeft={[0, 0, 0, 0, 6]}
-      paddingBottom={6}
+      paddingX={6}
+      paddingY={6}
       marginBottom={6}
       overflow="hidden"
     >
@@ -152,7 +138,7 @@ export default function Home() {
           <Button onClick={() => handleSearch("")}>Clear search</Button>
         </Box>
       ) : (
-        <HStack position="absolute" bottom={1} left={[1, 1, 1, 1, 6]}>
+        <HStack position="absolute" bottom={1} left={6}>
           <Button
             isDisabled={pageNumber === "0"}
             onClick={handleGoToPrevPage}

@@ -40,12 +40,7 @@ const DEFAULT_FILTER_PARAMS = Object.freeze({
 
 export const GROUP_BY_OPTION_NONE = "none";
 export const GROUP_BY_OPTION_DAY = "day";
-export const GROUP_BY_OPTION_SITE = "site";
-export const GROUP_BY_OPTIONS = [
-  GROUP_BY_OPTION_NONE,
-  GROUP_BY_OPTION_DAY,
-  GROUP_BY_OPTION_SITE,
-];
+export const GROUP_BY_OPTIONS = [GROUP_BY_OPTION_NONE, GROUP_BY_OPTION_DAY];
 
 const LOCALSTORAGE_KEY = "filters";
 const DEFAULT_LOCALSTORAGE_VALUE = {
