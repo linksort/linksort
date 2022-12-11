@@ -117,7 +117,7 @@ export default function LinkView() {
 
   return (
     <VStack
-      paddingLeft={[0, 0, 0, 0, 6]}
+      paddingX={6}
       paddingTop={6}
       spacing={6}
       align="left"

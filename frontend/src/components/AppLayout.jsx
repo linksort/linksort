@@ -45,7 +45,7 @@ export default function AppLayout({ children }) {
             top="0"
             left="0"
             justifyContent="flex-end"
-            zIndex={1}
+            zIndex={2}
           >
             <Box
               width="50%"
