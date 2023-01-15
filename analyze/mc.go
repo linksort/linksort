@@ -8,30 +8,27 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"strconv"
 )
 
 const mcEndpoint = "https://api.meaningcloud.com/deepcategorization-1.0"
 
-var (
-	mcKey          = os.Getenv("MEANING_CLOUD_KEY")
-	errNotOKStatus = errors.New("received non-ok status")
-)
+var errNotOKStatus = errors.New("received non-ok status")
 
 type mcBackend struct {
+	key        string
 	httpClient *http.Client
 }
 
-func newMCBackend(ctx context.Context, c *http.Client) (*mcBackend, error) {
-	return &mcBackend{c}, nil
+func newMCBackend(ctx context.Context, mcKey string, c *http.Client) (*mcBackend, error) {
+	return &mcBackend{mcKey, c}, nil
 }
 
 func (n *mcBackend) Classify(ctx context.Context, dat *Response) (*Response, error) {
 	body := new(bytes.Buffer)
 	form := multipart.NewWriter(body)
 
-	form.WriteField("key", mcKey)
+	form.WriteField("key", n.key)
 	form.WriteField("txt", dat.Corpus)
 	form.WriteField("model", "IAB_2.0")
 

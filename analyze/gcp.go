@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	language "cloud.google.com/go/language/apiv1"
@@ -12,16 +11,13 @@ import (
 	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
 )
 
-var (
-	gcpKey          = os.Getenv("ANALYZER_KEY")
-	errTooFewTokens = errors.New("too few tokens")
-)
+var errTooFewTokens = errors.New("too few tokens")
 
 type gcpBackend struct {
 	client *language.Client
 }
 
-func newGCPBackend(ctx context.Context) (*gcpBackend, error) {
+func newGCPBackend(ctx context.Context, gcpKey string) (*gcpBackend, error) {
 	c, err := language.NewClient(ctx, option.WithCredentialsJSON([]byte(gcpKey)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to bootstrap gcp client: %w", err)

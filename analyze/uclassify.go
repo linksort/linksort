@@ -6,21 +6,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 )
 
 const uclassifyEndpoint = "https://api.uclassify.com/v1/uClassify/iab-taxonomy/classify"
 
-var (
-	uclassifyKey = os.Getenv("UCLASSIFY_KEY")
-)
-
 type uclassifyBackend struct {
+	key        string
 	httpClient *http.Client
 }
 
-func newUClassifyBackend(ctx context.Context, c *http.Client) (*uclassifyBackend, error) {
-	return &uclassifyBackend{c}, nil
+func newUClassifyBackend(ctx context.Context, uclassifyKey string, c *http.Client) (*uclassifyBackend, error) {
+	return &uclassifyBackend{uclassifyKey, c}, nil
 }
 
 func (n *uclassifyBackend) Classify(ctx context.Context, dat *Response) (*Response, error) {
@@ -35,7 +31,7 @@ func (n *uclassifyBackend) Classify(ctx context.Context, dat *Response) (*Respon
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Token %s", uclassifyKey))
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", n.key))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := n.httpClient.Do(req)

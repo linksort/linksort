@@ -9,12 +9,15 @@ import (
 	"html"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/dyatlov/go-htmlinfo/htmlinfo"
 	"github.com/dyatlov/go-opengraph/opengraph"
 	"github.com/dyatlov/go-readability"
+
+	"github.com/linksort/linksort/log"
 )
 
 const defaultHTTPRequestTimeoutSeconds = 10
@@ -53,11 +56,13 @@ type Tag struct {
 	Confidence float32
 }
 
+type classifer interface {
+	Classify(context.Context, *Response) (*Response, error)
+	Close() error
+}
+
 type Client struct {
-	classifer interface {
-		Classify(context.Context, *Response) (*Response, error)
-		Close() error
-	}
+	classifer  classifer
 	httpClient *http.Client
 }
 
@@ -65,7 +70,7 @@ func New(ctx context.Context) (*Client, error) {
 	c := &http.Client{
 		Timeout: time.Duration(defaultHTTPRequestTimeoutSeconds) * time.Second}
 
-	classiferBackend, err := newGCPBackend(ctx)
+	classiferBackend, err := resolveBackend(ctx, c)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize: %w", err)
 	}
@@ -359,4 +364,24 @@ func (c *TestClient) Do(ctx context.Context, req *Request) (*Response, error) {
 
 func (c *TestClient) Close() error {
 	return nil
+}
+
+func resolveBackend(ctx context.Context, httpClient *http.Client) (classifer, error) {
+	if key := os.Getenv("ANALYZER_KEY"); key != "" {
+		log.Print("using GCP for auto-tagging")
+		return newGCPBackend(ctx, key)
+	}
+
+	if key := os.Getenv("MEANING_CLOUD_KEY"); key != "" {
+		log.Print("using Meaning Cloud for auto-tagging")
+		return newMCBackend(ctx, key, httpClient)
+	}
+
+	if key := os.Getenv("UCLASSIFY_KEY"); key != "" {
+		log.Print("using uClassify for auto-tagging")
+		return newUClassifyBackend(ctx, key, httpClient)
+	}
+
+	log.Print("links will not be auto-tagged because no analyzer key was found")
+	return newNullBackend(ctx)
 }
