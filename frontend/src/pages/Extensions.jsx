@@ -43,7 +43,7 @@ function GetExtLink({ imgSrc, name, url }) {
 
 export default function Extensions() {
   return (
-    <Stack paddingX={[0, 0, 6]} paddingY={6} spacing={6} maxWidth="80ch">
+    <Stack padding={6} spacing={6} maxWidth="5xl" marginX="auto">
       <Heading marginBottom={0} fontSize="3xl" fontWeight="medium">
         Browser Extension
       </Heading>

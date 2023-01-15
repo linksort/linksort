@@ -101,7 +101,7 @@ function Profile() {
         <FormHelperText>We'll never share your email.</FormHelperText>
       </FormControl>
 
-      <Flex justifyContent="right">
+      <Flex justifyContent="left">
         <Button type="submit" isLoading={formik.isSubmitting}>
           Update
         </Button>
@@ -146,9 +146,11 @@ function Danger() {
 export default function Account() {
   return (
     <VStack
+      maxWidth="5xl"
+      marginX="auto"
       paddingTop={6}
       paddingBottom={10}
-      paddingX={[0, 0, 6]}
+      padding={6}
       spacing={8}
       align="left"
       divider={<StackDivider />}

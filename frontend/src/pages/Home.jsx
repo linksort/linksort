@@ -103,6 +103,8 @@ export default function Home() {
 
   return (
     <Box
+      maxWidth="5xl"
+      marginX="auto"
       minHeight="calc(100vh - 6.5rem)"
       position="relative"
       paddingX={6}

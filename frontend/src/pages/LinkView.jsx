@@ -116,29 +116,27 @@ export default function LinkView() {
   }
 
   return (
-    <VStack
-      paddingX={6}
-      paddingTop={6}
-      spacing={6}
-      align="left"
-      maxWidth="70ch"
-      position="relative"
-    >
+    <Box>
       <Box
         position="fixed"
-        padding={6}
-        marginLeft="-1.55rem"
-        marginTop="-1.55rem"
-        borderWidth="thin"
-        borderColor="gray.100"
+        paddingY={6}
+        borderBottomWidth="thin"
+        borderBottomColor="gray.100"
         backgroundColor="white"
         zIndex={1}
         width="100%"
+        maxWidth={[
+          "calc(100vw)",
+          "calc(100vw)",
+          "calc(100vw)",
+          "calc(100vw)",
+          "calc(100vw - 18rem)",
+        ]}
         translateY={scrollDirection === "DOWN" ? "-6rem" : "0"}
         transform="auto"
         transition="transform ease 0.2s"
       >
-        <HStack>
+        <HStack maxWidth="5xl" marginX="auto" width="100%" paddingX={6}>
           <IconButton
             onClick={() => history.goBack()}
             icon={<ArrowBackIcon />}
@@ -164,104 +162,127 @@ export default function LinkView() {
         </HStack>
       </Box>
 
-      <Box height="2.4rem" />
+      <Box maxWidth="5xl" marginX="auto">
+        <Box maxWidth="50rem">
+          <VStack
+            paddingX={6}
+            paddingTop={6}
+            spacing={6}
+            align="left"
+            position="relative"
+          >
+            <Box height="4rem" />
 
-      <VStack align="left">
-        <HStack spacing={0}>
-          <LinkItemFavicon favicon={link.favicon} />
-          <Text>{link.site}</Text>
-        </HStack>
-        <Heading as="h1">{link.title}</Heading>
-      </VStack>
+            <VStack align="left">
+              <HStack spacing={0}>
+                <LinkItemFavicon favicon={link.favicon} />
+                <Text>{link.site}</Text>
+              </HStack>
+              <Heading as="h1">{link.title}</Heading>
+            </VStack>
 
-      {link.image && (
-        <Box
-          height="22rem"
-          borderRadius="lg"
-          overflow="hidden"
-          borderColor="gray.100"
-          borderWidth="thin"
-        >
-          <CoverImage
-            link={link}
-            width="100%"
-            height="22rem"
-            fallback={<Skeleton height="100%" width="100%" />}
-          />
-        </Box>
-      )}
-
-      <VStack align="left">
-        <Heading as="h6" fontSize="sm">
-          Description
-        </Heading>
-
-        {link.description.length > 0 ? (
-          <Text>{link.description}</Text>
-        ) : (
-          <Text color="gray.600">No description was found for this link.</Text>
-        )}
-      </VStack>
-
-      <VStack align="left">
-        <Heading as="h6" fontSize="sm">
-          Auto Tags
-        </Heading>
-        {link.tagDetails.length > 0 ? (
-          <Wrap>
-            {link.tagDetails.map((detail) => (
-              <Tag
-                key={detail.path}
-                marginRight={2}
-                whiteSpace="nowrap"
+            {link.image && (
+              <Box
+                height="22rem"
+                borderRadius="lg"
                 overflow="hidden"
+                borderColor="gray.100"
+                borderWidth="thin"
               >
-                {detail.path
-                  .slice(1, detail.path.length)
-                  .replaceAll("/", " -> ")}
-              </Tag>
-            ))}
-          </Wrap>
-        ) : (
-          <Text color="gray.600">No auto tags were assigned to this link.</Text>
-        )}
-      </VStack>
+                <CoverImage
+                  link={link}
+                  width="100%"
+                  height="22rem"
+                  fallback={<Skeleton height="100%" width="100%" />}
+                />
+              </Box>
+            )}
 
-      <VStack align="left" paddingBottom="5rem">
-        <Heading as="h6" fontSize="sm">
-          Corpus
-        </Heading>
-        {link.corpus.length > 1024 ? (
-          <Box
-            className="prose"
-            width="43rem"
-            dangerouslySetInnerHTML={{
-              __html: link.corpus
-                .replaceAll("<html>", "")
-                .replaceAll("<head>", "")
-                .replaceAll("<body>", "")
-                .replaceAll("</head>", "")
-                .replaceAll("</html>", "")
-                .replaceAll("</body>", ""),
-            }}
-          />
-        ) : (
-          <Text color="gray.600">No corpus was gathered for this link.</Text>
-        )}
-      </VStack>
+            <VStack align="left">
+              <Heading as="h6" fontSize="sm">
+                Description
+              </Heading>
 
-      <Box height="14rem" />
+              {link.description.length > 0 ? (
+                <Text>{link.description}</Text>
+              ) : (
+                <Text color="gray.600">
+                  No description was found for this link.
+                </Text>
+              )}
+            </VStack>
+
+            <VStack align="left">
+              <Heading as="h6" fontSize="sm">
+                Auto Tags
+              </Heading>
+              {link.tagDetails.length > 0 ? (
+                <Wrap>
+                  {link.tagDetails.map((detail) => (
+                    <Tag
+                      key={detail.path}
+                      marginRight={2}
+                      whiteSpace="nowrap"
+                      overflow="hidden"
+                    >
+                      {detail.path
+                        .slice(1, detail.path.length)
+                        .replaceAll("/", " -> ")}
+                    </Tag>
+                  ))}
+                </Wrap>
+              ) : (
+                <Text color="gray.600">
+                  No auto tags were assigned to this link.
+                </Text>
+              )}
+            </VStack>
+
+            <VStack align="left" paddingBottom="5rem">
+              <Heading as="h6" fontSize="sm">
+                Corpus
+              </Heading>
+              {link.corpus.length > 1024 ? (
+                <Box
+                  className="prose"
+                  width="60ch"
+                  dangerouslySetInnerHTML={{
+                    __html: link.corpus
+                      .replaceAll("<html>", "")
+                      .replaceAll("<head>", "")
+                      .replaceAll("<body>", "")
+                      .replaceAll("</head>", "")
+                      .replaceAll("</html>", "")
+                      .replaceAll("</body>", ""),
+                  }}
+                />
+              ) : (
+                <Text color="gray.600">
+                  No corpus was gathered for this link.
+                </Text>
+              )}
+            </VStack>
+
+            <Box height="14rem" />
+          </VStack>
+        </Box>
+      </Box>
 
       <Box
         position="fixed"
         bottom={0}
         left="auto"
         width="100%"
+        maxWidth={[
+          "calc(100vw)",
+          "calc(100vw)",
+          "calc(100vw)",
+          "calc(100vw)",
+          "calc(100vw - 18rem)",
+        ]}
         borderTopWidth="thin"
         borderTopColor="gray.100"
-        marginLeft="-2rem"
         backgroundColor="white"
-        paddingRight={6}
       >
         <Box
           width={8}
@@ -271,7 +292,7 @@ export default function LinkView() {
           marginTop="-1px"
         />
 
-        <Box>
+        <Box maxWidth="5xl" marginX="auto" paddingX={5}>
           <Box
             maxHeight={notePanelMaxHeight}
             height={notePanelHeight}
@@ -340,6 +361,6 @@ export default function LinkView() {
           </Flex>
         </Box>
       </Box>
-    </VStack>
+    </Box>
   );
 }

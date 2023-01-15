@@ -3,7 +3,7 @@ import {
   Stack,
   Heading,
   Flex,
-  Container,
+  Box,
   IconButton,
   useDisclosure,
   Drawer,
@@ -40,15 +40,25 @@ export default function Header() {
   }
 
   return (
-    <Container maxWidth="7xl" px={[0, 0, 0, 0, 6]}>
+    <Box
+      borderBottom="1px"
+      borderBottomColor="gray.100"
+      width="100%"
+      backgroundColor="white"
+      maxWidth={[
+        "calc(100vw)",
+        "calc(100vw)",
+        "calc(100vw)",
+        "calc(100vw)",
+        "calc(100vw - 18rem)",
+      ]}
+    >
       <Flex
-        paddingLeft={6}
-        paddingRight={[6, 6, 6, 6, 0]}
-        marginLeft={["0rem", "0rem", "0rem", "0rem", "16.5rem"]}
-        width={["100%", "100%", "100%", "100%", "calc(100% - 16.5rem)"]}
+        width="100%"
+        marginX="auto"
+        maxWidth="5xl"
+        paddingX={6}
         height={HEADER_HEIGHT}
-        borderBottom="1px"
-        borderBottomColor="gray.100"
         justifyContent="space-between"
         alignItems="center"
         backgroundColor="white"
@@ -110,6 +120,6 @@ export default function Header() {
           <Sidebar width="100%" isMobile={true} />
         </DrawerContent>
       </Drawer>
-    </Container>
+    </Box>
   );
 }
