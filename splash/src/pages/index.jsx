@@ -256,13 +256,6 @@ export default function Index({ data, location }) {
       <Container maxWidth="2xl" px={6} marginTop={8}>
         <Stack spacing={4}>
           <MarketingModule
-            heading="Auto tags."
-            subheading="We magically* organize your links into categories for you—okay, we don't have magic, just the next best thing, machine learning."
-            image={data.autoTags.childImageSharp.fluid}
-            orientation="right"
-          />
-
-          <MarketingModule
             heading="One-click to save links."
             subheading="Use the browser extension to effortlessly save links as you browse."
             image={data.extension.childImageSharp.fluid}
@@ -277,27 +270,6 @@ export default function Index({ data, location }) {
             orientation="right"
           />
 
-          <CenteredMarketingModule
-            heading="Reader view."
-            subheading="Cut out the cruft and focus with reader view."
-            image={data.reader.childImageSharp.fluid}
-            imageWidth="80%"
-          />
-
-          <MarketingModule
-            heading="Add notes."
-            subheading="Jot down your thoughts as you read."
-            image={data.notes.childImageSharp.fluid}
-            orientation="right"
-          />
-
-          <CenteredMarketingModule
-            heading="Graph view."
-            subheading="Explore relationships among your links and their topics with network graph view (experimental)."
-            image={data.graph.childImageSharp.fluid}
-            imageWidth="100%"
-          />
-
           <MarketingModule
             heading="Your links will look beautiful."
             subheading="Linksort has three ways of displaying your links: tiled view, comfy, or condensed. Whatever you choose, your links will look great."
@@ -306,9 +278,30 @@ export default function Index({ data, location }) {
           />
 
           <MarketingModule
+            heading="Auto tags."
+            subheading="We magically* organize your links into categories for you—okay, we don't have magic, just the next best thing, machine learning."
+            image={data.autoTags.childImageSharp.fluid}
+            orientation="right"
+          />
+
+          <CenteredMarketingModule
+            heading="Graph view."
+            subheading="Explore relationships among your links and their topics with network graph view."
+            image={data.graph.childImageSharp.fluid}
+            imageWidth="100%"
+          />
+
+          <MarketingModule
             heading="Use folders to organize your links."
             subheading="Sometimes you just need a good old folder."
             image={data.folders.childImageSharp.fluid}
+            orientation="left"
+          />
+
+          <MarketingModule
+            heading="Add notes."
+            subheading="Jot down your thoughts as you read."
+            image={data.notes.childImageSharp.fluid}
             orientation="right"
           />
 

@@ -65,7 +65,7 @@ export default function Metadata({ description = "", title = "" }) {
     meta = meta.concat([
       {
         property: `og:image`,
-        content: `https://linksort.com/social-img-2x1-1.jpeg`,
+        content: `https://linksort.com/social-img-2x1-2.jpeg`,
       },
       {
         property: `og:image:width`,
@@ -81,7 +81,7 @@ export default function Metadata({ description = "", title = "" }) {
       },
       {
         name: `twitter:image`,
-        content: `https://linksort.com/social-img-2x1-1.jpeg`,
+        content: `https://linksort.com/social-img-2x1-2.jpeg`,
       },
     ])
   } else {
