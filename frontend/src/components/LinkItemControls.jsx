@@ -47,11 +47,11 @@ export default function LinkItemControls({
   const folderIconProps =
     buttonFolderIconPlacement === "left"
       ? {
-          leftIcon: <FolderIcon />,
-        }
+        leftIcon: <FolderIcon />,
+      }
       : {
-          rightIcon: <FolderIcon />,
-        };
+        rightIcon: <FolderIcon />,
+      };
 
   return (
     <HStack overflow="hidden" spacing={buttonSpacing} flexShrink={0} {...rest}>
@@ -117,6 +117,15 @@ export default function LinkItemControls({
           _focus="none"
         />
       </Tooltip>
+      <Tooltip label="Copy link">
+        <IconButton
+          backgroundColor={buttonColor}
+          icon={<LinkIcon />}
+          size="sm"
+          _focus="none"
+          onClick={handleCopyLink}
+        />
+      </Tooltip>
       <Menu isLazy>
         <Tooltip label="More">
           <MenuButton>
@@ -131,9 +140,6 @@ export default function LinkItemControls({
         </Tooltip>
         <Portal>
           <MenuList>
-            <MenuItem icon={<LinkIcon />} onClick={handleCopyLink}>
-              Copy link
-            </MenuItem>
             <MenuItem
               icon={<EditIcon />}
               onClick={() => history.push(`/links/${link.id}/update`)}

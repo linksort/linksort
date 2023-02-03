@@ -13,13 +13,16 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import { useParams, useRouteMatch } from "react-router-dom";
 
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
 import { HEADER_HEIGHT } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
+import { useLink } from "../hooks/links";
 import Sidebar from "./Sidebar";
 import GiveFeedbackButton from "./GiveFeedbackButton";
+import { useScrollPosition } from "../hooks/utils";
 
 export default function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,15 +31,40 @@ export default function Header() {
     useFilters();
   const isSearching = searchQuery && searchQuery.length > 0;
   const isViewingTag = tagPath.length > 0;
+  const rootMatch = useRouteMatch({
+    path: "/",
+    strict: true,
+    sensitive: true
+  })
 
-  let heading = isViewingTag ? tagPath : folderName;
+  const { linkId } = useParams();
+  const {
+    data: link = { title: "" },
+  } = useLink(linkId, {
+    enabled: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
-  if (isSearching && areFavoritesShowing) {
-    heading = `Searching for "${searchQuery}" among favorites in ${folderName}`;
-  } else if (isSearching) {
-    heading = `Searching for "${searchQuery}" in ${folderName}`;
-  } else if (areFavoritesShowing) {
-    heading = `Favorites in ${heading}`;
+  const scrollPosition = useScrollPosition()
+
+  let opacity = "1"
+  if (linkId) {
+    opacity = scrollPosition > 400 ? "1" : "0"
+  }
+
+  let heading = linkId && scrollPosition > 200 ? link.title : ""
+  if (rootMatch.isExact) {
+    if (isSearching && areFavoritesShowing) {
+      heading = `Searching for "${searchQuery}" among favorites in ${folderName}`;
+    } else if (isSearching) {
+      heading = `Searching for "${searchQuery}" in ${folderName}`;
+    } else if (areFavoritesShowing) {
+      heading = `Favorites in ${heading}`;
+    } else {
+      heading = isViewingTag ? tagPath : folderName;
+    }
   }
 
   return (
@@ -71,6 +99,9 @@ export default function Header() {
             maxWidth="100%"
             overflow="hidden"
             whiteSpace="nowrap"
+            title={heading}
+            transition="opacity 0.2s ease"
+            opacity={opacity}
           >
             {heading}
           </Heading>
