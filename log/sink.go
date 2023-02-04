@@ -30,6 +30,7 @@ type sink struct {
 	writer        io.Writer
 	pool          []logEvent
 	mutex         sync.Mutex
+	flushC        chan []types.InputLogEvent
 	logStreamName string
 	client        interface {
 		PutLogEvents(
@@ -41,7 +42,10 @@ type sink struct {
 }
 
 func newCloudwatchSink(ctx context.Context, w io.Writer) *sink {
-	s := &sink{writer: w}
+	s := &sink{
+		writer: w,
+		flushC: make(chan []types.InputLogEvent),
+	}
 
 	s.setupCloudwatchClient(ctx)
 
@@ -72,6 +76,8 @@ func (s *sink) run(ctx context.Context) {
 		select {
 		case <-ticker.C:
 			go s.flush()
+		case logs := <-s.flushC:
+			go s.putLogs(logs)
 		case <-ctx.Done():
 			go s.flush()
 			return
@@ -95,6 +101,13 @@ func (s *sink) flush() {
 		})
 	}
 
+	s.flushC <- logEvents
+
+	s.pool = nil
+	fmt.Println("flushed logs")
+}
+
+func (s *sink) putLogs(logEvents []types.InputLogEvent) {
 	_, err := s.client.PutLogEvents(context.TODO(), &cloudwatchlogs.PutLogEventsInput{
 		LogGroupName:  aws.String(logGroupName),
 		LogStreamName: aws.String(s.logStreamName),
@@ -103,10 +116,9 @@ func (s *sink) flush() {
 	if err != nil {
 		fmt.Printf("error: failed to put logs on cloudwatch: %v", err)
 		raven.CaptureError(err, nil)
+	} else {
+		fmt.Println("put logs")
 	}
-
-	s.pool = nil
-	fmt.Println("flushed logs")
 }
 
 func (s *sink) setupCloudwatchClient(ctx context.Context) {
