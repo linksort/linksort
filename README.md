@@ -24,7 +24,7 @@ docker build -f docker/mongo.Dockerfile -t mongo-rs .
 docker run -p 27017:27017 -v db-data:/data/db -d mongo-rs
 ```
 
-Run [`air`](https://github.com/cosmtrek/air) to start the backend server. This also starts a watcher that automatically rebuilds and runs the server whenever changes are detected.
+Run [`air`](https://github.com/cosmtrek/air) to start the backend server. This also starts a watcher that automatically rebuilds and runs the server whenever changes are detected. You'll also need to set the following environment variables.
 
 ```bash
 export PRODUCTION=0

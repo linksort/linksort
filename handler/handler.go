@@ -36,7 +36,7 @@ type Config struct {
 	}
 	FrontendProxyHostname string
 	FrontendProxyPort     string
-	IsProd                string
+	IsProd                bool
 }
 
 func New(c *Config) http.Handler {
@@ -88,7 +88,7 @@ func New(c *Config) http.Handler {
 	}))
 
 	// Frontend Routes
-	if c.IsProd == "1" {
+	if c.IsProd {
 		router.PathPrefix("/").Handler(frontend.Server(&frontend.Config{
 			AuthController: authC,
 			Magic:          c.Magic,

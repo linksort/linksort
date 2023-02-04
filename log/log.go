@@ -4,6 +4,7 @@ package log
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -15,10 +16,21 @@ import (
 )
 
 // nolint
-var _logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr, NoColor: true}).
-	With().
-	Timestamp().
-	Logger()
+var _logger zerolog.Logger
+
+func ConfigureGlobalLogger(ctx context.Context, isProd bool) {
+	var writer io.Writer
+	if isProd {
+		writer = newCloudwatchSink(ctx, os.Stderr)
+	} else {
+		writer = zerolog.ConsoleWriter{Out: os.Stderr}
+	}
+
+	_logger = zerolog.New(writer).
+		With().
+		Timestamp().
+		Logger()
+}
 
 type Printer interface {
 	Print(v ...interface{})

@@ -20,8 +20,11 @@ import (
 
 func main() {
 	ctx := context.Background()
+	isProd := getenv("PRODUCTION", "1") == "1"
 
+	log.ConfigureGlobalLogger(ctx, isProd)
 	raven.SetDSN(getenv("SENTRY_DSN", ""))
+	raven.SetRelease(getenv("RELEASE", ""))
 
 	mongo, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost"))
 	if err != nil {
@@ -46,7 +49,7 @@ func main() {
 			Analyzer:              analyzer,
 			FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
 			FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
-			IsProd:                getenv("PRODUCTION", "1"),
+			IsProd:                isProd,
 		}),
 		Addr: fmt.Sprintf(":%s", port),
 	}
