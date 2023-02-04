@@ -48,6 +48,11 @@ func WithUser(auth interface {
 					return
 				}
 
+				log := zerolog.Ctx(ctx)
+				log.UpdateContext(func(c zerolog.Context) zerolog.Context {
+					return c.Str("UserID", user.ID)
+				})
+
 				next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, _userKey, user)))
 				return
 			}
