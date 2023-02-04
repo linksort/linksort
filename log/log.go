@@ -88,7 +88,7 @@ func WithAccessLogging(h http.Handler) http.Handler {
 			hlog.FromRequest(r).Info().
 				Str("Method", r.Method).
 				Str("UserAgent", r.UserAgent()).
-				Str("IP", r.RemoteAddr).
+				Str("IP", r.Header.Get("X-Forwarded-For")).
 				Stringer("URL", r.URL).
 				Int("Status", status).
 				Int("Size", size).
