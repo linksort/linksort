@@ -77,7 +77,7 @@ export default function LinkView() {
   const { handleSaveAnnotation, isSavingAnnotation } = useLinkOperations(link);
   const [annotation, setAnnotation] = useState("");
   const debouncedAnnotation = useDebounce(annotation, 1000);
-  const [notePanelState, setNotePanelState] = useState(NOTE_PANEL_NORMAL);
+  const [notePanelState, setNotePanelState] = useState(NOTE_PANEL_HIDDEN);
   const notePanelMaxHeight = getNotePanelMaxHeight(notePanelState);
   const notePanelHeight = getNotePanelHeight(notePanelState);
   const scrollDirection = useScrollDirection();
