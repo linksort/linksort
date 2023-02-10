@@ -97,7 +97,9 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 
 	rawhtml, err := c.doSimpleHTTPHTMLRequest(ctx, cleanURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to do simple HTTP HTML request: %w", err)
+		log.FromContext(ctx).Printf("failed to do simple HTTP HTML request: %w", err)
+
+		return nullResponse(req, urlobj), nil
 	}
 
 	// Parse response HTML content
@@ -106,7 +108,9 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	contentType := "text/html"
 	err = info.Parse(strings.NewReader(rawhtml), &cleanURL, &contentType)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse html info: %w", err)
+		log.FromContext(ctx).Printf("failed to parse html info: %w", err)
+
+		return nullResponse(req, urlobj), nil
 	}
 
 	oembed := info.GenerateOembedFor(cleanURL)
@@ -153,6 +157,8 @@ func (c *Client) handleYouTube(ctx context.Context, link, original string, ld *R
 
 	msi, err := c.doSimpleHTTPJSONRequest(ctx, purl)
 	if err != nil {
+		log.FromContext(ctx).Printf("failed to do simple HTTP HTML request: %w", err)
+
 		return ld, nil
 	}
 
@@ -182,6 +188,8 @@ func (c *Client) handleTwitter(ctx context.Context, link, original string, ld *R
 
 	msi, err := c.doSimpleHTTPJSONRequest(ctx, purl)
 	if err != nil {
+		log.FromContext(ctx).Printf("failed to do simple HTTP HTML request: %w", err)
+
 		return ld, nil
 	}
 
@@ -260,6 +268,19 @@ func (c *Client) doSimpleHTTPHTMLRequest(ctx context.Context, url string) (strin
 	}
 
 	return buf.String(), nil
+}
+
+func nullResponse(req *Request, urlobj *url.URL) *Response {
+	return &Response{
+		Title:       getNonZeroString(req.Title, urlobj.String()),
+		URL:         urlobj.String(),
+		Site:        getNonZeroString(req.Site, urlobj.Hostname()),
+		Description: req.Description,
+		Favicon:     req.Favicon,
+		Image:       req.Image,
+		Corpus:      req.Corpus,
+		Original:    req.URL,
+	}
 }
 
 func getFaviconURL(urlobj *url.URL, given string) string {
