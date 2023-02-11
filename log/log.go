@@ -119,7 +119,7 @@ func requestIDFromContext(ctx context.Context) string {
 }
 
 func resolveWriter(ctx context.Context, isProd bool) io.Writer {
-	if true {
+	if isProd {
 		_sink = newCloudwatchSink(ctx, os.Stderr)
 		return _sink
 	}
