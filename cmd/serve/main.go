@@ -23,6 +23,8 @@ func main() {
 	isProd := getenv("PRODUCTION", "1") == "1"
 
 	log.ConfigureGlobalLogger(ctx, isProd)
+	defer log.CleanUp()
+
 	raven.SetDSN(getenv("SENTRY_DSN", ""))
 	raven.SetRelease(getenv("RELEASE", ""))
 

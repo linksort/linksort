@@ -28,9 +28,8 @@ type logEvent struct {
 
 type sink struct {
 	writer        io.Writer
-	pool          []logEvent
+	buffer        []types.InputLogEvent
 	mutex         sync.Mutex
-	flushC        chan []types.InputLogEvent
 	logStreamName string
 	client        interface {
 		PutLogEvents(
@@ -44,7 +43,6 @@ type sink struct {
 func newCloudwatchSink(ctx context.Context, w io.Writer) *sink {
 	s := &sink{
 		writer: w,
-		flushC: make(chan []types.InputLogEvent),
 	}
 
 	s.setupCloudwatchClient(ctx)
@@ -59,9 +57,9 @@ func (s *sink) Write(p []byte) (int, error) {
 	defer s.mutex.Unlock()
 
 	if !bytes.Contains(p, []byte("ELB-HealthChecker")) {
-		s.pool = append(s.pool, logEvent{
-			Message:   string(p),
-			Timestamp: time.Now().UnixMilli(),
+		s.buffer = append(s.buffer, types.InputLogEvent{
+			Message:   aws.String(string(p)),
+			Timestamp: aws.Int64(time.Now().UnixMilli()),
 		})
 	}
 
@@ -76,38 +74,40 @@ func (s *sink) run(ctx context.Context) {
 		select {
 		case <-ticker.C:
 			go s.flush()
-		case logs := <-s.flushC:
-			go s.putLogs(logs)
 		case <-ctx.Done():
-			go s.flush()
 			return
 		}
 	}
 }
 
 func (s *sink) flush() {
+	s.putLogs(s.clearBuffer())
+}
+
+func (s *sink) clearBuffer() []types.InputLogEvent {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	if len(s.pool) == 0 {
-		return
+	if len(s.buffer) == 0 {
+		return nil
 	}
 
-	var logEvents []types.InputLogEvent
-	for i := range s.pool {
-		logEvents = append(logEvents, types.InputLogEvent{
-			Timestamp: aws.Int64(s.pool[i].Timestamp),
-			Message:   aws.String(s.pool[i].Message),
-		})
-	}
+	dst := make([]types.InputLogEvent, len(s.buffer))
+	copy(dst, s.buffer)
 
-	s.flushC <- logEvents
+	// https://yourbasic.org/golang/clear-slice/
+	s.buffer = s.buffer[:0]
 
-	s.pool = nil
-	fmt.Println("flushed logs")
+	fmt.Println("cleared log buffer")
+
+	return dst
 }
 
 func (s *sink) putLogs(logEvents []types.InputLogEvent) {
+	if len(logEvents) == 0 {
+		return
+	}
+
 	_, err := s.client.PutLogEvents(context.TODO(), &cloudwatchlogs.PutLogEventsInput{
 		LogGroupName:  aws.String(logGroupName),
 		LogStreamName: aws.String(s.logStreamName),
@@ -133,7 +133,6 @@ func (s *sink) setupCloudwatchClient(ctx context.Context) {
 	client := cloudwatchlogs.NewFromConfig(cfg, func(o *cloudwatchlogs.Options) {
 		o.Credentials = provider
 	})
-	s.logStreamName = os.Getenv("RELEASE")
 
 	// Create the log group if it doesn't exist already
 	_, err = client.CreateLogGroup(ctx, &cloudwatchlogs.CreateLogGroupInput{
@@ -147,6 +146,7 @@ func (s *sink) setupCloudwatchClient(ctx context.Context) {
 	}
 
 	// Create a log stream for this release
+	s.logStreamName = os.Getenv("RELEASE")
 	_, err = client.CreateLogStream(ctx, &cloudwatchlogs.CreateLogStreamInput{
 		LogGroupName:  aws.String(logGroupName),
 		LogStreamName: aws.String(s.logStreamName),

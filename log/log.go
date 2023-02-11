@@ -16,12 +16,16 @@ import (
 )
 
 // nolint
-var _logger zerolog.Logger
+var (
+	_logger zerolog.Logger
+	_sink   *sink
+)
 
 func ConfigureGlobalLogger(ctx context.Context, isProd bool) {
 	var writer io.Writer
 	if isProd {
-		writer = newCloudwatchSink(ctx, os.Stderr)
+		_sink = newCloudwatchSink(ctx, os.Stderr)
+		writer = _sink
 	} else {
 		writer = zerolog.ConsoleWriter{Out: os.Stderr}
 	}
@@ -30,6 +34,12 @@ func ConfigureGlobalLogger(ctx context.Context, isProd bool) {
 		With().
 		Timestamp().
 		Logger()
+}
+
+func CleanUp() {
+	if _sink != nil {
+		_sink.flush()
+	}
 }
 
 type Printer interface {
