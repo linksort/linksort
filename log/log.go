@@ -22,29 +22,13 @@ var (
 )
 
 func ConfigureGlobalLogger(ctx context.Context, isProd bool) {
-	var writer io.Writer
-	if isProd {
-		_sink = newCloudwatchSink(ctx, os.Stderr)
-		writer = _sink
-	} else {
-		writer = zerolog.ConsoleWriter{Out: os.Stderr}
-	}
-
-	_logger = zerolog.New(writer).
-		With().
-		Timestamp().
-		Logger()
+	_logger = zerolog.New(resolveWriter(ctx, isProd)).With().Timestamp().Logger()
 }
 
 func CleanUp() {
 	if _sink != nil {
 		_sink.flush()
 	}
-}
-
-type Printer interface {
-	Print(v ...interface{})
-	Printf(format string, i ...interface{})
 }
 
 // Print logs to stderr.
@@ -63,6 +47,11 @@ func Panicf(format string, i ...interface{}) {
 	panic(fmt.Sprintf(format, i...))
 }
 
+// Fatal is equivalent to Print() followed by a call to os.Exit(1).
+func Fatal(v ...interface{}) {
+	_logger.Fatal().Msg(fmt.Sprint(v...))
+}
+
 // Alarm logs the error to stderr and triggers an alarm.
 func Alarm(err error) {
 	raven.CaptureError(err, nil)
@@ -76,9 +65,9 @@ func AlarmWithContext(ctx context.Context, err error) {
 	FromContext(ctx).Print(err.Error())
 }
 
-// Fatal is equivalent to Print() followed by a call to os.Exit(1).
-func Fatal(v ...interface{}) {
-	_logger.Fatal().Msg(fmt.Sprint(v...))
+type Printer interface {
+	Print(v ...interface{})
+	Printf(format string, i ...interface{})
 }
 
 // FromContext returns a Printer from the given request.
@@ -89,6 +78,13 @@ func FromRequest(r *http.Request) Printer {
 // FromContext returns a Printer from the given context.
 func FromContext(ctx context.Context) Printer {
 	return zerolog.Ctx(ctx)
+}
+
+// UpdateContext adds a key-value pair to the logger's context.
+func UpdateContext(ctx context.Context, key, value string) {
+	zerolog.Ctx(ctx).UpdateContext(func(c zerolog.Context) zerolog.Context {
+		return c.Str(key, value)
+	})
 }
 
 // WithAccessLogging prints access logs for the given handler.
@@ -120,4 +116,12 @@ func requestIDFromContext(ctx context.Context) string {
 	}
 
 	return "missing-request-id"
+}
+
+func resolveWriter(ctx context.Context, isProd bool) io.Writer {
+	if true {
+		_sink = newCloudwatchSink(ctx, os.Stderr)
+		return _sink
+	}
+	return zerolog.ConsoleWriter{Out: os.Stderr}
 }

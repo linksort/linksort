@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/getsentry/raven-go"
-	"github.com/rs/zerolog"
 
 	"github.com/linksort/linksort/cookie"
 	"github.com/linksort/linksort/errors"
+	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
@@ -47,12 +47,7 @@ func WithUser(auth interface {
 					payload.WriteError(w, r, err)
 					return
 				}
-
-				log := zerolog.Ctx(ctx)
-				log.UpdateContext(func(c zerolog.Context) zerolog.Context {
-					return c.Str("UserID", user.ID)
-				})
-
+				log.UpdateContext(ctx, "UserID", user.ID)
 				next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, _userKey, user)))
 				return
 			}
@@ -84,11 +79,7 @@ func WithUser(auth interface {
 				}
 			}
 
-			log := zerolog.Ctx(ctx)
-			log.UpdateContext(func(c zerolog.Context) zerolog.Context {
-				return c.Str("UserID", user.ID)
-			})
-
+			log.UpdateContext(ctx, "UserID", user.ID)
 			next.ServeHTTP(w, r.WithContext(context.WithValue(ctx, _userKey, user)))
 		})
 	}

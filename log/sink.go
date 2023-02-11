@@ -21,11 +21,6 @@ import (
 
 const logGroupName = "linksort-main"
 
-type logEvent struct {
-	Timestamp int64
-	Message   string
-}
-
 type sink struct {
 	writer        io.Writer
 	buffer        []types.InputLogEvent
@@ -44,11 +39,8 @@ func newCloudwatchSink(ctx context.Context, w io.Writer) *sink {
 	s := &sink{
 		writer: w,
 	}
-
 	s.setupCloudwatchClient(ctx)
-
 	go s.run(ctx)
-
 	return s
 }
 
@@ -94,12 +86,9 @@ func (s *sink) clearBuffer() []types.InputLogEvent {
 
 	dst := make([]types.InputLogEvent, len(s.buffer))
 	copy(dst, s.buffer)
-
 	// https://yourbasic.org/golang/clear-slice/
 	s.buffer = s.buffer[:0]
-
 	fmt.Println("cleared log buffer")
-
 	return dst
 }
 
