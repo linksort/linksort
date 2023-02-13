@@ -383,3 +383,35 @@ func TestChangePassword(t *testing.T) {
 		})
 	}
 }
+
+func TestDownloadUserData(t *testing.T) {
+	ctx := context.Background()
+	usr1, _ := testutil.NewUser(t, ctx)
+	for i := 0; i < 10; i++ {
+		testutil.NewLink(t, ctx, usr1)
+	}
+
+	tests := []struct {
+		Name         string
+		GivenSession string
+		ExpectStatus int
+	}{
+		{
+			Name:         "success",
+			GivenSession: usr1.SessionID,
+			ExpectStatus: http.StatusOK,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Get("/api/users/download").
+				Cookie("session_id", tcase.GivenSession).
+				Expect(t).
+				Status(tcase.ExpectStatus).
+				End()
+		})
+	}
+}

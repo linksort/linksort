@@ -32,6 +32,7 @@ type GetLinksOption func(map[string]interface{})
 
 type LinkStore interface {
 	GetLinksByUser(context.Context, *User, *Pagination, ...GetLinksOption) ([]*Link, error)
+	GetAllLinksByUser(context.Context, *User, *Pagination) ([]*Link, error)
 	GetLinkByID(context.Context, string) (*Link, error)
 	CreateLink(context.Context, *Link) (*Link, error)
 	UpdateLink(context.Context, *Link) (*Link, error)

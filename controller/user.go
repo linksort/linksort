@@ -1,7 +1,11 @@
 package controller
 
 import (
+	"archive/zip"
 	"context"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -18,6 +22,7 @@ type User struct {
 	Store     model.UserStore
 	LinkStore interface {
 		DeleteAllLinksByUser(ctx context.Context, u *model.User) error
+		GetAllLinksByUser(ctx context.Context, u *model.User, p *model.Pagination) ([]*model.Link, error)
 	}
 	Email interface {
 		SendForgotPassword(context.Context, *model.User, string) error
@@ -185,4 +190,52 @@ func (u *User) ChangePassword(ctx context.Context, req *handler.ChangePasswordRe
 	}
 
 	return usr, nil
+}
+
+func (u *User) DownloadUserData(ctx context.Context, usr *model.User, w io.Writer) error {
+	op := errors.Opf("controller.DownloadUserData(%q)", u.Email)
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		return errors.E(op, errors.Strf("expected http.ResponseWriter, got %T", w))
+	}
+	zipW := zip.NewWriter(w)
+	// Write user data to zip file
+	userW, err := zipW.CreateHeader(&zip.FileHeader{
+		Name:     "user.json",
+		Modified: time.Now(),
+		Method:   zip.Deflate,
+	})
+	if err != nil {
+		return errors.E(op, err)
+	}
+	enc := json.NewEncoder(userW)
+	enc.Encode(usr)
+	flusher.Flush()
+	// Write links to zip file
+	pagination := &model.Pagination{Page: 0, Size: 500}
+	for {
+		batch, err := u.LinkStore.GetAllLinksByUser(ctx, usr, pagination)
+		if err != nil {
+			return errors.E(op, err)
+		}
+		batchW, err := zipW.CreateHeader(&zip.FileHeader{
+			Name:     fmt.Sprintf("links-%d.json", pagination.Page),
+			Modified: time.Now(),
+			Method:   zip.Deflate,
+		})
+		if err != nil {
+			return errors.E(op, err)
+		}
+		enc := json.NewEncoder(batchW)
+		enc.Encode(batch)
+		flusher.Flush()
+		if len(batch) < pagination.Size {
+			break
+		} else {
+			pagination.Page++
+		}
+	}
+	zipW.Close()
+	flusher.Flush()
+	return nil
 }

@@ -123,6 +123,36 @@ func (s *LinkStore) GetLinksByUser(
 	return links, nil
 }
 
+func (s *LinkStore) GetAllLinksByUser(
+	ctx context.Context,
+	u *model.User,
+	p *model.Pagination,
+) ([]*model.Link, error) {
+	op := errors.Opf("LinkStore.GetAllLinksByUser(u=%s)", u.Email)
+
+	m := map[string]interface{}{"userid": u.ID}
+	sort := bson.M{"createdat": -1}
+
+	cur, err := s.col.Find(ctx, bson.M(m), options.Find().
+		SetLimit(int64(p.Limit())).
+		SetSkip(int64(p.Offset())).
+		SetSort(sort))
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	links := make([]*model.Link, cur.RemainingBatchLength())
+	err = cur.All(ctx, &links)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+	for i := range links {
+		links[i].ID = links[i].Key.Hex()
+	}
+
+	return links, nil
+}
+
 func (s *LinkStore) CreateLink(ctx context.Context, l *model.Link) (*model.Link, error) {
 	op := errors.Op("LinkStore.CreateLink")
 

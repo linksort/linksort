@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"time"
 
@@ -24,6 +25,7 @@ type Config struct {
 		DeleteUser(context.Context, *model.User) error
 		ForgotPassword(context.Context, *ForgotPasswordRequest) error
 		ChangePassword(context.Context, *ChangePasswordRequest) (*model.User, error)
+		DownloadUserData(context.Context, *model.User, io.Writer) error
 	}
 	SessionController interface {
 		CreateSession(context.Context, *CreateSessionRequest) (*model.User, error)
@@ -64,6 +66,7 @@ func Handler(c *Config) *mux.Router {
 	t.HandleFunc("/api/users", cc.GetUser).Methods("GET")
 	t.HandleFunc("/api/users", cc.UpdateUser).Methods("PATCH")
 	t.HandleFunc("/api/users", cc.DeleteUser).Methods("DELETE")
+	t.HandleFunc("/api/users/download", cc.DownloadUserData).Methods("GET")
 
 	return r
 }
@@ -291,4 +294,22 @@ func (s *config) DeleteSession(w http.ResponseWriter, r *http.Request) {
 	cookie.UnsetSession(r, w)
 	w.Header().Add("X-Csrf-Token", string(s.CSRF.CSRF()))
 	payload.Write(w, r, nil, http.StatusNoContent)
+}
+
+func (s *config) DownloadUserData(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.DownloadUserData")
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"user-data.zip\"")
+	w.Header().Set("Transfer-Encoding", "chunked")
+
+	err := s.UserController.DownloadUserData(ctx, u, io.Writer(w))
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
 }

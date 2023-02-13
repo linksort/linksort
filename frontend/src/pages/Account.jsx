@@ -143,6 +143,24 @@ function Danger() {
   );
 }
 
+function DownloadData() {
+  return (
+    <VStack maxWidth="40ch" spacing={4} align="left">
+      <Heading as="h2" size="md">
+        Download Your Data
+      </Heading>
+
+      <Text>
+        This will download a ZIP file containing all of your data in JSON format.
+      </Text>
+
+      <Box>
+        <Button as="a" href="/api/users/download">Download Data</Button>
+      </Box>
+    </VStack>
+  );
+}
+
 export default function Account() {
   return (
     <VStack
@@ -156,6 +174,7 @@ export default function Account() {
       divider={<StackDivider />}
     >
       <Profile />
+      <DownloadData />
       <Danger />
     </VStack>
   );
