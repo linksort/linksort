@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { pick } from "lodash";
 import { useFormik } from "formik";
 import {
@@ -20,6 +20,7 @@ import {
   ModalOverlay,
   ModalContent,
   HStack,
+  Code,
 } from "@chakra-ui/react";
 
 import { suppressMutationErrors } from "../utils/mutations";
@@ -111,6 +112,37 @@ function Profile() {
           Update
         </Button>
       </Flex>
+    </VStack>
+  );
+}
+
+function APIAccess() {
+  const user = useUser();
+  const [isShowing, setIsShowing] = useState(false);
+
+  return (
+    <VStack maxWidth="40ch" spacing={4} align="left">
+      <Heading as="h2" size="md">
+        API Access
+      </Heading>
+
+      <Text>
+        Use this API key to access Linksort programatically. For example:
+      </Text>
+
+      <Code colorScheme="blue" padding={2} fontSize="0.8rem">
+        $ curl -H "Authorization: Bearer {"<key>"}" \
+        &nbsp;&nbsp;https://linksort.com/api/users
+      </Code>
+
+      <Input
+        value={isShowing ? user.token : user.token.slice(-4).padStart(user.token.length, '*')}
+        isReadOnly
+        fontFamily={"mono"} />
+
+      <Box>
+        <Button onClick={() => setIsShowing(!isShowing)}>{isShowing ? "Hide" : "Show"} Key</Button>
+      </Box>
     </VStack>
   );
 }
@@ -209,6 +241,7 @@ export default function Account() {
       divider={<StackDivider />}
     >
       <Profile />
+      <APIAccess />
       <DownloadData />
       <Danger />
     </VStack>
