@@ -303,7 +303,7 @@ func (s *config) DownloadUserData(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", "attachment; filename=\"user-data.zip\"")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"linksort-data.zip\"")
 	w.Header().Set("Transfer-Encoding", "chunked")
 
 	err := s.UserController.DownloadUserData(ctx, u, io.Writer(w))

@@ -15,6 +15,11 @@ import {
   Text,
   Flex,
   useToast,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  HStack,
 } from "@chakra-ui/react";
 
 import { suppressMutationErrors } from "../utils/mutations";
@@ -110,39 +115,6 @@ function Profile() {
   );
 }
 
-function Danger() {
-  const mutation = useDeleteUser();
-  const formik = useFormik({
-    initialValues: {},
-    onSubmit: suppressMutationErrors(mutation.mutateAsync),
-  });
-
-  return (
-    <VStack
-      as="form"
-      maxWidth="40ch"
-      spacing={4}
-      align="left"
-      onSubmit={formik.handleSubmit}
-    >
-      <Heading as="h2" size="md">
-        Danger
-      </Heading>
-
-      <Text>
-        This will instantly delete your account and all of your data. Please be
-        careful.
-      </Text>
-
-      <Box>
-        <Button colorScheme="red" type="submit" isLoading={formik.isSubmitting}>
-          Delete account
-        </Button>
-      </Box>
-    </VStack>
-  );
-}
-
 function DownloadData() {
   return (
     <VStack maxWidth="40ch" spacing={4} align="left">
@@ -155,7 +127,70 @@ function DownloadData() {
       </Text>
 
       <Box>
-        <Button as="a" href="/api/users/download">Download Data</Button>
+        <Button as="a" href="/api/users/download" download="linksort-data.zip">Download Data</Button>
+      </Box>
+    </VStack>
+  );
+}
+
+function Danger() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const mutation = useDeleteUser();
+  const formik = useFormik({
+    initialValues: {},
+    onSubmit: suppressMutationErrors(mutation.mutateAsync),
+  });
+
+  return (
+    <VStack
+      maxWidth="40ch"
+      spacing={4}
+      align="left"
+    >
+      <Heading as="h2" size="md">
+        Danger
+      </Heading>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <VStack
+            as="form"
+            spacing={4}
+            align="left"
+            onSubmit={formik.handleSubmit}
+            padding={6}
+          >
+            <Text fontSize={"lg"} fontWeight={"semibold"}>
+              Are you sure you want to delete your account?
+            </Text>
+            <Text fontSize={"md"} fontWeight={"normal"}>
+              This action cannot be reversed and it will not be possible to recover your data.
+            </Text>
+            <HStack justifyContent={"flex-end"}>
+              <Button
+                bgColor={"red.800"}
+                color={"white"}
+                type="submit"
+                onClick={formik.handleSubmit}
+                isLoading={formik.isSubmitting}>
+                Yes, Delete
+              </Button>
+              <Button onClick={onClose} autoFocus>No, Cancel</Button>
+            </HStack>
+          </VStack>
+        </ModalContent>
+      </Modal>
+
+      <Text>
+        This will instantly delete your account and all of your data. Please be
+        careful.
+      </Text>
+
+      <Box>
+        <Button colorScheme="red" onClick={onOpen}>
+          Delete account
+        </Button>
       </Box>
     </VStack>
   );
