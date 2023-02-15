@@ -1,18 +1,24 @@
 # Linksort
 
-[![CircleCI](https://circleci.com/gh/linksort/linksort/tree/main.svg?style=shield)](https://circleci.com/gh/linksort/linksort/tree/main)
+[![CircleCI](https://circleci.com/gh/linksort/linksort/tree/main.svg?style=shield)](https://circleci.com/gh/linksort/linksort/tree/main) [![API Docs](https://img.shields.io/badge/-API%20Docs-blue)](https://linksort.com/docs/index.html)
 
-## Setup
+![Screenshot](./splash/static/github.jpeg)
 
-### Short Way
+Linksort is an open source bookmarking application.
+
+## Development
+
+Setting up your development environment is easy. Make sure you have [`docker`](https://docs.docker.com/get-docker/) and [`docker-compose`](https://docs.docker.com/compose/install/) installed and run the following command from the root of this repository.
 
 ```bash
 docker-compose up
 ```
 
-That's it! Go to [http://localhost:8000](http://localhost:8000) to find the app up and running.
+That's it! Go to [http://localhost:8000](http://localhost:8000) to find the app up and running. Whenever you change a file, the code we be automatically recompiled and run.
 
-### Long Way
+---
+
+Sometimes you need to develop without being inside a Docker container. Follow these steps to run the project in development mode without Docker.
 
 You'll need a access to a mongodb endpoint that supports replica sets. You can build and run a docker image that provides such an endpoint by running the following commands.
 
@@ -28,7 +34,9 @@ Run [`air`](https://github.com/cosmtrek/air) to start the backend server. This a
 
 ```bash
 export PRODUCTION=0
-export ANALYZER_KEY=$(cat /path/to/key)
+export ANALYZER_KEY=$(cat /path/to/key)  # Optional
+export FRONTEND_HOSTNAME=localhost
+export FRONTEND_PORT=3000
 air
 ```
 
@@ -41,7 +49,7 @@ yarn start
 
 Go to [http://localhost:8080](http://localhost:8080).
 
-## Running Tests
+### Running Tests
 
 ```bash
 # Build the mongo image.
@@ -54,14 +62,14 @@ docker run -p 27017:27017 -v db-data2:/data/db2 -d mongo-rs
 go test ./...
 ```
 
-## Running in Prod Mode Locally
+### Running in Prod Mode Locally
 
 ```bash
 docker build -f ./docker/main.Dockerfile -t ls .
 docker run -e ANALYZER_KEY="$ANALYZER_KEY" -e DB_CONNECTION="mongodb://172.17.0.2:27017/?connect=direct" -p 8080:8080 ls
 ```
 
-## Generating API Docs
+### Generating API Docs
 
 ```bash
 # Make sure swag is installed.
