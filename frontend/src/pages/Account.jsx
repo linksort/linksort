@@ -20,8 +20,8 @@ import {
   ModalOverlay,
   ModalContent,
   HStack,
-  Code,
 } from "@chakra-ui/react";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 
 import { suppressMutationErrors } from "../utils/mutations";
 import { useUpdateUser, useDeleteUser, useUser } from "../hooks/auth";
@@ -127,22 +127,18 @@ function APIAccess() {
       </Heading>
 
       <Text>
-        Use this API key to access Linksort programatically. For example:
+        Use this API key to access Linksort programatically.
       </Text>
-
-      <Code colorScheme="blue" padding={2} fontSize="0.8rem">
-        $ curl -H "Authorization: Bearer {"<key>"}" \
-        &nbsp;&nbsp;https://linksort.com/api/users
-      </Code>
 
       <Input
         value={isShowing ? user.token : user.token.slice(-4).padStart(user.token.length, '*')}
         isReadOnly
         fontFamily={"mono"} />
 
-      <Box>
+      <HStack>
         <Button onClick={() => setIsShowing(!isShowing)}>{isShowing ? "Hide" : "Show"} Key</Button>
-      </Box>
+        <Button as="a" href="/docs" target="_blank" rightIcon={<ArrowForwardIcon />} >API Docs</Button>
+      </HStack>
     </VStack>
   );
 }
