@@ -64,6 +64,17 @@ type CreateLinkResponse struct {
 	User *model.User `json:"user"`
 }
 
+// CreateLink godoc
+//
+//	@Summary		CreateLink
+//	@Description	Creates a link. Both the new link and the user are returned so that newly created tags can be seen.
+//	@Param		CreateLinkRequest	body		CreateLinkRequest	true	"All fields are optional except 'url'."
+//	@Success		201					{object}	CreateLinkResponse
+//	@Failure		400					{object}	payload.Error
+//	@Failure		401					{object}	payload.Error
+//	@Failure		500					{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router		/links				[post]
 func (s *config) CreateLink(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.CreateLink")
 	ctx := r.Context()
@@ -92,6 +103,17 @@ type GetLinkResponse struct {
 	Link *model.Link `json:"link"`
 }
 
+// GetLink godoc
+//
+//	@Summary		GetLink
+//	@Description	Gets a link with all fields populated.
+//	@Param		id			path		string	true	"LinkID"
+//	@Success		200			{object}	GetLinkResponse
+//	@Failure		401			{object}	payload.Error
+//	@Failure		404			{object}	payload.Error
+//	@Failure		500			{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router		/links/{id}		[get]
 func (s *config) GetLink(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.GetLink")
 	ctx := r.Context()
@@ -123,6 +145,24 @@ type GetLinksResponse struct {
 	Links []*model.Link `json:"links"`
 }
 
+// GetLinks godoc
+//
+//	@Summary		GetLinks
+//	@Description	Gets a list of links with filters applied through the available query parameters.
+//	@Param		sort		query		string	false	"Sort, descending or ascending"		Enums(1, -1)
+//	@Param		search	query		string	false	"Search"
+//	@Param		favorite	query		string	false	"Only return favorites"				Enums(0, 1)
+//	@Param		annotated	query		string	false	"Only return links with annotations"	Enums(0, 1)
+//	@Param		folder	query		string	false	"Only return links from the given folder ID"
+//	@Param		tag		query		string	false	"Only return links with the given tag path"
+//	@Param		page		query		int		false	"Page"
+//	@Param		size		query		int		false	"Page size"						maximum(1000)
+//	@Success		200		{object}	GetLinksResponse
+//	@Failure		400		{object}	payload.Error
+//	@Failure		401		{object}	payload.Error
+//	@Failure		500		{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router		/links	[get]
 func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.GetLinks")
 	ctx := r.Context()
@@ -173,6 +213,18 @@ type UpdateLinkResponse struct {
 	Link *model.Link `json:"link"`
 }
 
+// UpdateLink godoc
+//
+//	@Summary	UpdateLink
+//	@Param	id			path		string		true	"LinkID"
+//	@Param	UpdateLinkRequest	body		UpdateLinkRequest	true	"All fields are optional."
+//	@Success	200					{object}	UpdateLinkResponse
+//	@Failure	400					{object}	payload.Error
+//	@Failure	401					{object}	payload.Error
+//	@Failure	404					{object}	payload.Error
+//	@Failure	500					{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router	/links/{id}				[patch]
 func (s *config) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.UpdateLink")
 	ctx := r.Context()
@@ -203,6 +255,17 @@ type DeleteLinkResponse struct {
 	User *model.User `json:"user"`
 }
 
+// DeleteLink godoc
+//
+//	@Summary	DeleteLink
+//	@Param	id			path		string	true	"LinkID"
+//	@Success	200					{object}	DeleteLinkResponse
+//	@Failure	400					{object}	payload.Error
+//	@Failure	401					{object}	payload.Error
+//	@Failure	404					{object}	payload.Error
+//	@Failure	500					{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router	/links/{id}				[delete]
 func (s *config) DelteLink(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.DeleteLink")
 	ctx := r.Context()

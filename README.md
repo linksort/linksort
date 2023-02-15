@@ -60,3 +60,13 @@ go test ./...
 docker build -f ./docker/main.Dockerfile -t ls .
 docker run -e ANALYZER_KEY="$ANALYZER_KEY" -e DB_CONNECTION="mongodb://172.17.0.2:27017/?connect=direct" -p 8080:8080 ls
 ```
+
+## Generating API Docs
+
+```bash
+# Make sure swag is installed.
+go install github.com/swaggo/swag/cmd/swag@latest
+
+# Generate docs.
+swag init --dir cmd/serve/,handler,model,payload
+```

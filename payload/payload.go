@@ -44,6 +44,10 @@ type ClientReporter interface {
 	Status() int
 }
 
+type Error struct {
+	Message string `json:"message"`
+}
+
 // WriteError writes an appropriate error response to the given response
 // writer. If the given error implements ClientReport, then the values from
 // ErrorReport() and StatusCode() are written to the response, except in

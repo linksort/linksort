@@ -38,5 +38,8 @@ func (p *Pagination) Limit() int {
 func GetPagination(r *http.Request) *Pagination {
 	pageNum, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	pageSize, _ := strconv.Atoi(r.URL.Query().Get("size"))
+	if pageSize > 1000 {
+		pageSize = 1000
+	}
 	return &Pagination{Page: pageNum, Size: pageSize}
 }

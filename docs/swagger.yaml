@@ -1,0 +1,566 @@
+basePath: /api
+consumes:
+- application/json
+definitions:
+  folder.CreateFolderRequest:
+    properties:
+      name:
+        maxLength: 128
+        type: string
+      parentId:
+        type: string
+    required:
+    - name
+    type: object
+  folder.CreateFolderResponse:
+    properties:
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  folder.DeleteFolderResponse:
+    properties:
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  folder.UpdateFolderRequest:
+    properties:
+      name:
+        maxLength: 128
+        type: string
+      parentId:
+        type: string
+    required:
+    - name
+    type: object
+  folder.UpdateFolderResponse:
+    properties:
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  link.CreateLinkRequest:
+    properties:
+      corpus:
+        maxLength: 500000
+        type: string
+      description:
+        maxLength: 2048
+        type: string
+      favicon:
+        maxLength: 512
+        type: string
+      image:
+        maxLength: 512
+        type: string
+      site:
+        maxLength: 512
+        type: string
+      title:
+        maxLength: 512
+        type: string
+      url:
+        maxLength: 2048
+        type: string
+    required:
+    - url
+    type: object
+  link.CreateLinkResponse:
+    properties:
+      link:
+        $ref: '#/definitions/model.Link'
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  link.DeleteLinkResponse:
+    properties:
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  link.GetLinkResponse:
+    properties:
+      link:
+        $ref: '#/definitions/model.Link'
+    type: object
+  link.GetLinksResponse:
+    properties:
+      links:
+        items:
+          $ref: '#/definitions/model.Link'
+        type: array
+    type: object
+  link.UpdateLinkRequest:
+    properties:
+      annotation:
+        type: string
+      description:
+        maxLength: 2048
+        type: string
+      favicon:
+        maxLength: 512
+        type: string
+      folderId:
+        type: string
+      image:
+        maxLength: 512
+        type: string
+      isFavorite:
+        type: boolean
+      site:
+        maxLength: 512
+        type: string
+      title:
+        maxLength: 512
+        type: string
+      url:
+        maxLength: 2048
+        type: string
+    type: object
+  link.UpdateLinkResponse:
+    properties:
+      link:
+        $ref: '#/definitions/model.Link'
+    type: object
+  model.Folder:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/model.Folder'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  model.Link:
+    properties:
+      annotation:
+        type: string
+      corpus:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      favicon:
+        type: string
+      folderId:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      isAnnotated:
+        type: boolean
+      isFavorite:
+        type: boolean
+      site:
+        type: string
+      tagDetails:
+        items:
+          $ref: '#/definitions/model.TagDetail'
+        type: array
+      tagPaths:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+      userId:
+        type: string
+    type: object
+  model.TagDetail:
+    properties:
+      confidence:
+        type: number
+      name:
+        type: string
+      path:
+        type: string
+    type: object
+  model.TagNode:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/model.TagNode'
+        type: array
+      count:
+        type: integer
+      name:
+        type: string
+      path:
+        type: string
+    type: object
+  model.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      folderTree:
+        $ref: '#/definitions/model.Folder'
+      hasSeenWelcomeTour:
+        type: boolean
+      id:
+        type: string
+      lastName:
+        type: string
+      tagTree:
+        $ref: '#/definitions/model.TagNode'
+      token:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  payload.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  user.GetUserResponse:
+    properties:
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+host: linksort.com
+info:
+  contact:
+    email: alex@linksort.com
+    name: Linksort Support
+    url: https://linksort.com
+  description: Linksort API documentation
+  license:
+    name: Copyright (c) 2023 Linksort
+    url: https://github.com/linksort/linksort/blob/main/LICENSE
+  termsOfService: https://linksort.com/terms
+  title: Linksort API
+  version: "1.0"
+paths:
+  /folders:
+    post:
+      parameters:
+      - description: Only 'name' is required. Use 'parentId' to nest the new folder
+          under a parent folder.
+        in: body
+        name: CreateFolderRequest
+        required: true
+        schema:
+          $ref: '#/definitions/folder.CreateFolderRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/folder.CreateFolderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateFolder
+  /folders/{id}:
+    delete:
+      parameters:
+      - description: FolderID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/folder.DeleteFolderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteFolder
+    patch:
+      parameters:
+      - description: FolderID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Change the folder's name or move the folder under a new parent
+          folder. Set the parentId to 'root' to move the folder to the top level.
+        in: body
+        name: UpdateFolderRequest
+        required: true
+        schema:
+          $ref: '#/definitions/folder.UpdateFolderRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/folder.UpdateFolderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateFolder
+  /links:
+    get:
+      description: Gets a list of links with filters applied through the available
+        query parameters.
+      parameters:
+      - description: Sort, descending or ascending
+        enum:
+        - "1"
+        - "-1"
+        in: query
+        name: sort
+        type: string
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Only return favorites
+        enum:
+        - "0"
+        - "1"
+        in: query
+        name: favorite
+        type: string
+      - description: Only return links with annotations
+        enum:
+        - "0"
+        - "1"
+        in: query
+        name: annotated
+        type: string
+      - description: Only return links from the given folder ID
+        in: query
+        name: folder
+        type: string
+      - description: Only return links with the given tag path
+        in: query
+        name: tag
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        maximum: 1000
+        name: size
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/link.GetLinksResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetLinks
+    post:
+      description: Creates a link. Both the new link and the user are returned so
+        that newly created tags can be seen.
+      parameters:
+      - description: All fields are optional except 'url'.
+        in: body
+        name: CreateLinkRequest
+        required: true
+        schema:
+          $ref: '#/definitions/link.CreateLinkRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/link.CreateLinkResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateLink
+  /links/{id}:
+    delete:
+      parameters:
+      - description: LinkID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/link.DeleteLinkResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteLink
+    get:
+      description: Gets a link with all fields populated.
+      parameters:
+      - description: LinkID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/link.GetLinkResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetLink
+    patch:
+      parameters:
+      - description: LinkID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: All fields are optional.
+        in: body
+        name: UpdateLinkRequest
+        required: true
+        schema:
+          $ref: '#/definitions/link.UpdateLinkRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/link.UpdateLinkResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateLink
+  /users:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetUserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetUser
+produces:
+- application/json
+schemes:
+- https
+securityDefinitions:
+  ApiKeyAuth:
+    description: 'Bearer token. Your token can be found on Linksort''s account page.
+      Example: Bearer \<token\>'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

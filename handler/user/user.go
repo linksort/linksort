@@ -200,6 +200,14 @@ type GetUserResponse struct {
 	User *model.User `json:"user"`
 }
 
+// GetUser godoc
+//
+//	@Summary	GetUser
+//	@Success	200		{object}	GetUserResponse
+//	@Failure	401		{object}	payload.Error
+//	@Failure	500		{object}	payload.Error
+//	@Security	ApiKeyAuth
+//	@Router	/users	[get]
 func (s *config) GetUser(w http.ResponseWriter, r *http.Request) {
 	u := middleware.UserFromContext(r.Context())
 	payload.Write(w, r, &GetUserResponse{u}, http.StatusOK)

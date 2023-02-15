@@ -11,6 +11,7 @@ import (
 	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
+	"github.com/linksort/linksort/handler/docs"
 	"github.com/linksort/linksort/handler/folder"
 	"github.com/linksort/linksort/handler/frontend"
 	"github.com/linksort/linksort/handler/link"
@@ -41,6 +42,7 @@ type Config struct {
 
 func New(c *Config) http.Handler {
 	router := mux.NewRouter()
+	router.PathPrefix("/docs").HandlerFunc(docs.Handler()).Methods("GET")
 
 	// Controllers
 	userC := &controller.User{

@@ -18,6 +18,28 @@ import (
 	"github.com/linksort/linksort/magic"
 )
 
+// @title					Linksort API
+// @version					1.0
+// @description				Linksort API documentation
+// @termsOfService			https://linksort.com/terms
+
+// @license.name				Copyright (c) 2023 Linksort
+// @license.url				https://github.com/linksort/linksort/blob/main/LICENSE
+
+// @contact.name				Linksort Support
+// @contact.url				https://linksort.com
+// @contact.email				alex@linksort.com
+
+// @host					linksort.com
+// @BasePath				/api
+// @schemes					https
+// @accept					json
+// @produce					json
+
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in					header
+// @name					Authorization
+// @description				Bearer token. Your token can be found on Linksort's account page. Example: Bearer \<token\>
 func main() {
 	ctx := context.Background()
 	isProd := getenv("PRODUCTION", "1") == "1"
