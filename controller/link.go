@@ -45,7 +45,9 @@ func (l *Link) CreateLink(
 	var link *model.Link
 	var user *model.User
 
-	err = l.Transactor.DoInTransaction(ctx, func(sessCtx context.Context) error {
+	// We use a new context here so that this operation isn't cancelled if the
+	// request is cancelled.
+	err = l.Transactor.DoInTransaction(context.Background(), func(sessCtx context.Context) error {
 		innerOp := errors.Opf("%s.innerTxn", op)
 
 		user, err = l.UserStore.GetUserByEmail(sessCtx, u.Email)

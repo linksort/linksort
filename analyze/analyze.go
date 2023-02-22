@@ -246,7 +246,9 @@ func (c *Client) doSimpleHTTPJSONRequest(ctx context.Context, url string) (map[s
 }
 
 func (c *Client) doSimpleHTTPHTMLRequest(ctx context.Context, url string) (string, error) {
-	httpreq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	// We use a new context here because we don't want to cancel the request if the
+	// context is cancelled.
+	httpreq, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
