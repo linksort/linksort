@@ -26,6 +26,7 @@ import (
 	"github.com/linksort/linksort/handler/user"
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
+	"github.com/linksort/linksort/random"
 )
 
 // nolint
@@ -113,7 +114,7 @@ func NewLink(t *testing.T, ctx context.Context, u *model.User) *model.Link {
 		UserID:      u.ID,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
-		URL:         fmt.Sprintf("https://%s", fake.DomainName()),
+		URL:         fmt.Sprintf("https://%s/%s", fake.DomainName(), random.String(8)),
 		Title:       fake.ProductName(),
 		Favicon:     fmt.Sprintf("https://%s/favicon.ico", fake.DomainName()),
 		Corpus:      fake.Paragraphs(),
