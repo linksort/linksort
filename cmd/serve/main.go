@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/getsentry/raven-go"
 
@@ -75,7 +76,9 @@ func main() {
 			FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
 			IsProd:                isProd,
 		}),
-		Addr: fmt.Sprintf(":%s", port),
+		ReadTimeout:  time.Duration(5 * time.Second),
+		WriteTimeout: time.Duration(30 * time.Second),
+		Addr:         fmt.Sprintf(":%s", port),
 	}
 
 	go func() {
