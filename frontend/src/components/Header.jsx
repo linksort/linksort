@@ -61,7 +61,7 @@ export default function Header() {
     } else if (isSearching) {
       heading = `Searching for "${searchQuery}" in ${folderName}`;
     } else if (areFavoritesShowing) {
-      heading = `Favorites in ${heading}`;
+      heading = `Favorites in ${isViewingTag ? tagPath : folderName}`;
     } else {
       heading = isViewingTag ? tagPath : folderName;
     }
