@@ -1,14 +1,11 @@
 import React from "react";
-import { FeedbackFish } from "@feedback-fish/react";
 
-import { useUser } from "../hooks/auth";
+import { Link } from "@chakra-ui/react";
 
 export default function GiveFeedback({ children }) {
-  const user = useUser();
-
   return (
-    <FeedbackFish projectId="25d4c57c4deea1" userId={user.email}>
+    <Link href="https://linksort.frill.co/b/90p331mj/feature-ideas/idea/new" isExternal>
       {children}
-    </FeedbackFish>
+    </Link>
   );
 }
