@@ -217,6 +217,7 @@ func TestUpdateLink(t *testing.T) {
 		GivenLinkID    string
 		ExpectStatus   int
 		ExpectBody     string
+		ExpectTags     map[string]int
 	}{
 		{
 			Name:           "success",
@@ -257,6 +258,41 @@ func TestUpdateLink(t *testing.T) {
 			ExpectStatus: http.StatusOK,
 		},
 		{
+			Name:           "add tags",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"userTags": []string{"tag1", "tag2"},
+			},
+			ExpectTags: map[string]int{
+				"tag1": 1,
+				"tag2": 1,
+			},
+			ExpectStatus: http.StatusOK,
+		},
+		{
+			Name:           "remove tags",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"userTags": []string{"tag2"},
+			},
+			ExpectTags: map[string]int{
+				"tag2": 1,
+			},
+			ExpectStatus: http.StatusOK,
+		},
+		{
+			Name:           "invalid tags",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"userTags": []string{"$%^&**&&*--", ""},
+			},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"userTags[0]": "This is not valid.","userTags[1]": "This is not valid."}`,
+		},
+		{
 			Name:           "move to non-existent folder",
 			GivenSessionID: usr.SessionID,
 			GivenLinkID:    lnk1.ID,
@@ -291,7 +327,20 @@ func TestUpdateLink(t *testing.T) {
 				tt.Assert(jsonpath.Equal("$.link.id", tcase.GivenLinkID))
 
 				for k, v := range tcase.GivenBody {
-					tt.Assert(jsonpath.Equal(fmt.Sprintf("$.link.%s", k), v))
+					switch ty := v.(type) {
+					case []string:
+						tt.Assert(jsonpath.Len(fmt.Sprintf("$.link.%s", k), len(ty)))
+						for _, tag := range ty {
+							tt.Assert(jsonpath.Contains(fmt.Sprintf("$.link.%s", k), tag))
+						}
+
+						tt.Assert(jsonpath.Len("$.user.userTags", len(tcase.ExpectTags)))
+						for tag := range tcase.ExpectTags {
+							tt.Assert(jsonpath.Contains("$.user.userTags", tag))
+						}
+					default:
+						tt.Assert(jsonpath.Equal(fmt.Sprintf("$.link.%s", k), v))
+					}
 				}
 			} else {
 				tt.Body(tcase.ExpectBody)

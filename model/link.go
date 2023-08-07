@@ -13,6 +13,7 @@ type Link struct {
 	UserID      string             `json:"userId"`
 	CreatedAt   time.Time          `json:"createdAt"`
 	UpdatedAt   time.Time          `json:"updatedAt"`
+	UserTags    JSONStringArray    `json:"userTags"`
 	TagPaths    JSONStringArray    `json:"tagPaths"`
 	TagDetails  TagDetailList      `json:"tagDetails"`
 	IsFavorite  bool               `json:"isFavorite"`
