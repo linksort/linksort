@@ -180,4 +180,8 @@ func handleNullValues(usr *model.User) {
 			Children: make([]*model.TagNode, 0),
 		}
 	}
+
+	if usr.UserTags == nil {
+		usr.UserTags = model.NewUserTags()
+	}
 }

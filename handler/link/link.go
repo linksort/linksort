@@ -20,7 +20,7 @@ type Config struct {
 		CreateLink(context.Context, *model.User, *CreateLinkRequest) (*model.Link, *model.User, error)
 		GetLink(context.Context, *model.User, string) (*model.Link, error)
 		GetLinks(context.Context, *model.User, *GetLinksRequest) ([]*model.Link, error)
-		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, error)
+		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, *model.User, error)
 		DeleteLink(context.Context, *model.User, string) (*model.User, error)
 	}
 	AuthController interface {
@@ -197,20 +197,22 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdateLinkRequest struct {
-	ID          string  `json:"-"`
-	Title       *string `json:"title" validate:"omitempty,max=512"`
-	URL         *string `json:"url" validate:"omitempty,url,max=2048"`
-	Favicon     *string `json:"favicon" validate:"omitempty,url,max=512"`
-	IsFavorite  *bool   `json:"isFavorite"`
-	FolderID    *string `json:"folderId" validate:"omitempty,uuid|eq=root"`
-	Description *string `json:"description" validate:"omitempty,max=2048"`
-	Image       *string `json:"image" validate:"omitempty,len=0|url,max=512"`
-	Site        *string `json:"site" validate:"omitempty,max=512"`
-	Annotation  *string `json:"annotation"`
+	ID          string    `json:"-"`
+	Title       *string   `json:"title" validate:"omitempty,max=512"`
+	URL         *string   `json:"url" validate:"omitempty,url,max=2048"`
+	Favicon     *string   `json:"favicon" validate:"omitempty,url,max=512"`
+	IsFavorite  *bool     `json:"isFavorite"`
+	FolderID    *string   `json:"folderId" validate:"omitempty,uuid|eq=root"`
+	Description *string   `json:"description" validate:"omitempty,max=2048"`
+	Image       *string   `json:"image" validate:"omitempty,len=0|url,max=512"`
+	Site        *string   `json:"site" validate:"omitempty,max=512"`
+	Annotation  *string   `json:"annotation"`
+	UserTags    *[]string `json:"userTags" validate:"omitempty,dive,alphanum,max=64"`
 }
 
 type UpdateLinkResponse struct {
 	Link *model.Link `json:"link"`
+	User *model.User `json:"user"`
 }
 
 // UpdateLink godoc
@@ -241,14 +243,14 @@ func (s *config) UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	req.ID = id
 
-	l, err := s.LinkController.UpdateLink(ctx, u, req)
+	l, u, err := s.LinkController.UpdateLink(ctx, u, req)
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))
 
 		return
 	}
 
-	payload.Write(w, r, &UpdateLinkResponse{l}, http.StatusOK)
+	payload.Write(w, r, &UpdateLinkResponse{l, u}, http.StatusOK)
 }
 
 type DeleteLinkResponse struct {

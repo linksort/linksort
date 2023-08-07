@@ -62,6 +62,7 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 			Count:    0,
 			Children: make([]*model.TagNode, 0),
 		},
+		UserTags: model.NewUserTags(),
 	})
 	if err != nil {
 		return nil, errors.E(op, err)

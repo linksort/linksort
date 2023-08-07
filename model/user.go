@@ -25,6 +25,7 @@ type User struct {
 	Token              string             `json:"token"`
 	FolderTree         *Folder            `json:"folderTree"`
 	TagTree            *TagNode           `json:"tagTree"`
+	UserTags           UserTags           `json:"userTags"`
 	HasSeenWelcomeTour bool               `json:"hasSeenWelcomeTour"`
 }
 
