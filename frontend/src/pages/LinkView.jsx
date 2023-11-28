@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useParams, useHistory } from "react-router-dom";
+import { Link as RouterLink, useParams, useHistory } from "react-router-dom";
 import {
   Heading,
   Box,
@@ -12,6 +12,7 @@ import {
   Skeleton,
   IconButton,
   Flex,
+  Link,
 } from "@chakra-ui/react";
 import {
   ArrowBackIcon,
@@ -219,7 +220,7 @@ export default function LinkView() {
                 <Wrap>
                   {link.userTags.map((tag) => (
                     <Tag
-                      as={Link}
+                      as={RouterLink}
                       to={`/?usertag=${encodeURIComponent(tag)}`}
                       key={tag}
                       marginRight={2}
@@ -245,7 +246,7 @@ export default function LinkView() {
                 <Wrap>
                   {link.tagDetails.map((detail) => (
                     <Tag
-                      as={Link}
+                      as={RouterLink}
                       to={`/tag=${encodeURIComponent(detail.path)}`}
                       key={detail.path}
                       marginRight={2}
