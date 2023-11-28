@@ -127,6 +127,7 @@ export function useFilters() {
     const folderName = resolveFolderName(filterParams.folder);
     const folderId = filterParams.folder;
     const tagPath = unescape(filterParams.tag);
+    const userTagPath = unescape(filterParams.usertag);
     const index = folderId + tagPath;
 
     function mergeParamAndStringify(param = {}) {
@@ -252,6 +253,7 @@ export function useFilters() {
       folderName,
       folderId,
       tagPath,
+      userTagPath,
     };
   }, [filterParams, history, resolveFolderName, setLocalStorageParam]);
 }

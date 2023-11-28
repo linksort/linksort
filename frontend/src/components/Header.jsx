@@ -27,10 +27,11 @@ import { useScrollPosition } from "../hooks/utils";
 export default function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = useRef();
-  const { folderName, areFavoritesShowing, searchQuery, tagPath } =
+  const { folderName, areFavoritesShowing, searchQuery, tagPath, userTagPath } =
     useFilters();
   const isSearching = searchQuery && searchQuery.length > 0;
   const isViewingTag = tagPath.length > 0;
+  const isViewingUserTag = userTagPath.length > 0;
   const rootMatch = useRouteMatch({
     path: "/",
     strict: true,
@@ -62,6 +63,8 @@ export default function Header() {
       heading = `Searching for "${searchQuery}" in ${folderName}`;
     } else if (areFavoritesShowing) {
       heading = `Favorites in ${isViewingTag ? tagPath : folderName}`;
+    } else if (isViewingUserTag) {
+      heading = userTagPath;
     } else {
       heading = isViewingTag ? tagPath : folderName;
     }
