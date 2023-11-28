@@ -113,6 +113,7 @@ func (l *Link) GetLinks(ctx context.Context, u *model.User, req *handler.GetLink
 		db.GetLinksSort(req.Sort),
 		db.GetLinksFolder(req.FolderID),
 		db.GetLinksTag(req.TagPath),
+		db.GetLinksUserTag(req.UserTag),
 		db.GetLinksFavorites(req.Favorites),
 		db.GetLinksAnnotated(req.Annotations))
 	if err != nil {

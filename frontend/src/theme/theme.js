@@ -36,6 +36,15 @@ const theme = {
         borderRadius: "lg",
       },
     },
+    Alert: {
+      variants: {
+        solid: {
+          container: {
+            bg: "brand.500",
+          },
+        },
+      },
+    },
   },
 
   colors: {
