@@ -263,7 +263,7 @@ func (s *config) UpdateLink(w http.ResponseWriter, r *http.Request) {
 					op,
 					errors.Str("invalid tag"),
 					http.StatusBadRequest,
-					errors.M{"message": "Invalid tag"},
+					errors.M{"message": "Invalid tag."},
 				))
 
 				return

@@ -290,7 +290,7 @@ func TestUpdateLink(t *testing.T) {
 				"userTags": []string{"$%^&**&&*--", ""},
 			},
 			ExpectStatus: http.StatusBadRequest,
-			ExpectBody:   `{"userTags[0]": "This is not valid.","userTags[1]": "This is not valid."}`,
+			ExpectBody:   `{"message": "Invalid tag."}`,
 		},
 		{
 			Name:           "move to non-existent folder",
