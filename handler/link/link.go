@@ -5,6 +5,7 @@ import (
 	"html"
 	"net/http"
 	"net/url"
+	"regexp"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -138,6 +139,7 @@ type GetLinksRequest struct {
 	Annotations string
 	FolderID    string
 	TagPath     string
+	UserTag     string
 	Pagination  *model.Pagination
 }
 
@@ -155,6 +157,7 @@ type GetLinksResponse struct {
 //	@Param		annotated	query		string	false	"Only return links with annotations"	Enums(0, 1)
 //	@Param		folder	query		string	false	"Only return links from the given folder ID"
 //	@Param		tag		query		string	false	"Only return links with the given tag path"
+//	@Param		usertag	query		string	false	"Only return links with the given user tag"
 //	@Param		page		query		int		false	"Page"
 //	@Param		size		query		int		false	"Page size"						maximum(1000)
 //	@Success		200		{object}	GetLinksResponse
@@ -178,6 +181,15 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userTag, err := url.PathUnescape(q.Get("usertag"))
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err, http.StatusBadRequest, errors.M{
+			"message": "Malformed usertag",
+		}))
+
+		return
+	}
+
 	l, err := s.LinkController.GetLinks(ctx, u, &GetLinksRequest{
 		Sort:        q.Get("sort"),
 		Search:      q.Get("search"),
@@ -185,6 +197,7 @@ func (s *config) GetLinks(w http.ResponseWriter, r *http.Request) {
 		Annotations: q.Get("annotated"),
 		FolderID:    q.Get("folder"),
 		TagPath:     tagPath,
+		UserTag:     userTag,
 		Pagination:  model.GetPagination(r),
 	})
 	if err != nil {
@@ -207,7 +220,7 @@ type UpdateLinkRequest struct {
 	Image       *string   `json:"image" validate:"omitempty,len=0|url,max=512"`
 	Site        *string   `json:"site" validate:"omitempty,max=512"`
 	Annotation  *string   `json:"annotation"`
-	UserTags    *[]string `json:"userTags" validate:"omitempty,dive,alphanum,max=64"`
+	UserTags    *[]string `json:"userTags" validate:"omitempty,dive,max=64"`
 }
 
 type UpdateLinkResponse struct {
@@ -242,6 +255,21 @@ func (s *config) UpdateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req.ID = id
+
+	if req.UserTags != nil {
+		for _, t := range *req.UserTags {
+			if !tagRegex.MatchString(t) {
+				payload.WriteError(w, r, errors.E(
+					op,
+					errors.Str("invalid tag"),
+					http.StatusBadRequest,
+					errors.M{"message": "Invalid tag"},
+				))
+
+				return
+			}
+		}
+	}
 
 	l, u, err := s.LinkController.UpdateLink(ctx, u, req)
 	if err != nil {
@@ -284,3 +312,7 @@ func (s *config) DelteLink(w http.ResponseWriter, r *http.Request) {
 
 	payload.Write(w, r, &DeleteLinkResponse{user}, http.StatusOK)
 }
+
+// Define a regex to check if the tag is valid.
+// It must be lowercase and only have dashes as separators.
+var tagRegex = regexp.MustCompile(`^[a-z0-9]+(-[a-z0-9]+)*$`)

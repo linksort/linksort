@@ -15,6 +15,7 @@ export const FILTER_KEY_GROUP = "group";
 export const FILTER_KEY_FAVORITE = "favorite";
 export const FILTER_KEY_FOLDER = "folder";
 export const FILTER_KEY_TAG = "tag";
+export const FILTER_KEY_USER_TAG = "usertag";
 export const FILTER_KEY_ANNOTATED = "annotated";
 
 const LOCALSTORAGE_FILTER_KEYS = [FILTER_KEY_SORT, FILTER_KEY_GROUP];
@@ -24,6 +25,7 @@ const QUERY_FILTER_KEYS = [
   FILTER_KEY_FAVORITE,
   FILTER_KEY_SEARCH,
   FILTER_KEY_TAG,
+  FILTER_KEY_USER_TAG,
   FILTER_KEY_ANNOTATED,
 ];
 
@@ -36,6 +38,7 @@ const DEFAULT_FILTER_PARAMS = Object.freeze({
   [FILTER_KEY_ANNOTATED]: "0",
   [FILTER_KEY_FOLDER]: "root",
   [FILTER_KEY_TAG]: "",
+  [FILTER_KEY_USER_TAG]: "",
 });
 
 export const GROUP_BY_OPTION_NONE = "none";
@@ -48,7 +51,7 @@ const DEFAULT_LOCALSTORAGE_VALUE = {
   [FILTER_KEY_GROUP]: DEFAULT_FILTER_PARAMS[FILTER_KEY_GROUP],
 };
 
-const Context = createContext([DEFAULT_LOCALSTORAGE_VALUE, () => {}]);
+const Context = createContext([DEFAULT_LOCALSTORAGE_VALUE, () => { }]);
 
 export function GlobalFiltersProvider({ children }) {
   const [localStore, setLocalStore] = useLocalStorage(
@@ -162,6 +165,7 @@ export function useFilters() {
       return mergeParamAndStringify({
         folder: encodeURIComponent(folder),
         tag: "",
+        usertag: "",
         page: "0",
       });
     }
@@ -184,8 +188,8 @@ export function useFilters() {
         group: {
           [index]:
             GROUP_BY_OPTIONS[
-              (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
-                GROUP_BY_OPTIONS.length
+            (GROUP_BY_OPTIONS.indexOf(filterParams.group) + 1) %
+            GROUP_BY_OPTIONS.length
             ],
         },
       });

@@ -26,6 +26,7 @@ import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
 import { useFilters } from "../hooks/filters";
 import { GraphIcon, StarBorderIcon } from "./CustomIcons";
+import SidebarTagCluster from "./SidebarTagCluster";
 
 export default function Sidebar({ width = "18rem", isMobile = false }) {
   const {
@@ -150,6 +151,13 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
               >
                 <SidebarCollapsableSection title="Folders">
                   <SidebarFolderTree />
+                </SidebarCollapsableSection>
+              </ListItem>
+              <ListItem
+                marginBottom={8}
+              >
+                <SidebarCollapsableSection title="Personal Tags">
+                  <SidebarTagCluster />
                 </SidebarCollapsableSection>
               </ListItem>
               <ListItem

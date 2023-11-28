@@ -24,6 +24,7 @@ import { useDeleteLink, useLink, useUpdateLink } from "../hooks/links";
 import { suppressMutationErrors } from "../utils/mutations";
 import LoadingScreen from "../components/LoadingScreen";
 import ErrorScreen from "../components/ErrorScreen";
+import TagEditor from "../components/TagEditor";
 
 export default function LinkUpdate() {
   const history = useHistory();
@@ -42,6 +43,7 @@ export default function LinkUpdate() {
       createdAt: "",
       isFavorite: false,
       folderId: "",
+      userTags: [],
     },
     enableReinitialize: true,
     onSubmit: suppressMutationErrors((params) =>
@@ -55,6 +57,7 @@ export default function LinkUpdate() {
             "favicon",
             "image",
             "isFavorite",
+            "userTags"
           ])
         )
         .then(() => {
@@ -169,6 +172,11 @@ export default function LinkUpdate() {
             onChange={formik.handleChange}
           />
         </FormControl>
+        <FormControl id="utags" mb={6}>
+          <FormLabel>Personal tags</FormLabel>
+          <TagEditor tags={formik.values.userTags} onChange={tags => formik.setFieldValue("userTags", tags)} />
+        </FormControl>
+
         <FormControl id="tags" mb={6}>
           <FormLabel>Auto tags</FormLabel>
           {link.tagDetails.length > 0 ? (

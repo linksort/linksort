@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import {
   Heading,
   Box,
@@ -10,7 +10,6 @@ import {
   Wrap,
   Button,
   Skeleton,
-  Link,
   IconButton,
   Flex,
 } from "@chakra-ui/react";
@@ -214,12 +213,40 @@ export default function LinkView() {
 
             <VStack align="left">
               <Heading as="h6" fontSize="sm">
+                Personal Tags
+              </Heading>
+              {link.userTags.length > 0 ? (
+                <Wrap>
+                  {link.userTags.map((tag) => (
+                    <Tag
+                      as={Link}
+                      to={`/?usertag=${encodeURIComponent(tag)}`}
+                      key={tag}
+                      marginRight={2}
+                      whiteSpace="nowrap"
+                      overflow="hidden"
+                    >
+                      {tag}
+                    </Tag>
+                  ))}
+                </Wrap>
+              ) : (
+                <Text color="gray.600">
+                  No personal tags have been assigned to this link.
+                </Text>
+              )}
+            </VStack>
+
+            <VStack align="left">
+              <Heading as="h6" fontSize="sm">
                 Auto Tags
               </Heading>
               {link.tagDetails.length > 0 ? (
                 <Wrap>
                   {link.tagDetails.map((detail) => (
                     <Tag
+                      as={Link}
+                      to={`/tag=${encodeURIComponent(detail.path)}`}
                       key={detail.path}
                       marginRight={2}
                       whiteSpace="nowrap"

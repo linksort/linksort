@@ -71,6 +71,7 @@ func (s *LinkStore) GetLinksByUser(
 		primitive.E{Key: "updatedat", Value: 1},
 		primitive.E{Key: "tagpaths", Value: 1},
 		primitive.E{Key: "tagdetails", Value: 1},
+		primitive.E{Key: "usertags", Value: 1},
 		primitive.E{Key: "isfavorite", Value: 1},
 		primitive.E{Key: "folderid", Value: 1},
 		primitive.E{Key: "url", Value: 1},
@@ -261,6 +262,14 @@ func GetLinksTag(val string) model.GetLinksOption {
 	return func(m map[string]interface{}) {
 		if len(val) > 0 && val != "root" {
 			m["tagpaths"] = val
+		}
+	}
+}
+
+func GetLinksUserTag(val string) model.GetLinksOption {
+	return func(m map[string]interface{}) {
+		if len(val) > 0 && val != "root" {
+			m["usertags"] = val
 		}
 	}
 }

@@ -14,6 +14,7 @@ import {
   FILTER_KEY_FOLDER,
   FILTER_KEY_TAG,
   FILTER_KEY_ANNOTATED,
+  FILTER_KEY_USER_TAG,
 } from "./filters";
 import { omit } from "lodash";
 import { useHistory } from "react-router-dom";
@@ -25,6 +26,7 @@ const REFETCH_FILTERS = [
   FILTER_KEY_PAGE,
   FILTER_KEY_FOLDER,
   FILTER_KEY_TAG,
+  FILTER_KEY_USER_TAG,
   FILTER_KEY_ANNOTATED,
 ];
 
@@ -106,11 +108,13 @@ export function useUpdateLink(linkId, { supressToast = false } = {}) {
           "isFavorite",
           "folderId",
           "annotation",
+          "userTags",
         ]),
         method: "PATCH",
       }),
     {
       onSuccess: (data, payload) => {
+        queryClient.setQueryData("user", data?.user);
         queryClient.setQueryData(["links", "detail", linkId], () => data.link);
 
         queryClient.setQueryData(["links", "list", filterParams], (old = []) =>
