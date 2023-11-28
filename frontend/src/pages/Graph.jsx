@@ -9,7 +9,13 @@ import GraphInfoPanel from "../components/GraphInfoPanel";
 import { useLinks } from "../hooks/links";
 import { useState } from "react";
 
-let graph;
+// This is a hack to get out of the React lifecycle and use vis.js
+// without having React re-render the graph on every load.
+window.graph = null;
+window.graphNode = document.createElement("div");
+window.graphNode.style.height = "calc(100vh - 5rem)";
+window.graphNode.style.width = "100%";
+window.setSelectedLinkId = () => { };
 
 function maxConfidence(tagDetails) {
   let max = { name: "None", confidence: 0, path: "/None" };
@@ -23,7 +29,7 @@ function maxConfidence(tagDetails) {
   return max.path.split("/")[1];
 }
 
-function determineNodesAndEdges(links, setSelectedLinkId) {
+function determineNodesAndEdges(links) {
   const tags = new Set();
   const nodes = [];
   const edges = [];
@@ -48,7 +54,7 @@ function determineNodesAndEdges(links, setSelectedLinkId) {
       group: maxConfidence(l.tagDetails),
       size: 10,
       chosen: {
-        node: (_, id) => setSelectedLinkId((_) => id),
+        node: (_, id) => window.setSelectedLinkId((_) => id),
       },
     });
   });
@@ -111,12 +117,20 @@ export default function Graph() {
   });
   const [selectedLinkId, setSelectedLinkId] = useState("");
   const graphRef = useRef();
+  const isMounted = useRef(false);
+
+  window.setSelectedLinkId = setSelectedLinkId;
 
   useEffect(() => {
-    if (graphRef.current && links.length > 0 && !graph) {
-      const { nodes, edges } = determineNodesAndEdges(links, setSelectedLinkId);
-      graph = new vis.Network(
-        graphRef.current,
+    if (graphRef.current && !isMounted.current) {
+      graphRef.current.appendChild(window.graphNode);
+      isMounted.current = true;
+    }
+
+    if (graphRef.current && links.length > 0 && !window.graph) {
+      const { nodes, edges } = determineNodesAndEdges(links);
+      window.graph = new vis.Network(
+        window.graphNode,
         {
           nodes: new vis.DataSet(nodes),
           edges: new vis.DataSet(edges),
@@ -152,7 +166,7 @@ export default function Graph() {
     }
 
     return () => {
-      graph = null;
+      isMounted.current = false;
     };
   }, [links, graphRef]);
 
