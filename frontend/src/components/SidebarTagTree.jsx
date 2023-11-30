@@ -10,6 +10,8 @@ import { useFilters } from "../hooks/filters";
 function SidebarTagItem({ tag }) {
   const { makeTagLink, tagPath } = useFilters();
   const isSelected = tag.path === tagPath;
+  const isChildSelected = tagPath.startsWith(`${tag.path}/`);
+  const shouldShowChildren = isSelected || isChildSelected;
 
   return (
     <ListItem key={tag.path}>
@@ -23,6 +25,13 @@ function SidebarTagItem({ tag }) {
           {tag.name}
         </Text>
       </SidebarButton>
+      {shouldShowChildren && tag.children?.length > 0 && (
+        <List paddingLeft={6} paddingTop={1} spacing={1}>
+          {tag.children.map((childTag) => (
+            <SidebarTagItem key={childTag.path} tag={childTag} />
+          ))}
+        </List>
+      )}
     </ListItem>
   );
 }

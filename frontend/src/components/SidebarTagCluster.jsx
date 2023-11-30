@@ -26,6 +26,8 @@ export default function SidebarTagCluster() {
           whiteSpace="nowrap"
           overflow="hidden"
           size="md"
+          transition="all 0.2s"
+          _hover={{ backgroundColor: "gray.200" }}
         >
           {tag}
         </Tag>

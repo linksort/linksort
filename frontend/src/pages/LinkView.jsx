@@ -35,6 +35,7 @@ import {
   MaximizeIcon,
   MinimizeIcon,
 } from "../components/CustomIcons";
+import { useFilters } from "../hooks/filters";
 
 const NOTE_PANEL_NORMAL = "normal";
 const NOTE_PANEL_MAXIMIZED = "maximized";
@@ -81,6 +82,7 @@ export default function LinkView() {
   const notePanelMaxHeight = getNotePanelMaxHeight(notePanelState);
   const notePanelHeight = getNotePanelHeight(notePanelState);
   const scrollDirection = useScrollDirection();
+  const { makeTagLink } = useFilters();
 
   // Handle initial retrieval of annotation...
   useEffect(() => {
@@ -226,6 +228,8 @@ export default function LinkView() {
                       marginRight={2}
                       whiteSpace="nowrap"
                       overflow="hidden"
+                      transition="all 0.2s"
+                      _hover={{ backgroundColor: "gray.200" }}
                     >
                       {tag}
                     </Tag>
@@ -247,11 +251,13 @@ export default function LinkView() {
                   {link.tagDetails.map((detail) => (
                     <Tag
                       as={RouterLink}
-                      to={`/tag=${encodeURIComponent(detail.path)}`}
+                      to={makeTagLink(detail.path.slice(1, detail.path.length))}
                       key={detail.path}
                       marginRight={2}
                       whiteSpace="nowrap"
                       overflow="hidden"
+                      transition="all 0.2s"
+                      _hover={{ backgroundColor: "gray.200" }}
                     >
                       {detail.path
                         .slice(1, detail.path.length)
