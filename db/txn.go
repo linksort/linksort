@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/linksort/linksort/errors"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -43,6 +44,19 @@ func (t *TxnClient) DoInTransaction(
 			return nil, nil
 		})
 	if err != nil {
+		var e mongo.WriteException
+		if errors.As(err, &e) {
+			for _, we := range e.WriteErrors {
+				if we.Code == 112 {
+					return errors.E(
+						op,
+						errors.M{"message": "There was a conflicting operation. Please try again."},
+						err,
+						http.StatusConflict)
+				}
+			}
+		}
+
 		return errors.E(op, err)
 	}
 

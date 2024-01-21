@@ -195,7 +195,7 @@ func (l *Link) UpdateLink(
 			}
 		}
 
-		link, err = l.Store.UpdateLink(ctx, link)
+		link, err = l.Store.UpdateLink(sessCtx, link)
 		if err != nil {
 			return errors.E(innerOp, err)
 		}
