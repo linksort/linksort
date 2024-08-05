@@ -289,5 +289,6 @@ export function useLinkOperations(link = {}) {
     toast,
     updateLink,
     deleteLink,
+    history,
   ]);
 }

@@ -11,7 +11,7 @@ export default function TagEditor({ tags, onChange }) {
 
     e.target.value.split("").forEach((char) => {
       // Only allow alphanumeric characters
-      if (/[a-z0-9\-]/.test(char)) {
+      if (/[a-z0-9-]/.test(char)) {
         newName += char;
       }
     });

@@ -16,7 +16,7 @@ RUN yarn
 COPY ./splash .
 RUN yarn build
 
-FROM golang:1.19.5 AS api-builder
+FROM golang:1.22 AS api-builder
 WORKDIR /opt/linksort/
 RUN mkdir build
 COPY ./go.mod ./go.sum ./

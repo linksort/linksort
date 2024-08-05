@@ -1887,6 +1887,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@fontsource/inter@^5.0.20":
+  version "5.0.20"
+  resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-5.0.20.tgz#968436ab21f05d3b3cb3191fa0958d91e37dde43"
+  integrity sha512-rtw2F7xfM7rJmmnncXnR4ADr5wXsp4GyN1O1jmQJ1PMjAK+bm620/ZkQkeOYOkGoa09OksGinOeMA+Mkt6K9PQ==
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
