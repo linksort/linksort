@@ -42,21 +42,18 @@ function determineNodesAndEdges(links) {
       edges.push({ from: p, to: l.id });
     });
 
-    if (l.tagPaths.length === 0) {
-      // If the link doesn't have any tags, add it to the None group
-      edges.push({ from: "None", to: l.id });
+    if (l.tagPaths.length > 0) {
+      nodes.push({
+        id: l.id,
+        label: l.title,
+        shape: "dot",
+        group: maxConfidence(l.tagDetails),
+        size: 10,
+        chosen: {
+          node: (_, id) => window.setSelectedLinkId((_) => id),
+        },
+      });
     }
-
-    nodes.push({
-      id: l.id,
-      label: l.title,
-      shape: "dot",
-      group: maxConfidence(l.tagDetails),
-      size: 10,
-      chosen: {
-        node: (_, id) => window.setSelectedLinkId((_) => id),
-      },
-    });
   });
 
   tags.forEach((t) => {
