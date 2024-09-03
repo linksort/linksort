@@ -4,33 +4,35 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
-// AIClient interface defines the methods that any AI provider should implement
-type AIClient interface {
+// aiClient interface defines the methods that any AI provider should implement
+type aiClient interface {
 	Summarize(ctx context.Context, text string) (string, error)
 }
 
-// AnthropicClient implements the AIClient interface using Anthropic's API
-type AnthropicClient struct {
+// anthropicClient implements the aiClient interface using Anthropic's API
+type anthropicClient struct {
 	apiKey     string
 	httpClient *http.Client
 }
 
-// NewAnthropicClient creates a new AnthropicClient
-func NewAnthropicClient(apiKey string) *AnthropicClient {
-	return &AnthropicClient{
+// newAnthropicClient creates a new anthropicClient
+func newAnthropicClient(apiKey string) *anthropicClient {
+	return &anthropicClient{
 		apiKey:     apiKey,
-		httpClient: &http.Client{},
+		httpClient: &http.Client{
+			Timeout: time.Duration(defaultHTTPRequestTimeoutSeconds) * time.Second},
 	}
 }
 
 // Summarize sends a request to Anthropic's API to summarize the given text
-func (c *AnthropicClient) Summarize(ctx context.Context, text string) (string, error) {
+func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, error) {
 	const apiURL = "https://api.anthropic.com/v1/completions"
 
 	prompt := fmt.Sprintf("Summarize the following text in a concise manner:\n\n%s", text)
@@ -59,7 +61,7 @@ func (c *AnthropicClient) Summarize(ctx context.Context, text string) (string, e
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		return "", fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -73,11 +75,11 @@ func (c *AnthropicClient) Summarize(ctx context.Context, text string) (string, e
 	return strings.TrimSpace(result.Completion), nil
 }
 
-// GetAIClient returns an AIClient based on the environment configuration
-func GetAIClient() (AIClient, error) {
+// getAIClient returns an aiClient based on the environment configuration
+func getAIClient() (aiClient, error) {
 	apiKey := os.Getenv("ANTHROPIC_API_KEY")
 	if apiKey == "" {
 		return nil, fmt.Errorf("ANTHROPIC_API_KEY environment variable is not set")
 	}
-	return NewAnthropicClient(apiKey), nil
+	return newAnthropicClient(apiKey), nil
 }

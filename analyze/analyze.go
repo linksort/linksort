@@ -68,6 +68,7 @@ type Client struct {
 	classifer    classifer
 	httpClient   *http.Client
 	diffbotToken string
+	aiClient aiClient
 }
 
 func New(ctx context.Context) (*Client, error) {
@@ -79,10 +80,16 @@ func New(ctx context.Context) (*Client, error) {
 		return nil, fmt.Errorf("failed to initialize: %w", err)
 	}
 
+	aiClient, err := getAIClient()
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize AI client: %w", err)
+	}
+
 	return &Client{
 		httpClient:   c,
 		classifer:    classiferBackend,
 		diffbotToken: os.Getenv("DIFFBOT_TOKEN"),
+		aiClient: aiClient,
 	}, nil
 }
 
@@ -117,16 +124,11 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	}
 
 	// Generate summary using AI
-	aiClient, err := GetAIClient()
+	summary, err := c.aiClient.Summarize(nctx, ld.Corpus)
 	if err != nil {
-		rlog.Printf("Failed to get AI client: %v", err)
+		rlog.Printf("failed to generate summary: %v", err)
 	} else {
-		summary, err := aiClient.Summarize(nctx, ld.Corpus)
-		if err != nil {
-			rlog.Printf("Failed to generate summary: %v", err)
-		} else {
-			ld.Summary = summary
-		}
+		ld.Summary = summary
 	}
 
 	ld.html = ""

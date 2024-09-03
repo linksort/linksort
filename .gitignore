@@ -25,3 +25,4 @@ frontend/node_modules
 
 # Local libraries
 node_modules
+.aider*
