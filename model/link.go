@@ -27,6 +27,7 @@ type Link struct {
 	Site        string             `json:"site"`
 	Annotation  string             `json:"annotation"`
 	IsAnnotated bool               `json:"isAnnotated"`
+	Summary     string             `json:"summary"`
 }
 
 type GetLinksOption func(map[string]interface{})

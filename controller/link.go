@@ -68,6 +68,7 @@ func (l *Link) CreateLink(
 			Corpus:      dat.Corpus,
 			TagDetails:  model.ParseTagDetails(dat.Tags),
 			TagPaths:    model.ParseTagDetailsToPathList(dat.Tags),
+			Summary:     dat.Summary,
 		})
 		if err != nil {
 			return errors.E(innerOp, err)
