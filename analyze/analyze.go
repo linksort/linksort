@@ -50,6 +50,7 @@ type Response struct {
 	Original    string
 	Corpus      string
 	Tags        []*Tag
+	Summary     string
 	html        string
 }
 
