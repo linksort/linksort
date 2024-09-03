@@ -116,6 +116,19 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 		return ld, fmt.Errorf("%w: %s", ErrNoClassify, err.Error())
 	}
 
+	// Generate summary using AI
+	aiClient, err := GetAIClient()
+	if err != nil {
+		rlog.Printf("Failed to get AI client: %v", err)
+	} else {
+		summary, err := aiClient.Summarize(nctx, ld.Corpus)
+		if err != nil {
+			rlog.Printf("Failed to generate summary: %v", err)
+		} else {
+			ld.Summary = summary
+		}
+	}
+
 	ld.html = ""
 
 	// Use Twitter's and YouTube's oembed APIs which don't provide much info but which
