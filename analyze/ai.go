@@ -1,6 +1,7 @@
 package analyze
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -25,7 +26,7 @@ type anthropicClient struct {
 // newAnthropicClient creates a new anthropicClient
 func newAnthropicClient(apiKey string) *anthropicClient {
 	return &anthropicClient{
-		apiKey:     apiKey,
+		apiKey: apiKey,
 		httpClient: &http.Client{
 			Timeout: time.Duration(defaultHTTPRequestTimeoutSeconds) * time.Second},
 	}
@@ -33,26 +34,30 @@ func newAnthropicClient(apiKey string) *anthropicClient {
 
 // Summarize sends a request to Anthropic's API to summarize the given text
 func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, error) {
-	const apiURL = "https://api.anthropic.com/v1/completions"
-
-	prompt := fmt.Sprintf("Summarize the following text in a concise manner:\n\n%s", text)
+	const apiURL = "https://api.anthropic.com/v1/messages"
 
 	requestBody, err := json.Marshal(map[string]interface{}{
-		"model":      "claude-2",
-		"prompt":     prompt,
+		"model": "claude-3-haiku-20240307",
 		"max_tokens": 150,
+		"messages": []map[string]string{
+			{
+				"role": "user",
+				"content": fmt.Sprintf("Summarize the following text in a concise manner:\n\n%s", text),
+			},
+		},
 	})
 	if err != nil {
 		return "", fmt.Errorf("error marshaling request body: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", apiURL, strings.NewReader(string(requestBody)))
+	req, err := http.NewRequestWithContext(ctx, "POST", apiURL, bytes.NewReader(requestBody))
 	if err != nil {
 		return "", fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-API-Key", c.apiKey)
+	req.Header.Set("x-api-key", c.apiKey)
+	req.Header.Set("anthropic-version", "2023-06-01")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -66,13 +71,19 @@ func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, e
 	}
 
 	var result struct {
-		Completion string `json:"completion"`
+		Content []struct {
+			Text string `json:"text"`
+		} `json:"content"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return "", fmt.Errorf("error decoding response: %w", err)
 	}
 
-	return strings.TrimSpace(result.Completion), nil
+	if len(result.Content) == 0 || result.Content[0].Text == "" {
+		return "", fmt.Errorf("no summary content in the response")
+	}
+
+	return strings.TrimSpace(result.Content[0].Text), nil
 }
 
 // getAIClient returns an aiClient based on the environment configuration
