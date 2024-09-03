@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   db:
     build:
@@ -35,6 +33,7 @@ services:
       - "FRONTEND_HOSTNAME=frontend"
       - "FRONTEND_PORT=3000"
       - "ANALYZER_KEY=${ANALYZER_KEY}"
+      - "DIFFBOT_TOKEN=${DIFFBOT_TOKEN}"
     links:
       - "db"
       - "frontend"

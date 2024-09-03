@@ -159,9 +159,9 @@
   color: var(--color-text);
   font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 1.5em;
-  margin-top: 2em;
-  margin-bottom: 1em;
+  font-size: 1.2em;
+  margin-top: 1em;
+  margin-bottom: 0.6em;
   line-height: 1.3333333;
 }
 
@@ -169,8 +169,8 @@
   color: var(--color-text);
   font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 1.25em;
-  margin-top: 1.6em;
+  font-size: 1.15em;
+  margin-top: 1em;
   margin-bottom: 0.6em;
   line-height: 1.6;
 }
@@ -179,7 +179,7 @@
   color: var(--color-text);
   font-family: var(--font-sans);
   font-weight: 700;
-  margin-top: 1.5em;
+  margin-top: 1em;
   margin-bottom: 0.5em;
   line-height: 1.5;
 }
@@ -218,7 +218,7 @@
   color: inherit;
   background-color: var(--color-code-background);
   overflow-x: auto;
-  font-size: 0.875em;
+  font-size: 0.8em;
   font-family: var(--font-mono);
   line-height: 1.7142857;
   margin-top: 1.7142857em;
@@ -336,14 +336,12 @@
 }
 
 .prose ul {
-  margin-top: 1.25em;
-  margin-bottom: 1.25em;
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
   font-size: 1.25rem;
 }
 
 .prose li {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
 }
 
 .prose > ul > li p {

@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/dyatlov/go-htmlinfo/htmlinfo"
 	"github.com/dyatlov/go-opengraph/opengraph"
 	"github.com/dyatlov/go-readability"
@@ -20,12 +21,13 @@ import (
 	"github.com/linksort/linksort/log"
 )
 
-const defaultHTTPRequestTimeoutSeconds = 10
+const defaultHTTPRequestTimeoutSeconds = 30
 
 var (
 	ErrUnparsableURI            = errors.New("unparsable URI")
 	ErrNoClassify               = errors.New("could not classify")
 	errUnexpectedOembedResponse = errors.New("unexpected oembed response")
+	errNoDiffbotResult          = errors.New("no result from diffbot")
 )
 
 type Request struct {
@@ -62,8 +64,9 @@ type classifer interface {
 }
 
 type Client struct {
-	classifer  classifer
-	httpClient *http.Client
+	classifer    classifer
+	httpClient   *http.Client
+	diffbotToken string
 }
 
 func New(ctx context.Context) (*Client, error) {
@@ -76,8 +79,9 @@ func New(ctx context.Context) (*Client, error) {
 	}
 
 	return &Client{
-		httpClient: c,
-		classifer:  classiferBackend,
+		httpClient:   c,
+		classifer:    classiferBackend,
+		diffbotToken: os.Getenv("DIFFBOT_TOKEN"),
 	}, nil
 }
 
@@ -86,6 +90,11 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
+	rlog := log.FromContext(ctx)
+	// We use a new context here because we don't want to cancel the request if the
+	// context is cancelled.
+	nctx := context.Background()
+
 	urlobj, err := url.ParseRequestURI(req.URL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrUnparsableURI, err.Error())
@@ -95,43 +104,13 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	urlobj.Host = strings.TrimPrefix(urlobj.Host, "mobile.")
 	cleanURL := urlobj.String()
 
-	rawhtml, err := c.doSimpleHTTPHTMLRequest(ctx, cleanURL)
+	ld, err := c.extract(nctx, rlog, urlobj)
 	if err != nil {
-		log.FromContext(ctx).Printf("failed to do simple HTTP HTML request: %w", err)
-
-		return nullResponse(req, urlobj), nil
+		return nil, fmt.Errorf("failed to extract any info: %w", err)
 	}
 
-	// Parse response HTML content
-	info := htmlinfo.NewHTMLInfo()
-	info.AllowMainContentExtraction = false
-	contentType := "text/html"
-	err = info.Parse(strings.NewReader(rawhtml), &cleanURL, &contentType)
-	if err != nil {
-		log.FromContext(ctx).Printf("failed to parse html info: %w", err)
-
-		return nullResponse(req, urlobj), nil
-	}
-
-	oembed := info.GenerateOembedFor(cleanURL)
-	description := getNonZeroString(req.Description, info.OGInfo.Description, info.Description, oembed.Description)
-
-	ld := &Response{
-		Title:       getNonZeroString(req.Title, oembed.Title, urlobj.Hostname()),
-		URL:         getNonZeroString(oembed.URL, cleanURL),
-		Site:        getNonZeroString(req.Site, oembed.ProviderName, urlobj.Hostname()),
-		Description: description,
-		Favicon:     getNonZeroString(req.Favicon, getFaviconURL(urlobj, info.FaviconURL)),
-		Image:       getNonZeroString(req.Image, oembed.ThumbnailURL, getOpenGraphImageURL(info.OGInfo.Images), info.ImageSrcURL),
-		Corpus:      getCorpus(req.Corpus, rawhtml, description),
-		Original:    req.URL,
-		html:        getNonZeroString(req.Corpus, rawhtml),
-	}
-
-	ld, err = c.classifer.Classify(ctx, ld)
+	ld, err = c.classifer.Classify(nctx, ld)
 	if err != nil && !errors.Is(err, errTooFewTokens) {
-		ld.Description = ""
-		ld.Corpus = ""
 		ld.html = ""
 		return ld, fmt.Errorf("%w: %s", ErrNoClassify, err.Error())
 	}
@@ -149,6 +128,68 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	}
 
 	return ld, nil
+}
+
+func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.URL) (*Response, error) {
+	simpleRes, simpleErr := c.simpleExtract(ctx, inputURL.String())
+	diffbotRes, diffbotErr := c.diffbot(ctx, inputURL.String())
+	if simpleErr != nil && diffbotErr != nil {
+		return nil, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, diffbotErr)
+	}
+
+	if simpleErr != nil {
+		rlog.Printf("error when executing simpleExtract: %v", simpleErr)
+		return diffbotRes, nil
+	}
+	if diffbotErr != nil {
+		if !errors.Is(diffbotErr, errNoDiffbotResult) {
+			rlog.Printf("error when executing diffbot: %v", diffbotErr)
+		}
+		return simpleRes, nil
+	}
+
+	return &Response{
+		Title:       getNonZeroString(diffbotRes.Title, simpleRes.Title),
+		URL:         getNonZeroString(simpleRes.URL, diffbotRes.URL),
+		Site:        getNonZeroString(simpleRes.Site, diffbotRes.Site),
+		Description: getNonZeroString(simpleRes.Description, diffbotRes.Description),
+		Favicon:     getNonZeroString(simpleRes.Favicon, diffbotRes.Favicon),
+		Image:       getNonZeroString(simpleRes.Image, diffbotRes.Image),
+		Corpus:      getNonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
+		Original:    inputURL.String(),
+		html:        getNonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
+	}, nil
+}
+
+func (c *Client) simpleExtract(ctx context.Context, inputURL string) (*Response, error) {
+	rawhtml, err := c.doSimpleHTTPHTMLRequest(ctx, inputURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to do http request: %w", err)
+	}
+
+	// Parse response HTML content
+	info := htmlinfo.NewHTMLInfo()
+	info.AllowMainContentExtraction = false
+	contentType := "text/html"
+	err = info.Parse(strings.NewReader(rawhtml), &inputURL, &contentType)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse html info: %w", err)
+	}
+
+	oembed := info.GenerateOembedFor(inputURL)
+	description := getNonZeroString(info.OGInfo.Description, info.Description, oembed.Description)
+
+	return &Response{
+		Title:       oembed.Title,
+		URL:         oembed.URL,
+		Site:        oembed.ProviderName,
+		Description: description,
+		Favicon:     info.FaviconURL,
+		Image:       getNonZeroString(oembed.ThumbnailURL, getOpenGraphImageURL(info.OGInfo.Images), info.ImageSrcURL),
+		Corpus:      applyReadability(rawhtml),
+		Original:    inputURL,
+		html:        rawhtml,
+	}, nil
 }
 
 func (c *Client) handleYouTube(ctx context.Context, link, original string, ld *Response) (*Response, error) {
@@ -246,9 +287,7 @@ func (c *Client) doSimpleHTTPJSONRequest(ctx context.Context, url string) (map[s
 }
 
 func (c *Client) doSimpleHTTPHTMLRequest(ctx context.Context, url string) (string, error) {
-	// We use a new context here because we don't want to cancel the request if the
-	// context is cancelled.
-	httpreq, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	httpreq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
@@ -313,21 +352,28 @@ func getOpenGraphImageURL(images []*opengraph.Image) string {
 	return ""
 }
 
-func getCorpus(reqCorpus, parsedBody, description string) string {
-	if len(parsedBody) < 512 && len(reqCorpus) < 512 {
-		return description
+func applyReadability(body string) string {
+	if len(body) < 4096 {
+		return ""
 	}
 
-	var docToUse string
-	if len(reqCorpus) > 512 {
-		docToUse = reqCorpus
-	} else {
-		docToUse = parsedBody
-	}
-
-	doc, err := readability.NewDocument(docToUse)
+	// Remove figure tags from Diffbot.
+	d, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 	if err != nil {
-		return description
+		return ""
+	}
+
+	d.Find("figure").Remove()
+	d.Find("h1").Remove()
+	cleanedHtml, err := d.Html()
+	if err != nil {
+		return ""
+	}
+
+	// Actually apply Readability.
+	doc, err := readability.NewDocument(cleanedHtml)
+	if err != nil {
+		return ""
 	}
 
 	doc.WhitelistTags = []string{
@@ -347,9 +393,7 @@ func getCorpus(reqCorpus, parsedBody, description string) string {
 		"ul",
 		"li",
 		"blockquote",
-		// "img",
 	}
-	// doc.WhitelistAttrs["img"] = []string{"src", "title", "alt"}
 	doc.WhitelistAttrs["a"] = []string{"href"}
 
 	return strings.Trim(doc.Content(), "\r\n\t ")
