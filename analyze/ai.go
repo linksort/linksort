@@ -34,6 +34,12 @@ func newAnthropicClient(apiKey string) *anthropicClient {
 
 // Summarize sends a request to Anthropic's API to summarize the given text
 func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, error) {
+	// Only generate summary if text is more than roughly 1,500 words
+	words := len(strings.Fields(text))
+	if words <= 1500 {
+		return "", nil
+	}
+
 	const apiURL = "https://api.anthropic.com/v1/messages"
 
 	requestBody, err := json.Marshal(map[string]interface{}{
