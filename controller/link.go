@@ -281,6 +281,13 @@ func (l *Link) SummarizeLink(ctx context.Context, u *model.User, id string) (str
 		return "", errors.E(op, err)
 	}
 
+	// Update the link with the new summary
+	link.Summary = summary
+	_, err = l.Store.UpdateLink(ctx, link)
+	if err != nil {
+		return "", errors.E(op, errors.Str("failed to update link with summary"), err)
+	}
+
 	return summary, nil
 }
 
