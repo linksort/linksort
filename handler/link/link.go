@@ -23,7 +23,7 @@ type Config struct {
 		GetLinks(context.Context, *model.User, *GetLinksRequest) ([]*model.Link, error)
 		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, *model.User, error)
 		DeleteLink(context.Context, *model.User, string) (*model.User, error)
-		SummarizeLink(context.Context, *model.User, string) (string, error)
+		SummarizeLink(context.Context, *model.User, string) (*model.Link, error)
 	}
 	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)

@@ -58,13 +58,14 @@ func (c *Client) diffbot(ctx context.Context, inputUrl string) (*Response, error
 	}
 
 	return &Response{
-		Title:    diffbotRes.Title,
-		URL:      diffbotRes.Objects[0].PageUrl,
-		Site:     diffbotRes.Objects[0].SiteName,
-		Favicon:  diffbotRes.Objects[0].Icon,
-		Image:    image,
-		Corpus:   applyReadability(diffbotRes.Objects[0].Html),
-		Original: inputUrl,
+		Title:     diffbotRes.Title,
+		URL:       diffbotRes.Objects[0].PageUrl,
+		Site:      diffbotRes.Objects[0].SiteName,
+		Favicon:   diffbotRes.Objects[0].Icon,
+		Image:     image,
+		Corpus:    applyReadability(diffbotRes.Objects[0].Html),
+		Original:  inputUrl,
+		IsArticle: true,
 	}, nil
 }
 

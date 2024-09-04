@@ -18,11 +18,9 @@ type Link struct {
 	UserStore model.UserStore
 	Analyzer  interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
-	}
-	Transactor db.Transactor
-	AIClient  interface {
 		Summarize(context.Context, string) (string, error)
 	}
+	Transactor db.Transactor
 }
 
 func (l *Link) CreateLink(
@@ -272,16 +270,20 @@ func (l *Link) SummarizeLink(ctx context.Context, u *model.User, id string) (*mo
 		return nil, errors.E(op, err)
 	}
 
+	if len(link.Summary) > 0 {
+		// Link already has a summary.
+		return link, nil
+	}
+
 	if link.Corpus == "" {
 		return nil, errors.E(op, errors.Str("no corpus available for summarization"), http.StatusBadRequest)
 	}
 
-	summary, err := l.AIClient.Summarize(ctx, link.Corpus)
+	summary, err := l.Analyzer.Summarize(ctx, link.Corpus)
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
 
-	// Update the link with the new summary
 	link.Summary = summary
 	updatedLink, err := l.Store.UpdateLink(ctx, link)
 	if err != nil {

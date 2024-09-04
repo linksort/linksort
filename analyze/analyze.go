@@ -51,6 +51,7 @@ type Response struct {
 	Corpus      string
 	Tags        []*Tag
 	Summary     string
+	IsArticle   bool
 }
 
 type Tag struct {
@@ -67,7 +68,7 @@ type Client struct {
 	classifer    classifer
 	httpClient   *http.Client
 	diffbotToken string
-	aiClient aiClient
+	aiClient     aiClient
 }
 
 func New(ctx context.Context) (*Client, error) {
@@ -88,12 +89,27 @@ func New(ctx context.Context) (*Client, error) {
 		httpClient:   c,
 		classifer:    classiferBackend,
 		diffbotToken: os.Getenv("DIFFBOT_TOKEN"),
-		aiClient: aiClient,
+		aiClient:     aiClient,
 	}, nil
 }
 
 func (c *Client) Close() error {
 	return c.classifer.Close()
+}
+
+func (c *Client) Summarize(ctx context.Context, text string) (string, error) {
+	// Only generate summary if text is more than roughly 700 words
+	words := len(strings.Fields(text))
+	if words <= 700 {
+		return "", nil
+	}
+
+	summary, err := c.aiClient.Summarize(ctx, text)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate summary: %w", err)
+	}
+
+	return summary, nil
 }
 
 func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
@@ -111,7 +127,7 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	urlobj.Host = strings.TrimPrefix(urlobj.Host, "mobile.")
 	cleanURL := urlobj.String()
 
-	ld, isArticle, err := c.extract(nctx, rlog, urlobj)
+	ld, err := c.extract(nctx, rlog, urlobj)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract any info: %w", err)
 	}
@@ -119,15 +135,6 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	ld, err = c.classifer.Classify(nctx, ld)
 	if err != nil && !errors.Is(err, errTooFewTokens) {
 		rlog.Printf("failed to classify text: %v", err)
-	}
-
-	if isArticle {
-		summary, err := c.aiClient.Summarize(nctx, ld.Corpus)
-		if err != nil {
-			rlog.Printf("failed to generate summary: %v", err)
-		} else {
-			ld.Summary = summary
-		}
 	}
 
 	// Use Twitter's and YouTube's oembed APIs which don't provide much info but which
@@ -143,24 +150,22 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	return ld, nil
 }
 
-// extract attempts to extract the content of the given webpage. The bool in the output indicates
-// whether the given webpage is an article or not.
-func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.URL) (*Response, bool, error) {
+func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.URL) (*Response, error) {
 	simpleRes, simpleErr := c.simpleExtract(ctx, inputURL.String())
 	diffbotRes, diffbotErr := c.diffbot(ctx, inputURL.String())
 	if simpleErr != nil && diffbotErr != nil {
-		return nil, false, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, diffbotErr)
+		return nil, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, diffbotErr)
 	}
 
 	if simpleErr != nil {
 		rlog.Printf("error when executing simpleExtract: %v", simpleErr)
-		return diffbotRes, true, nil
+		return diffbotRes, nil
 	}
 	if diffbotErr != nil {
 		if !errors.Is(diffbotErr, errNoDiffbotResult) {
 			rlog.Printf("error when executing diffbot: %v", diffbotErr)
 		}
-		return simpleRes, false, nil
+		return simpleRes, nil
 	}
 
 	return &Response{
@@ -172,7 +177,8 @@ func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.UR
 		Image:       getNonZeroString(simpleRes.Image, diffbotRes.Image),
 		Corpus:      getNonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
 		Original:    inputURL.String(),
-	}, true, nil
+		IsArticle:   true,
+	}, nil
 }
 
 func (c *Client) simpleExtract(ctx context.Context, inputURL string) (*Response, error) {
@@ -202,6 +208,7 @@ func (c *Client) simpleExtract(ctx context.Context, inputURL string) (*Response,
 		Image:       getNonZeroString(oembed.ThumbnailURL, getOpenGraphImageURL(info.OGInfo.Images), info.ImageSrcURL),
 		Corpus:      applyReadability(rawhtml),
 		Original:    inputURL,
+		IsArticle:   false,
 	}, nil
 }
 

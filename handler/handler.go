@@ -34,6 +34,7 @@ type Config struct {
 	}
 	Analyzer interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
+		Summarize(context.Context, string) (string, error)
 	}
 	FrontendProxyHostname string
 	FrontendProxyPort     string
