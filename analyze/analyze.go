@@ -51,7 +51,6 @@ type Response struct {
 	Corpus      string
 	Tags        []*Tag
 	Summary     string
-	html        string
 }
 
 type Tag struct {
@@ -112,26 +111,24 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	urlobj.Host = strings.TrimPrefix(urlobj.Host, "mobile.")
 	cleanURL := urlobj.String()
 
-	ld, err := c.extract(nctx, rlog, urlobj)
+	ld, isArticle, err := c.extract(nctx, rlog, urlobj)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract any info: %w", err)
 	}
 
 	ld, err = c.classifer.Classify(nctx, ld)
 	if err != nil && !errors.Is(err, errTooFewTokens) {
-		ld.html = ""
-		return ld, fmt.Errorf("%w: %s", ErrNoClassify, err.Error())
+		rlog.Printf("failed to classify text: %v", err)
 	}
 
-	// Generate summary using AI
-	summary, err := c.aiClient.Summarize(nctx, ld.Corpus)
-	if err != nil {
-		rlog.Printf("failed to generate summary: %v", err)
-	} else {
-		ld.Summary = summary
+	if isArticle {
+		summary, err := c.aiClient.Summarize(nctx, ld.Corpus)
+		if err != nil {
+			rlog.Printf("failed to generate summary: %v", err)
+		} else {
+			ld.Summary = summary
+		}
 	}
-
-	ld.html = ""
 
 	// Use Twitter's and YouTube's oembed APIs which don't provide much info but which
 	// are more reliable than making ordinary reqests.
@@ -146,22 +143,24 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	return ld, nil
 }
 
-func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.URL) (*Response, error) {
+// extract attempts to extract the content of the given webpage. The bool in the output indicates
+// whether the given webpage is an article or not.
+func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.URL) (*Response, bool, error) {
 	simpleRes, simpleErr := c.simpleExtract(ctx, inputURL.String())
 	diffbotRes, diffbotErr := c.diffbot(ctx, inputURL.String())
 	if simpleErr != nil && diffbotErr != nil {
-		return nil, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, diffbotErr)
+		return nil, false, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, diffbotErr)
 	}
 
 	if simpleErr != nil {
 		rlog.Printf("error when executing simpleExtract: %v", simpleErr)
-		return diffbotRes, nil
+		return diffbotRes, true, nil
 	}
 	if diffbotErr != nil {
 		if !errors.Is(diffbotErr, errNoDiffbotResult) {
 			rlog.Printf("error when executing diffbot: %v", diffbotErr)
 		}
-		return simpleRes, nil
+		return simpleRes, false, nil
 	}
 
 	return &Response{
@@ -173,8 +172,7 @@ func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.UR
 		Image:       getNonZeroString(simpleRes.Image, diffbotRes.Image),
 		Corpus:      getNonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
 		Original:    inputURL.String(),
-		html:        getNonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
-	}, nil
+	}, true, nil
 }
 
 func (c *Client) simpleExtract(ctx context.Context, inputURL string) (*Response, error) {
@@ -204,7 +202,6 @@ func (c *Client) simpleExtract(ctx context.Context, inputURL string) (*Response,
 		Image:       getNonZeroString(oembed.ThumbnailURL, getOpenGraphImageURL(info.OGInfo.Images), info.ImageSrcURL),
 		Corpus:      applyReadability(rawhtml),
 		Original:    inputURL,
-		html:        rawhtml,
 	}, nil
 }
 
@@ -234,7 +231,7 @@ func (c *Client) handleYouTube(ctx context.Context, link, original string, ld *R
 	ld.Title = getNonZeroString(title, ld.Title)
 	ld.Image = thumbnail
 	ld.Description = getNonZeroString(ld.Description, title)
-	ld.Corpus = getNonZeroString(ld.Corpus, ld.Description)
+	ld.Corpus = ""
 
 	return ld, nil
 }
@@ -269,7 +266,7 @@ func (c *Client) handleTwitter(ctx context.Context, link, original string, ld *R
 	ld.Title = getNonZeroString(oembed.Title, ld.Title)
 	ld.Image = getNonZeroString(oembed.ThumbnailURL, ld.Image)
 	ld.Description = getNonZeroString(oembed.Description, ld.Description)
-	ld.Corpus = getNonZeroString(ld.Corpus, ld.Description)
+	ld.Corpus = ""
 
 	return ld, nil
 }

@@ -31,7 +31,7 @@ func (n *gcpBackend) Classify(ctx context.Context, dat *Response) (*Response, er
 		Document: &languagepb.Document{
 			Type: languagepb.Document_HTML,
 			Source: &languagepb.Document_Content{
-				Content: trim(dat.html),
+				Content: trim(dat.Corpus),
 			},
 			Language: "en",
 		},

@@ -12,6 +12,34 @@ import (
 	"time"
 )
 
+const systemPrompt = `# IDENTITY and PURPOSE
+
+You are an expert content summarizer. You take in content and output a cogent plane text summary using the format below.
+
+Take a deep breath and think about how to best accomplish your goal using the following steps.
+
+# GOAL
+
+- Output a bulleted list of at most 10 points summarizing the content in clear and concise manner.
+
+- In the first bullet point, combine all of your understanding of the content into one to three sentences. These sentences should express the primary thesis of the text.
+
+- In the remaining bullets, output the most important points of the content. If there is a core argument expressed in the text, this argument should also be expressed in these points.
+
+# OUTPUT INSTRUCTIONS
+
+- Create the output using the formatting above.
+- You only output human readable plane text.
+- Output bulleted lists, not numbers.
+- Do not output warnings or notes—just the requested sections.
+- Do not repeat items in the output sections.
+- Do not start items with the same opening words.
+- You are extremely smart and capable. I know you'll do a great job.
+
+# INPUT:
+
+INPUT:`
+
 // aiClient interface defines the methods that any AI provider should implement
 type aiClient interface {
 	Summarize(ctx context.Context, text string) (string, error)
@@ -36,7 +64,7 @@ func newAnthropicClient(apiKey string) *anthropicClient {
 func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, error) {
 	// Only generate summary if text is more than roughly 1,500 words
 	words := len(strings.Fields(text))
-	if words <= 1500 {
+	if words <= 700 {
 		return "", nil
 	}
 
@@ -44,13 +72,14 @@ func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, e
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model": "claude-3-haiku-20240307",
-		"max_tokens": 150,
+		"max_tokens": 665,
 		"messages": []map[string]string{
 			{
 				"role": "user",
-				"content": fmt.Sprintf("Summarize the following text in a concise manner:\n\n%s", text),
+				"content": text,
 			},
 		},
+		"system": systemPrompt,
 	})
 	if err != nil {
 		return "", fmt.Errorf("error marshaling request body: %w", err)

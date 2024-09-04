@@ -44,6 +44,7 @@ func (c *Client) diffbot(ctx context.Context, inputUrl string) (*Response, error
 		return nil, fmt.Errorf("failed to decode Diffbot response json: %w", err)
 	}
 
+	// If there's no result, then the given webpage isn't an article.
 	if len(diffbotRes.Objects) < 1 {
 		return nil, errNoDiffbotResult
 	}
@@ -64,7 +65,6 @@ func (c *Client) diffbot(ctx context.Context, inputUrl string) (*Response, error
 		Image:    image,
 		Corpus:   applyReadability(diffbotRes.Objects[0].Html),
 		Original: inputUrl,
-		html:     diffbotRes.Objects[0].Html,
 	}, nil
 }
 
