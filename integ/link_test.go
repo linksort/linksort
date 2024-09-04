@@ -441,7 +441,8 @@ func TestSummarizeLink(t *testing.T) {
 		t.Run(tcase.Name, func(t *testing.T) {
 			tt := apitest.New(tcase.Name).
 				Handler(testutil.Handler()).
-				Get(fmt.Sprintf("/api/links/%s/summarize", tcase.GivenLinkID)).
+				Post(fmt.Sprintf("/api/links/%s/summarize", tcase.GivenLinkID)).
+				Header("X-Csrf-Token", testutil.UserCSRF(tcase.GivenSessionID)).
 				Cookie("session_id", tcase.GivenSessionID).
 				Expect(t).Status(tcase.ExpectStatus)
 

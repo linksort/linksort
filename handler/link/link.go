@@ -45,9 +45,9 @@ func Handler(c *Config) *mux.Router {
 	r.HandleFunc("/api/links", cc.CreateLink).Methods("POST")
 	r.HandleFunc("/api/links/{linkID}", cc.GetLink).Methods("GET")
 	r.HandleFunc("/api/links", cc.GetLinks).Methods("GET")
+	r.HandleFunc("/api/links/{linkID}/summarize", cc.SummarizeLink).Methods("POST")
 	r.HandleFunc("/api/links/{linkID}", cc.UpdateLink).Methods("PATCH")
 	r.HandleFunc("/api/links/{linkID}", cc.DelteLink).Methods("DELETE")
-	r.HandleFunc("/api/links/{linkID}/summarize", cc.SummarizeLink).Methods("GET")
 
 	return r
 }

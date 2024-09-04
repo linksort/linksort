@@ -436,6 +436,10 @@ func NewTestClient() *TestClient {
 	return &TestClient{}
 }
 
+func (c *TestClient) Summarize(ctx context.Context, text string) (string, error) {
+	return "summary", nil
+}
+
 func (c *TestClient) Do(ctx context.Context, req *Request) (*Response, error) {
 	return &Response{
 		URL:         req.URL,
