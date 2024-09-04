@@ -20,6 +20,9 @@ type Link struct {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
 	}
 	Transactor db.Transactor
+	AIClient  interface {
+		Summarize(context.Context, string) (string, error)
+	}
 }
 
 func (l *Link) CreateLink(
@@ -259,6 +262,26 @@ func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) (*model
 	}
 
 	return user, nil
+}
+
+func (l *Link) SummarizeLink(ctx context.Context, u *model.User, id string) (string, error) {
+	op := errors.Opf("controller.SummarizeLink(%q)", id)
+
+	link, err := l.GetLink(ctx, u, id)
+	if err != nil {
+		return "", errors.E(op, err)
+	}
+
+	if link.Corpus == "" {
+		return "", errors.E(op, errors.Str("no corpus available for summarization"), http.StatusBadRequest)
+	}
+
+	summary, err := l.AIClient.Summarize(ctx, link.Corpus)
+	if err != nil {
+		return "", errors.E(op, err)
+	}
+
+	return summary, nil
 }
 
 func doesFolderExist(u *model.User, folderID string) bool {

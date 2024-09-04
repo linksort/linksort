@@ -23,6 +23,7 @@ type Config struct {
 		GetLinks(context.Context, *model.User, *GetLinksRequest) ([]*model.Link, error)
 		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, *model.User, error)
 		DeleteLink(context.Context, *model.User, string) (*model.User, error)
+		SummarizeLink(context.Context, *model.User, string) (string, error)
 	}
 	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)
@@ -46,6 +47,7 @@ func Handler(c *Config) *mux.Router {
 	r.HandleFunc("/api/links", cc.GetLinks).Methods("GET")
 	r.HandleFunc("/api/links/{linkID}", cc.UpdateLink).Methods("PATCH")
 	r.HandleFunc("/api/links/{linkID}", cc.DelteLink).Methods("DELETE")
+	r.HandleFunc("/api/links/{linkID}/summarize", cc.SummarizeLink).Methods("GET")
 
 	return r
 }
@@ -311,6 +313,37 @@ func (s *config) DelteLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload.Write(w, r, &DeleteLinkResponse{user}, http.StatusOK)
+}
+
+type SummarizeLinkResponse struct {
+	Summary string `json:"summary"`
+}
+
+// SummarizeLink godoc
+//
+//	@Summary		SummarizeLink
+//	@Description	Generates a summary of the given link's corpus.
+//	@Param		id			path		string	true	"LinkID"
+//	@Success		200			{object}	SummarizeLinkResponse
+//	@Failure		401			{object}	payload.Error
+//	@Failure		404			{object}	payload.Error
+//	@Failure		500			{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router		/links/{id}/summarize	[get]
+func (s *config) SummarizeLink(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.SummarizeLink")
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+	vars := mux.Vars(r)
+	id := vars["linkID"]
+
+	summary, err := s.LinkController.SummarizeLink(ctx, u, id)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+		return
+	}
+
+	payload.Write(w, r, &SummarizeLinkResponse{Summary: summary}, http.StatusOK)
 }
 
 // Define a regex to check if the tag is valid.
