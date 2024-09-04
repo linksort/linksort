@@ -316,13 +316,13 @@ func (s *config) DelteLink(w http.ResponseWriter, r *http.Request) {
 }
 
 type SummarizeLinkResponse struct {
-	Summary string `json:"summary"`
+	Link *model.Link `json:"link"`
 }
 
 // SummarizeLink godoc
 //
 //	@Summary		SummarizeLink
-//	@Description	Generates a summary of the given link's corpus.
+//	@Description	Generates a summary of the given link's corpus and returns the updated link.
 //	@Param		id			path		string	true	"LinkID"
 //	@Success		200			{object}	SummarizeLinkResponse
 //	@Failure		401			{object}	payload.Error
@@ -337,13 +337,13 @@ func (s *config) SummarizeLink(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["linkID"]
 
-	summary, err := s.LinkController.SummarizeLink(ctx, u, id)
+	link, err := s.LinkController.SummarizeLink(ctx, u, id)
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))
 		return
 	}
 
-	payload.Write(w, r, &SummarizeLinkResponse{Summary: summary}, http.StatusOK)
+	payload.Write(w, r, &SummarizeLinkResponse{Link: link}, http.StatusOK)
 }
 
 // Define a regex to check if the tag is valid.

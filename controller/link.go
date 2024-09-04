@@ -264,31 +264,31 @@ func (l *Link) DeleteLink(ctx context.Context, u *model.User, id string) (*model
 	return user, nil
 }
 
-func (l *Link) SummarizeLink(ctx context.Context, u *model.User, id string) (string, error) {
+func (l *Link) SummarizeLink(ctx context.Context, u *model.User, id string) (*model.Link, error) {
 	op := errors.Opf("controller.SummarizeLink(%q)", id)
 
 	link, err := l.GetLink(ctx, u, id)
 	if err != nil {
-		return "", errors.E(op, err)
+		return nil, errors.E(op, err)
 	}
 
 	if link.Corpus == "" {
-		return "", errors.E(op, errors.Str("no corpus available for summarization"), http.StatusBadRequest)
+		return nil, errors.E(op, errors.Str("no corpus available for summarization"), http.StatusBadRequest)
 	}
 
 	summary, err := l.AIClient.Summarize(ctx, link.Corpus)
 	if err != nil {
-		return "", errors.E(op, err)
+		return nil, errors.E(op, err)
 	}
 
 	// Update the link with the new summary
 	link.Summary = summary
-	_, err = l.Store.UpdateLink(ctx, link)
+	updatedLink, err := l.Store.UpdateLink(ctx, link)
 	if err != nil {
-		return "", errors.E(op, errors.Str("failed to update link with summary"), err)
+		return nil, errors.E(op, errors.Str("failed to update link with summary"), err)
 	}
 
-	return summary, nil
+	return updatedLink, nil
 }
 
 func doesFolderExist(u *model.User, folderID string) bool {
