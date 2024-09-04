@@ -402,3 +402,56 @@ func TestDeleteLink(t *testing.T) {
 		})
 	}
 }
+
+func TestSummarizeLink(t *testing.T) {
+	ctx := context.Background()
+	usr, _ := testutil.NewUser(t, ctx)
+	lnk := testutil.NewLink(t, ctx, usr)
+
+	tests := []struct {
+		Name           string
+		GivenSessionID string
+		GivenLinkID    string
+		ExpectStatus   int
+		ExpectBody     string
+	}{
+		{
+			Name:           "success",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk.ID,
+			ExpectStatus:   http.StatusOK,
+		},
+		{
+			Name:           "not found",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    "non-existent-id",
+			ExpectStatus:   http.StatusNotFound,
+			ExpectBody:     `{"message":"The requested resource was not found"}`,
+		},
+		{
+			Name:           "unauthorized",
+			GivenSessionID: "invalid-session-id",
+			GivenLinkID:    lnk.ID,
+			ExpectStatus:   http.StatusUnauthorized,
+			ExpectBody:     `{"message":"Unauthorized"}`,
+		},
+	}
+
+	for _, tcase := range tests {
+		t.Run(tcase.Name, func(t *testing.T) {
+			tt := apitest.New(tcase.Name).
+				Handler(testutil.Handler()).
+				Get(fmt.Sprintf("/api/links/%s/summarize", tcase.GivenLinkID)).
+				Cookie("session_id", tcase.GivenSessionID).
+				Expect(t).Status(tcase.ExpectStatus)
+
+			if tcase.ExpectStatus < http.StatusBadRequest {
+				tt.Assert(jsonpath.Present("$.link.summary"))
+			} else {
+				tt.Body(tcase.ExpectBody)
+			}
+
+			tt.End()
+		})
+	}
+}
