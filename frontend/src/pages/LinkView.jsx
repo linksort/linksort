@@ -87,10 +87,10 @@ export default function LinkView() {
   const hasSummary = link.isSummarized
 
   useEffect(() => {
-    if (isFetched && !isGeneratingSummary && !hasSummary) {
+    if (isFetched && !isError && !isGeneratingSummary && !hasSummary) {
       handleGenerateSummary();
     }
-  }, [isFetched, hasSummary, isGeneratingSummary, handleGenerateSummary])
+  }, [isFetched, isError, hasSummary, isGeneratingSummary, handleGenerateSummary]);
 
   // Handle initial retrieval of annotation...
   useEffect(() => {
@@ -287,15 +287,15 @@ export default function LinkView() {
               {hasSummary && link.summary.length > 0 ? (
                 <Box className="prose prose-serif" dangerouslySetInnerHTML={{ __html: link.summary }} />
               ) : (
-                  <>
-                    {isGeneratingSummary ? (
-                      <Spinner />
-                    ) : (
-                      <Text color="gray.600">
-                        No summary was generated for this link.
-                      </Text>
-                    )}
-                  </>
+                <>
+                  {isGeneratingSummary ? (
+                    <Spinner />
+                  ) : (
+                    <Text color="gray.600">
+                      No summary was generated for this link.
+                    </Text>
+                  )}
+                </>
               )}
             </VStack>
 
