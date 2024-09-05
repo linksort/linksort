@@ -75,7 +75,12 @@ export default function LinkView() {
     isError,
     error,
     isFetched,
-  } = useLink(linkId);
+  } = useLink(linkId, {
+    retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
   const { handleSaveAnnotation, isSavingAnnotation, handleGenerateSummary, isGeneratingSummary } = useLinkOperations(link);
   const [annotation, setAnnotation] = useState("");
   const debouncedAnnotation = useDebounce(annotation, 1000);
