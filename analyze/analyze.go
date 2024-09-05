@@ -17,6 +17,8 @@ import (
 	"github.com/dyatlov/go-htmlinfo/htmlinfo"
 	"github.com/dyatlov/go-opengraph/opengraph"
 	"github.com/dyatlov/go-readability"
+	"github.com/russross/blackfriday/v2"
+	"github.com/yosssi/gohtml"
 
 	"github.com/linksort/linksort/log"
 )
@@ -104,10 +106,13 @@ func (c *Client) Summarize(ctx context.Context, text string) (string, error) {
 		return "", nil
 	}
 
-	summary, err := c.aiClient.Summarize(ctx, text)
+	rawsummary, err := c.aiClient.Summarize(ctx, gohtml.Format(text))
 	if err != nil {
 		return "", fmt.Errorf("failed to generate summary: %w", err)
 	}
+
+	bytes := blackfriday.Run([]byte(rawsummary))
+	summary := string(bytes)
 
 	return summary, nil
 }
@@ -165,6 +170,7 @@ func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.UR
 		if !errors.Is(diffbotErr, errNoDiffbotResult) {
 			rlog.Printf("error when executing diffbot: %v", diffbotErr)
 		}
+		rlog.Printf("not an article: %v", diffbotErr)
 		return simpleRes, nil
 	}
 

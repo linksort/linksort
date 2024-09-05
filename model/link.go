@@ -8,26 +8,28 @@ import (
 )
 
 type Link struct {
-	Key         primitive.ObjectID `json:"-" bson:"_id,omitempty"`
-	ID          string             `json:"id"`
-	UserID      string             `json:"userId"`
-	CreatedAt   time.Time          `json:"createdAt"`
-	UpdatedAt   time.Time          `json:"updatedAt"`
-	UserTags    JSONStringArray    `json:"userTags"`
-	TagPaths    JSONStringArray    `json:"tagPaths"`
-	TagDetails  TagDetailList      `json:"tagDetails"`
-	IsFavorite  bool               `json:"isFavorite"`
-	FolderID    string             `json:"folderId"`
-	Corpus      string             `json:"corpus"`
-	URL         string             `json:"url"`
-	Title       string             `json:"title"`
-	Description string             `json:"description"`
-	Favicon     string             `json:"favicon"`
-	Image       string             `json:"image"`
-	Site        string             `json:"site"`
-	Annotation  string             `json:"annotation"`
-	IsAnnotated bool               `json:"isAnnotated"`
-	Summary     string             `json:"summary"`
+	Key          primitive.ObjectID `json:"-" bson:"_id,omitempty"`
+	ID           string             `json:"id"`
+	UserID       string             `json:"userId"`
+	CreatedAt    time.Time          `json:"createdAt"`
+	UpdatedAt    time.Time          `json:"updatedAt"`
+	UserTags     JSONStringArray    `json:"userTags"`
+	TagPaths     JSONStringArray    `json:"tagPaths"`
+	TagDetails   TagDetailList      `json:"tagDetails"`
+	IsFavorite   bool               `json:"isFavorite"`
+	FolderID     string             `json:"folderId"`
+	Corpus       string             `json:"corpus"`
+	URL          string             `json:"url"`
+	Title        string             `json:"title"`
+	Description  string             `json:"description"`
+	Favicon      string             `json:"favicon"`
+	Image        string             `json:"image"`
+	Site         string             `json:"site"`
+	Annotation   string             `json:"annotation"`
+	IsAnnotated  bool               `json:"isAnnotated"`
+	Summary      string             `json:"summary"`
+	IsSummarized bool               `json:"isSummarized"`
+	IsArticle    bool               `json:"isArticle"`
 }
 
 type GetLinksOption func(map[string]interface{})

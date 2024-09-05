@@ -90,6 +90,39 @@ export function useLink(linkId, options = {}) {
   );
 }
 
+export function useGenerateSummary(linkId) {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  return useMutation(
+    () => apiFetch(`/api/links/${linkId}/summarize`, {
+      body: {},
+      method: "POST",
+    }),
+    {
+      onSuccess: (data, _) => {
+        queryClient.setQueryData(["links", "detail", linkId], () => data.link);
+
+        if (data.link.summary.length > 0) {
+          toast({
+            title: "Summary generated",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
+      },
+      onError: (error) => {
+        toast({
+          title: error.toString(),
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      },
+    })
+}
+
 export function useUpdateLink(linkId, { supressToast = false } = {}) {
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -193,6 +226,7 @@ export function useLinkOperations(link = {}) {
   const { mutateAsync: updateLink } = useUpdateLink(link.id, {
     supressToast: true,
   });
+  const { mutateAsync: generateSummary, isLoading: isGeneratingSummary } = useGenerateSummary(link.id);
   const [isFavoriting, setIsFavoriting] = useState(false);
   const [isMovingFolders, setIsMovingFolders] = useState(false);
   const [isSavingAnnotation, setIsSavingAnnotation] = useState(false);
@@ -204,6 +238,10 @@ export function useLinkOperations(link = {}) {
       if (history.location.pathname.endsWith(link.id)) {
         history.push("/");
       }
+    }
+
+    async function handleGenerateSummary() {
+      await generateSummary();
     }
 
     async function handleToggleIsFavorite() {
@@ -272,6 +310,8 @@ export function useLinkOperations(link = {}) {
     return {
       handleDeleteLink,
       isDeleting,
+      handleGenerateSummary,
+      isGeneratingSummary,
       handleToggleIsFavorite,
       isFavoriting,
       handleMoveToFolder,
@@ -283,12 +323,14 @@ export function useLinkOperations(link = {}) {
   }, [
     link,
     isDeleting,
+    isGeneratingSummary,
     isFavoriting,
     isMovingFolders,
     isSavingAnnotation,
     toast,
     updateLink,
     deleteLink,
+    generateSummary,
     history,
   ]);
 }

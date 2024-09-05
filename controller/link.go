@@ -57,19 +57,20 @@ func (l *Link) CreateLink(
 		}
 
 		link, err = l.Store.CreateLink(sessCtx, &model.Link{
-			UserID:      u.ID,
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
-			URL:         dat.URL,
-			Image:       dat.Image,
-			Favicon:     dat.Favicon,
-			Title:       dat.Title,
-			Site:        dat.Site,
-			Description: dat.Description,
-			Corpus:      dat.Corpus,
-			TagDetails:  model.ParseTagDetails(dat.Tags),
-			TagPaths:    model.ParseTagDetailsToPathList(dat.Tags),
-			Summary:     dat.Summary,
+			UserID:       u.ID,
+			CreatedAt:    time.Now(),
+			UpdatedAt:    time.Now(),
+			URL:          dat.URL,
+			Image:        dat.Image,
+			Favicon:      dat.Favicon,
+			Title:        dat.Title,
+			Site:         dat.Site,
+			Description:  dat.Description,
+			Corpus:       dat.Corpus,
+			TagDetails:   model.ParseTagDetails(dat.Tags),
+			TagPaths:     model.ParseTagDetailsToPathList(dat.Tags),
+			IsArticle:    dat.IsArticle,
+			IsSummarized: !dat.IsArticle,
 		})
 		if err != nil {
 			return errors.E(innerOp, err)
@@ -270,21 +271,20 @@ func (l *Link) SummarizeLink(ctx context.Context, u *model.User, id string) (*mo
 		return nil, errors.E(op, err)
 	}
 
-	if len(link.Summary) > 0 {
+	if link.IsSummarized {
 		// Link already has a summary.
 		return link, nil
 	}
 
-	if link.Corpus == "" {
-		return nil, errors.E(op, errors.Str("no corpus available for summarization"), http.StatusBadRequest)
+	link.IsSummarized = true
+
+	if link.IsArticle && link.Corpus != "" {
+		link.Summary, err = l.Analyzer.Summarize(ctx, link.Corpus)
+		if err != nil {
+			return nil, errors.E(op, err)
+		}
 	}
 
-	summary, err := l.Analyzer.Summarize(ctx, link.Corpus)
-	if err != nil {
-		return nil, errors.E(op, err)
-	}
-
-	link.Summary = summary
 	updatedLink, err := l.Store.UpdateLink(ctx, link)
 	if err != nil {
 		return nil, errors.E(op, errors.Str("failed to update link with summary"), err)

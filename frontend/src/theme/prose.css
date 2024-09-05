@@ -19,6 +19,11 @@
   font-family: var(--font-serif);
 }
 
+.prose.prose-serif {
+  font-size: 1rem;
+  font-family: var(--font-sans);
+}
+
 .prose .message {
   background-color: var(--color-code-background);
   padding: 1rem;
@@ -338,23 +343,15 @@
 .prose ul {
   margin-top: 1.2em;
   margin-bottom: 1.2em;
-  font-size: 1.25rem;
 }
 
 .prose li {
+  margin-bottom: 0.5em;
 }
 
 .prose > ul > li p {
   margin-top: 0.75em;
-  margin-bottom: 0.75em;
-}
-
-.prose > ul > li > *:first-child {
-  margin-top: 1.25em;
-}
-
-.prose > ul > li > *:last-child {
-  margin-bottom: 1.25em;
+  margin-bottom: 0.5em;
 }
 
 .prose > ol > li > *:first-child {

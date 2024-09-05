@@ -13,6 +13,7 @@ import {
   IconButton,
   Flex,
   Link,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   ArrowBackIcon,
@@ -75,7 +76,7 @@ export default function LinkView() {
     error,
     isFetched,
   } = useLink(linkId);
-  const { handleSaveAnnotation, isSavingAnnotation } = useLinkOperations(link);
+  const { handleSaveAnnotation, isSavingAnnotation, handleGenerateSummary, isGeneratingSummary } = useLinkOperations(link);
   const [annotation, setAnnotation] = useState("");
   const debouncedAnnotation = useDebounce(annotation, 1000);
   const [notePanelState, setNotePanelState] = useState(NOTE_PANEL_HIDDEN);
@@ -83,6 +84,13 @@ export default function LinkView() {
   const notePanelHeight = getNotePanelHeight(notePanelState);
   const scrollDirection = useScrollDirection();
   const { makeTagLink } = useFilters();
+  const hasSummary = link.isSummarized
+
+  useEffect(() => {
+    if (isFetched && !isGeneratingSummary && !hasSummary) {
+      handleGenerateSummary();
+    }
+  }, [isFetched, hasSummary, isGeneratingSummary, handleGenerateSummary])
 
   // Handle initial retrieval of annotation...
   useEffect(() => {
@@ -269,6 +277,25 @@ export default function LinkView() {
                 <Text color="gray.600">
                   No auto tags were assigned to this link.
                 </Text>
+              )}
+            </VStack>
+
+            <VStack align="left">
+              <Heading as="h6" fontSize="sm">
+                Summary
+              </Heading>
+              {hasSummary && link.summary.length > 0 ? (
+                <Box className="prose prose-serif" dangerouslySetInnerHTML={{ __html: link.summary }} />
+              ) : (
+                  <>
+                    {isGeneratingSummary ? (
+                      <Spinner />
+                    ) : (
+                      <Text color="gray.600">
+                        No summary was generated for this link.
+                      </Text>
+                    )}
+                  </>
               )}
             </VStack>
 
