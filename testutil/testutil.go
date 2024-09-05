@@ -120,6 +120,7 @@ func NewLink(t *testing.T, ctx context.Context, u *model.User) *model.Link {
 		Corpus:      fake.Paragraphs(),
 		Description: fake.Paragraph(),
 		Site:        fake.Company(),
+		IsArticle:   true,
 	})
 	if err != nil {
 		t.Error(err)
