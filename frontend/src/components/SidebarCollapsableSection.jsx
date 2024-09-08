@@ -39,7 +39,7 @@ export default function SidebarCollapsableSection({ title, children }) {
           transform={isOpen ? "" : "rotate(90deg)"}
         />
       </SidebarSectionHeader>
-      <Collapse in={isOpen}>{children}</Collapse>
+      <Collapse overflow="unset" in={isOpen}>{children}</Collapse>
     </Box>
   );
 }
