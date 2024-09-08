@@ -11,7 +11,7 @@ Linksort is an open source bookmarking application.
 Setting up your development environment is easy. Make sure you have [`docker`](https://docs.docker.com/get-docker/) and [`docker-compose`](https://docs.docker.com/compose/install/) installed and run the following command from the root of this repository.
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 That's it! Go to [http://localhost:8000](http://localhost:8000) to find the app up and running. Whenever you change a file, the code we be automatically recompiled and run.
@@ -35,6 +35,8 @@ Run [`air`](https://github.com/air-verse/air) to start the backend server. This 
 ```bash
 export PRODUCTION=0
 export ANALYZER_KEY=$(cat /path/to/key)  # Optional
+export DIFFBOT_TOKEN="<YOUR KEY>"
+export ANTHROPIC_API_KEY="<YOUR KEY>"
 export FRONTEND_HOSTNAME=localhost
 export FRONTEND_PORT=3000
 air

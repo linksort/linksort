@@ -1,22 +1,20 @@
-FROM node:16-bullseye AS frontend-builder
+FROM node:20-bookworm AS frontend-builder
 WORKDIR /opt/linksort
 ARG REACT_APP_SENTRY_DSN
-ENV REACT_APP_SENTRY_DSN ${REACT_APP_SENTRY_DSN}
+ENV REACT_APP_SENTRY_DSN=${REACT_APP_SENTRY_DSN}
 COPY ./frontend/package.json ./frontend/yarn.lock ./
 RUN yarn
 COPY ./frontend .
-RUN yarn
 RUN yarn build
 
-FROM node:16-bullseye AS splash-builder
+FROM node:20-bookworm AS splash-builder
 WORKDIR /opt/linksort
-ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
 COPY ./splash/package.json ./splash/yarn.lock ./
 RUN yarn
 COPY ./splash .
 RUN yarn build
 
-FROM golang:1.22 AS api-builder
+FROM golang:1.23 AS api-builder
 WORKDIR /opt/linksort/
 RUN mkdir build
 COPY ./go.mod ./go.sum ./
