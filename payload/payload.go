@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -107,7 +108,11 @@ func Write(w http.ResponseWriter, r *http.Request, payload interface{}, status i
 
 		_, err := w.Write(encoded)
 		if err != nil {
-			panic(errors.E(op, err))
+			if errors.Is(err, io.ErrClosedPipe) {
+				// ignore
+			} else {
+				panic(errors.E(op, err))
+			}
 		}
 	}
 }
