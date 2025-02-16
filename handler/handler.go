@@ -11,6 +11,7 @@ import (
 	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
+	"github.com/linksort/linksort/handler/conversation"
 	"github.com/linksort/linksort/handler/docs"
 	"github.com/linksort/linksort/handler/folder"
 	"github.com/linksort/linksort/handler/frontend"
@@ -25,11 +26,12 @@ import (
 )
 
 type Config struct {
-	Transactor db.Transactor
-	UserStore  model.UserStore
-	LinkStore  model.LinkStore
-	Magic      *magic.Client
-	Email      interface {
+	Transactor        db.Transactor
+	UserStore         model.UserStore
+	LinkStore         model.LinkStore
+	ConversationStore model.ConversationStore
+	Magic             *magic.Client
+	Email             interface {
 		SendForgotPassword(context.Context, *model.User, string) error
 	}
 	Analyzer interface {
@@ -62,6 +64,10 @@ func New(c *Config) http.Handler {
 	folderC := &controller.Folder{Store: c.UserStore}
 	oauthC := &controller.OAuth{Store: c.UserStore}
 	sessionC := &controller.Session{Store: c.UserStore}
+	conversationC := &controller.Conversation{
+		UserStore:         c.UserStore,
+		ConversationStore: c.ConversationStore,
+	}
 
 	// API Routes
 	api := router.PathPrefix("/api").Subrouter()
@@ -82,6 +88,11 @@ func New(c *Config) http.Handler {
 		AuthController:   authC,
 		FolderController: folderC,
 		CSRF:             c.Magic,
+	})))
+	api.PathPrefix("/conversations").Handler(wrap(conversation.Handler(&conversation.Config{
+		AuthController:         authC,
+		ConversationController: conversationC,
+		CSRF:                   c.Magic,
 	})))
 
 	router.PathPrefix("/oauth").Handler(oauth.Handler(&oauth.Config{

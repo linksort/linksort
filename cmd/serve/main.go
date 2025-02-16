@@ -69,6 +69,7 @@ func main() {
 			Transactor:            db.NewTxnClient(mongo),
 			UserStore:             db.NewUserStore(mongo),
 			LinkStore:             db.NewLinkStore(mongo),
+			ConversationStore:     db.NewConversationStore(mongo),
 			Magic:                 magic.New(getenv("APP_SECRET", "")),
 			Email:                 email.New(getenv("MAILGUN_KEY", "")),
 			Analyzer:              analyzer,

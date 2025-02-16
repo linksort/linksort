@@ -31,14 +31,15 @@ import (
 
 // nolint
 var (
-	_once      sync.Once
-	_closer    func() error
-	_h         http.Handler
-	_userStore model.UserStore
-	_linkStore model.LinkStore
-	_magic     = magic.New("test-secret")
-	_email     = email.NewLogger()
-	_txnClient db.Transactor
+	_once              sync.Once
+	_closer            func() error
+	_h                 http.Handler
+	_userStore         model.UserStore
+	_linkStore         model.LinkStore
+	_conversationStore model.ConversationStore
+	_magic             = magic.New("test-secret")
+	_email             = email.NewLogger()
+	_txnClient         db.Transactor
 )
 
 func Handler() http.Handler {
@@ -69,13 +70,15 @@ func Handler() http.Handler {
 		_txnClient = db.NewTxnClient(mongo)
 		_userStore = db.NewUserStore(mongo)
 		_linkStore = db.NewLinkStore(mongo)
+		_conversationStore = db.NewConversationStore(mongo)
 		_h = handler.New(&handler.Config{
-			Transactor: _txnClient,
-			UserStore:  _userStore,
-			LinkStore:  _linkStore,
-			Magic:      _magic,
-			Email:      _email,
-			Analyzer:   analyze.NewTestClient(),
+			Transactor:        _txnClient,
+			UserStore:         _userStore,
+			LinkStore:         _linkStore,
+			ConversationStore: _conversationStore,
+			Magic:             _magic,
+			Email:             _email,
+			Analyzer:          analyze.NewTestClient(),
 		})
 	})
 
@@ -188,6 +191,22 @@ func CSRF() string {
 
 func UserCSRF(sessionID string) string {
 	return string(_magic.UserCSRF(sessionID))
+}
+
+func NewConversation(t *testing.T, ctx context.Context, u *model.User) (*model.Conversation, error) {
+	conv := &model.Conversation{
+		UserID:    u.ID,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Length:    0,
+	}
+
+	conv, err := _conversationStore.CreateConversation(ctx, conv)
+	if err != nil {
+		return nil, err
+	}
+
+	return conv, nil
 }
 
 func PrintResponse(t *testing.T) func(*http.Response, *http.Request) error {
