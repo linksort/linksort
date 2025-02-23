@@ -8,6 +8,11 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/getsentry/raven-go"
 
 	"github.com/linksort/linksort/analyze"
@@ -45,24 +50,47 @@ func main() {
 	ctx := context.Background()
 	isProd := getenv("PRODUCTION", "1") == "1"
 
-	log.ConfigureGlobalLogger(ctx, isProd)
+	// Setup AWS creds
+	awsCfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("us-east-1"))
+	if err != nil {
+		panic(err)
+	}
+	stsC := sts.NewFromConfig(awsCfg)
+	provider := stscreds.NewAssumeRoleProvider(stsC, os.Getenv("LOG_PUTTER"))
+
+	// Setup CloudwatchLogs
+	cwlogsClient := cloudwatchlogs.NewFromConfig(awsCfg, func(o *cloudwatchlogs.Options) {
+		o.Credentials = provider
+	})
+
+	// Setup Bedrock
+	bedrockClient := bedrockruntime.NewFromConfig(awsCfg, func(o *bedrockruntime.Options) {
+		o.Credentials = provider
+	})
+
+	// Configure the logger
+	log.ConfigureGlobalLogger(ctx, isProd, cwlogsClient)
 	defer log.CleanUp()
 
+	// Setup Sentry for error reporting
 	raven.SetDSN(getenv("SENTRY_DSN", ""))
 	raven.SetRelease(getenv("RELEASE", ""))
 
+	// Bootstrap the database
 	mongo, err := db.NewMongoClient(ctx, getenv("DB_CONNECTION", "mongodb://localhost"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer mongo.Disconnect(ctx)
 
-	analyzer, err := analyze.New(ctx)
+	// Bootstrap the analyzer
+	analyzer, err := analyze.New(ctx, bedrockClient)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer analyzer.Close()
 
+	// Create the server instance
 	port := getenv("PORT", "8080")
 	srv := http.Server{
 		Handler: handler.New(&handler.Config{
@@ -82,6 +110,7 @@ func main() {
 		Addr:         fmt.Sprintf(":%s", port),
 	}
 
+	// Handle shutdown properly
 	go func() {
 		signalC := make(chan os.Signal, 1)
 		signal.Notify(signalC, os.Interrupt)
@@ -93,6 +122,7 @@ func main() {
 
 	log.Printf("Listening on port :%s", port)
 
+	// Start serving
 	if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 		log.Alarm(err)
 		log.Panicf("ListenAndServe: %v", err)

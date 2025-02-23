@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/dyatlov/go-htmlinfo/htmlinfo"
 	"github.com/dyatlov/go-opengraph/opengraph"
 	"github.com/dyatlov/go-readability"
@@ -73,7 +74,7 @@ type Client struct {
 	aiClient     aiClient
 }
 
-func New(ctx context.Context) (*Client, error) {
+func New(ctx context.Context, bedrockC *bedrockruntime.Client) (*Client, error) {
 	c := &http.Client{
 		Timeout: time.Duration(defaultHTTPRequestTimeoutSeconds) * time.Second}
 
@@ -82,7 +83,7 @@ func New(ctx context.Context) (*Client, error) {
 		return nil, fmt.Errorf("failed to initialize: %w", err)
 	}
 
-	aiClient, err := getAIClient()
+	aiClient, err := getAIClient(bedrockC)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize AI client: %w", err)
 	}

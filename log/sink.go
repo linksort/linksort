@@ -11,11 +11,8 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
 	raven "github.com/getsentry/raven-go"
 )
 
@@ -35,11 +32,11 @@ type sink struct {
 	}
 }
 
-func newCloudwatchSink(ctx context.Context, w io.Writer) *sink {
+func newCloudwatchSink(ctx context.Context, w io.Writer, cwlogsClient *cloudwatchlogs.Client) *sink {
 	s := &sink{
 		writer: w,
 	}
-	s.setupCloudwatchClient(ctx)
+	s.setupCloudwatchLogs(ctx, cwlogsClient)
 	go s.run(ctx)
 	return s
 }
@@ -110,21 +107,9 @@ func (s *sink) putLogs(logEvents []types.InputLogEvent) {
 	}
 }
 
-func (s *sink) setupCloudwatchClient(ctx context.Context) {
-	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("us-east-1"))
-	if err != nil {
-		panic(err)
-	}
-
-	stsC := sts.NewFromConfig(cfg)
-	provider := stscreds.NewAssumeRoleProvider(stsC, os.Getenv("LOG_PUTTER"))
-
-	client := cloudwatchlogs.NewFromConfig(cfg, func(o *cloudwatchlogs.Options) {
-		o.Credentials = provider
-	})
-
+func (s *sink) setupCloudwatchLogs(ctx context.Context, client *cloudwatchlogs.Client) {
 	// Create the log group if it doesn't exist already
-	_, err = client.CreateLogGroup(ctx, &cloudwatchlogs.CreateLogGroupInput{
+	_, err := client.CreateLogGroup(ctx, &cloudwatchlogs.CreateLogGroupInput{
 		LogGroupName: aws.String(logGroupName),
 	})
 	if err != nil {
@@ -148,5 +133,4 @@ func (s *sink) setupCloudwatchClient(ctx context.Context) {
 	}
 
 	s.client = client
-	fmt.Println("setup cloudwatchlogs client")
 }

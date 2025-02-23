@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	raven "github.com/getsentry/raven-go"
 	"github.com/linksort/linksort/errors"
 	"github.com/rs/zerolog"
@@ -21,8 +22,8 @@ var (
 	_sink   *sink
 )
 
-func ConfigureGlobalLogger(ctx context.Context, isProd bool) {
-	_logger = zerolog.New(resolveWriter(ctx, isProd)).With().Timestamp().Logger()
+func ConfigureGlobalLogger(ctx context.Context, isProd bool, cwlogsClient *cloudwatchlogs.Client) {
+	_logger = zerolog.New(resolveWriter(ctx, isProd, cwlogsClient)).With().Timestamp().Logger()
 }
 
 func CleanUp() {
@@ -118,9 +119,9 @@ func requestIDFromContext(ctx context.Context) string {
 	return "missing-request-id"
 }
 
-func resolveWriter(ctx context.Context, isProd bool) io.Writer {
+func resolveWriter(ctx context.Context, isProd bool, cwlogsClient *cloudwatchlogs.Client) io.Writer {
 	if isProd {
-		_sink = newCloudwatchSink(ctx, os.Stderr)
+		_sink = newCloudwatchSink(ctx, os.Stderr, cwlogsClient)
 		return _sink
 	}
 	return zerolog.ConsoleWriter{Out: os.Stderr}

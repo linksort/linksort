@@ -113,6 +113,8 @@ export function useGenerateSummary(linkId) {
         }
       },
       onError: (error) => {
+        queryClient.setQueryData(["links", "detail", linkId], () => ({ isSummarized: true }));
+
         toast({
           title: error.toString(),
           status: "error",

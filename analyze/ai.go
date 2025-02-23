@@ -7,9 +7,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 	"time"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
 )
 
 const systemPrompt = `# IDENTITY and PURPOSE
@@ -20,7 +23,7 @@ Before you begin, take a deep breath and think carefully about how to best accom
 
 # FORMAT
 
-- Output a bulleted list of at most 7 points summarizing the content in clear and concise manner.
+- Output a bulleted list of at most 7 points summarizing the content in a clear and concise manner.
 - In the first bullet point, combine all of your understanding of the content into one to three sentences that express the primary thesis of the text.
 - In the remaining bullet points, output the most important points of the content. If there is a core argument expressed in the text, express that argument in these points.
 
@@ -33,14 +36,51 @@ Before you begin, take a deep breath and think carefully about how to best accom
 - Do not output warnings or notes.
 - Do not repeat items in the output sections.
 - Do not start items with the same opening words.
-
-# INPUT:
-
-INPUT:`
+`
 
 // aiClient interface defines the methods that any AI provider should implement
 type aiClient interface {
 	Summarize(ctx context.Context, text string) (string, error)
+}
+
+type bedrockClient struct {
+	client *bedrockruntime.Client
+}
+
+func (c *bedrockClient) Summarize(ctx context.Context, text string) (string, error) {
+	resp, err := c.client.Converse(ctx, &bedrockruntime.ConverseInput{
+		ModelId: aws.String("us.anthropic.claude-3-5-haiku-20241022-v1:0"),
+		System: []types.SystemContentBlock{
+			&types.SystemContentBlockMemberText{
+				Value: systemPrompt,
+			},
+		},
+		Messages: []types.Message{
+			{
+				Role: types.ConversationRoleUser,
+				Content: []types.ContentBlock{
+					&types.ContentBlockMemberText{
+						Value: text,
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return "", err
+	}
+
+	switch output := resp.Output.(type) {
+	case *types.ConverseOutputMemberMessage:
+		for i := range output.Value.Content {
+			switch content := output.Value.Content[i].(type) {
+			case *types.ContentBlockMemberText:
+				return content.Value, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("no summary content in the response")
 }
 
 // anthropicClient implements the aiClient interface using Anthropic's API
@@ -114,10 +154,6 @@ func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, e
 }
 
 // getAIClient returns an aiClient based on the environment configuration
-func getAIClient() (aiClient, error) {
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
-	if apiKey == "" {
-		return nil, fmt.Errorf("ANTHROPIC_API_KEY environment variable is not set")
-	}
-	return newAnthropicClient(apiKey), nil
+func getAIClient(bedrockC *bedrockruntime.Client) (aiClient, error) {
+	return &bedrockClient{bedrockC}, nil
 }
