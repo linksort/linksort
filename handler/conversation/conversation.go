@@ -185,7 +185,6 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Transfer-Encoding", "chunked")
 
-	log.FromRequest(r).Print("calling Converse")
 	// Get event channel from controller
 	events, err := s.ConversationController.Converse(ctx, u, req)
 	if err != nil {

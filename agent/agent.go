@@ -121,12 +121,12 @@ func nonTerminalStopReason(stopReson string) bool {
 
 func (a *Agent) Act(ctx context.Context) error {
 	ll := log.FromContext(ctx)
-	ll.Printf("system prompt: %s", a.System)
 	defer close(a.Stream)
 
 	stopReason := ""
+	iterations := 1
 	for nonTerminalStopReason(stopReason) {
-		ll.Print("calling ConverseStream")
+		ll.Printf("calling ConverseStream: [iteration=%d]", iterations)
 		resp, err := a.Client.ConverseStream(ctx, &bedrockruntime.ConverseStreamInput{
 			// ModelId: aws.String("us.anthropic.claude-3-5-sonnet-20241022-v2:0"),
 			ModelId: aws.String("us.anthropic.claude-3-5-haiku-20241022-v1:0"),
@@ -139,17 +139,16 @@ func (a *Agent) Act(ctx context.Context) error {
 			ToolConfig: mapTools(a.Tools),
 		})
 		if err != nil {
-			ll.Printf("got error from ConverseStream: %v", err)
+			ll.Printf("error calling ConverseStream: %v", err)
 			return err
 		}
 
 		nextMessage := Message{}
 
-		ll.Print("getting stream")
 		respStream := resp.GetStream()
 		err = respStream.Err()
 		if err != nil {
-			ll.Printf("got error from ConverseStream stream: %v", err)
+			ll.Printf("error reading from ConverseStream response: %v", err)
 			return err
 		}
 
@@ -210,9 +209,10 @@ func (a *Agent) Act(ctx context.Context) error {
 					}
 				}
 			case *types.ConverseStreamOutputMemberContentBlockStop:
-				a.Messages = append(a.Messages, nextMessage)
 			}
 		}
+
+		a.Messages = append(a.Messages, nextMessage)
 
 		if nextMessage.IsToolUse {
 			toolUseList := make([]ToolUse, 0)
@@ -234,12 +234,9 @@ func (a *Agent) Act(ctx context.Context) error {
 					if toolUse.Name == tool.Spec().Name {
 						foundTool = true
 
-						ll.Printf("calling tool %s with input: %s", toolUse.Name, toolUse.Request.Text)
-
+						ll.Printf("calling tool %q", toolUse.Name)
 						resp := tool.Use(ctx, toolUse.ID, toolUse.Request.Text)
-
-						ll.Printf("tool %s response: status=%s text=%s", toolUse.Name, resp.Status, resp.Text)
-
+						ll.Printf("tool %q response: [status=%q]", toolUse.Name, resp.Status)
 						nextToolUse.Response = &ToolUseResponse{
 							Status: resp.Status,
 							Text:   resp.Text,
@@ -259,6 +256,8 @@ func (a *Agent) Act(ctx context.Context) error {
 
 			a.Messages = append(a.Messages, toolUseResponseMessage)
 		}
+
+		iterations++
 	}
 
 	return nil

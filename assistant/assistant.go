@@ -14,7 +14,12 @@ import (
 	"github.com/linksort/linksort/model"
 )
 
-var agenticSystemPrompt string = `Your task is to help users of Linksort, a web application, to organize their links. You have a number of tools at your disposal to help you complete this task. Remember to be friendly and cordial as you work through the problem. Below is some relevent information about the current user.
+var agenticSystemPrompt string = `## Identity
+Your task is to help users of Linksort, a web application, to organize and learn about their links. You have a number of tools at your disposal to help you complete your tasks. Remember to be friendly and cordial as you work through the problem.
+
+## Current User
+
+Below is some relevent information about the current user.
 
 %s
 `
@@ -50,7 +55,7 @@ func (c *Client) NewAssistant(u *model.User) *Assistant {
 			{
 				Role:      agent.RoleUser,
 				IsToolUse: false,
-				Text:      aws.String("What can you tell me about the most recent article I saved?"),
+				Text:      aws.String("Help me organize the most recent link's I've saved."),
 			},
 		},
 		Tools: []agent.Tool{
@@ -90,7 +95,7 @@ type GetLinksTool struct {
 func (t *GetLinksTool) Spec() agent.Spec {
 	return agent.Spec{
 		Name:        "get_links",
-		Description: "Use this tool to query the user's links.",
+		Description: "Use this tool to query the user's links. This will give you information about many links at a time, but it will not give you all details about each link. If you need more information, use the get_link tool.",
 		InputSchema: map[string]any{
 			"type": "object",
 			"properties": map[string]any{},
@@ -145,7 +150,7 @@ type GetLinkTool struct {
 func (t *GetLinkTool) Spec() agent.Spec {
 	return agent.Spec{
 		Name:        "get_link",
-		Description: "Use this tool to retrieve all information about a given link.",
+		Description: "Use this tool to retrieve all information about a given link. This includes the full text content of the link and, in many cases, an AI generated summary.",
 		InputSchema: map[string]any{
 			"type": "object",
 			"properties": map[string]any{
@@ -213,7 +218,7 @@ type FoldersTool struct {
 func (t *FoldersTool) Spec() agent.Spec {
 	return agent.Spec{
 		Name:        "use_folders",
-		Description: "Use this tool to create, retrieve, and update the current user's folders.",
+		Description: "Use this tool to create, update, and delete the current user's folders and to move links into and out of folders.",
 		InputSchema: map[string]any{
 			"type": "object",
 			"properties": map[string]any{
@@ -370,7 +375,7 @@ func (t *FoldersTool) Use(ctx context.Context, id, input string) agent.ToolUseRe
 
 		return agent.ToolUseResponse{
 			Status: agent.ToolUseStatusSuccess,
-			Text:   fmt.Sprintf("Successfully created folder '%s'. It's ID is %s", name, target.ID),
+			Text:   fmt.Sprintf("Successfully created folder '%s'. Its ID is %s", name, target.ID),
 		}
 
 	case "DELETE_FOLDER":

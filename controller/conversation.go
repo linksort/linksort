@@ -90,28 +90,23 @@ func (c *Conversation) Converse(
 	req *handler.ConverseRequest,
 ) (<-chan *model.ConverseEvent, error) {
 	op := errors.Op("controller.Converse")
-	ll := log.FromContext(ctx)
 
 	_, err := c.GetConversation(ctx, usr, req.ID, &model.Pagination{})
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
-	ll.Print("successfully retrieved conversation")
 
 	asst := c.AssistantClient.NewAssistant(usr)
 	outC := make(chan *model.ConverseEvent)
-	ll.Print("calling Act")
 	go func() {
 		defer close(outC)
 		err := asst.Act(ctx)
 		if err != nil {
-			ll.Printf("got error calling assistant.Act: %v", err)
+			log.AlarmWithContext(ctx, errors.Strf("error calling assistant.Act: %v", err))
 		}
 	}()
-	ll.Print("creating goroutine")
 	go func() {
 		for event := range asst.Stream() {
-			ll.Printf("got string event: %q", event)
 			outC <- &model.ConverseEvent{
 				TextDelta: event,
 			}
