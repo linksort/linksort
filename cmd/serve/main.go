@@ -101,6 +101,7 @@ func main() {
 			Magic:                 magic.New(getenv("APP_SECRET", "")),
 			Email:                 email.New(getenv("MAILGUN_KEY", "")),
 			Analyzer:              analyzer,
+			BedrockClient:         bedrockClient,
 			FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
 			FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
 			IsProd:                isProd,

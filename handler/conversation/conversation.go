@@ -10,6 +10,7 @@ import (
 
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/handler/middleware"
+	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/payload"
 )
@@ -184,6 +185,7 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Transfer-Encoding", "chunked")
 
+	log.FromRequest(r).Print("calling Converse")
 	// Get event channel from controller
 	events, err := s.ConversationController.Converse(ctx, u, req)
 	if err != nil {
@@ -200,6 +202,7 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 		case event, ok := <-events:
 			if !ok {
 				// Channel closed, end stream
+				log.FromRequest(r).Print("channel closed, end stream")
 				return
 			}
 			// Write event as JSON
@@ -213,6 +216,7 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 			}
 		case <-done:
 			// Client disconnected
+			log.FromRequest(r).Print("client disconnected")
 			return
 		}
 	}

@@ -2,26 +2,40 @@ package agent
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/document"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
+	"github.com/linksort/linksort/log"
 )
 
 type Agent struct {
 	System   string
 	Messages []Message
 	Tools    []Tool
-	Client   *bedrockruntime.Client
 	Stream   chan string
+	Client   interface {
+		ConverseStream(
+			ctx context.Context,
+			params *bedrockruntime.ConverseStreamInput,
+			optFns ...func(*bedrockruntime.Options),
+		) (*bedrockruntime.ConverseStreamOutput, error)
+	}
 }
 
 type Config struct {
 	System   string
 	Messages []Message
 	Tools    []Tool
-	Client   *bedrockruntime.Client
+	Client   interface {
+		ConverseStream(
+			ctx context.Context,
+			params *bedrockruntime.ConverseStreamInput,
+			optFns ...func(*bedrockruntime.Options),
+		) (*bedrockruntime.ConverseStreamOutput, error)
+	}
 }
 
 type Message struct {
@@ -74,7 +88,7 @@ const (
 
 type Tool interface {
 	Spec() Spec
-	Use(id string, input string) ToolUseResponse
+	Use(ctx context.Context, id string, input string) ToolUseResponse
 }
 
 type Spec struct {
@@ -90,6 +104,7 @@ func New(c Config) *Agent {
 		Tools:    c.Tools,
 		Messages: c.Messages,
 		Stream:   make(chan string),
+		Client:   c.Client,
 	}
 }
 
@@ -97,7 +112,7 @@ func nonTerminalStopReason(stopReson string) bool {
 	switch stopReson {
 	case "end_turn", "max_tokens", "stop_sequence", "guardrail_intervened", "content_filtered":
 		return false
-	case "tool_use":
+	case "tool_use", "":
 		return true
 	default:
 		return false
@@ -105,10 +120,16 @@ func nonTerminalStopReason(stopReson string) bool {
 }
 
 func (a *Agent) Act(ctx context.Context) error {
+	ll := log.FromContext(ctx)
+	ll.Printf("system prompt: %s", a.System)
+	defer close(a.Stream)
+
 	stopReason := ""
 	for nonTerminalStopReason(stopReason) {
+		ll.Print("calling ConverseStream")
 		resp, err := a.Client.ConverseStream(ctx, &bedrockruntime.ConverseStreamInput{
-			ModelId: aws.String(""),
+			// ModelId: aws.String("us.anthropic.claude-3-5-sonnet-20241022-v2:0"),
+			ModelId: aws.String("us.anthropic.claude-3-5-haiku-20241022-v1:0"),
 			System: []types.SystemContentBlock{
 				&types.SystemContentBlockMemberText{
 					Value: a.System,
@@ -118,12 +139,20 @@ func (a *Agent) Act(ctx context.Context) error {
 			ToolConfig: mapTools(a.Tools),
 		})
 		if err != nil {
+			ll.Printf("got error from ConverseStream: %v", err)
 			return err
 		}
 
 		nextMessage := Message{}
 
+		ll.Print("getting stream")
 		respStream := resp.GetStream()
+		err = respStream.Err()
+		if err != nil {
+			ll.Printf("got error from ConverseStream stream: %v", err)
+			return err
+		}
+
 		for ev := range respStream.Reader.Events() {
 			switch event := ev.(type) {
 			case *types.ConverseStreamOutputMemberMessageStart:
@@ -171,8 +200,13 @@ func (a *Agent) Act(ctx context.Context) error {
 					a.Stream <- delta.Value
 				case *types.ContentBlockDeltaMemberToolUse:
 					toolUseList := *nextMessage.ToolUse
-					toolUseList[len(toolUseList)-1].Request = &ToolUseRequest{
-						Text: *delta.Value.Input,
+					target := toolUseList[len(toolUseList)-1].Request
+					if target == nil {
+						toolUseList[len(toolUseList)-1].Request = &ToolUseRequest{
+							Text: *delta.Value.Input,
+						}
+					} else {
+						target.Text += *delta.Value.Input
 					}
 				}
 			case *types.ConverseStreamOutputMemberContentBlockStop:
@@ -199,7 +233,13 @@ func (a *Agent) Act(ctx context.Context) error {
 				for _, tool := range a.Tools {
 					if toolUse.Name == tool.Spec().Name {
 						foundTool = true
-						resp := tool.Use(toolUse.ID, toolUse.Request.Text)
+
+						ll.Printf("calling tool %s with input: %s", toolUse.Name, toolUse.Request.Text)
+
+						resp := tool.Use(ctx, toolUse.ID, toolUse.Request.Text)
+
+						ll.Printf("tool %s response: status=%s text=%s", toolUse.Name, resp.Status, resp.Text)
+
 						nextToolUse.Response = &ToolUseResponse{
 							Status: resp.Status,
 							Text:   resp.Text,
@@ -229,7 +269,7 @@ func mapMessages(messages []Message) []types.Message {
 
 	for _, msg := range messages {
 		typesMsg := types.Message{
-			Role: types.ConversationRole(msg.Role),
+			Role:    types.ConversationRole(msg.Role),
 			Content: []types.ContentBlock{},
 		}
 
@@ -237,12 +277,14 @@ func mapMessages(messages []Message) []types.Message {
 			// Handle tool use messages
 			for _, tu := range *msg.ToolUse {
 				if tu.Type == ToolUseTypeRequest {
+					toolUseInput := make(map[string]any)
+					json.Unmarshal([]byte(tu.Request.Text), &toolUseInput)
 					// Add tool use request
 					typesMsg.Content = append(typesMsg.Content, &types.ContentBlockMemberToolUse{
 						Value: types.ToolUseBlock{
 							ToolUseId: &tu.ID,
 							Name:      &tu.Name,
-							Input:     document.NewLazyDocument(tu.Request.Text),
+							Input:     document.NewLazyDocument(toolUseInput),
 						},
 					})
 				} else if tu.Type == ToolUseTypeResponse && tu.Response != nil {

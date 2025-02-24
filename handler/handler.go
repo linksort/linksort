@@ -5,10 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	"github.com/linksort/linksort/analyze"
+	"github.com/linksort/linksort/assistant"
 	"github.com/linksort/linksort/controller"
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/handler/conversation"
@@ -37,6 +39,13 @@ type Config struct {
 	Analyzer interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
 		Summarize(context.Context, string) (string, error)
+	}
+	BedrockClient interface {
+		ConverseStream(
+			ctx context.Context,
+			params *bedrockruntime.ConverseStreamInput,
+			optFns ...func(*bedrockruntime.Options),
+		) (*bedrockruntime.ConverseStreamOutput, error)
 	}
 	FrontendProxyHostname string
 	FrontendProxyPort     string
@@ -67,6 +76,11 @@ func New(c *Config) http.Handler {
 	conversationC := &controller.Conversation{
 		UserStore:         c.UserStore,
 		ConversationStore: c.ConversationStore,
+		AssistantClient: &assistant.Client{
+			LinkController:   linkC,
+			FolderController: folderC,
+			BedrockClient:    c.BedrockClient,
+		},
 	}
 
 	// API Routes
