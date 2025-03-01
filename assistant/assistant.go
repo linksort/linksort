@@ -58,7 +58,7 @@ func (c *Client) NewAssistant(u *model.User) *Assistant {
 			{
 				Role:      agent.RoleUser,
 				IsToolUse: false,
-				Text:      aws.String("Hi"),
+				Text:      aws.String("What can you tell me about the most recent link I saved?"),
 			},
 		},
 		Tools: []agent.Tool{
@@ -99,7 +99,7 @@ func (a *Assistant) Act(ctx context.Context) error {
 	return a.agent.Act(ctx)
 }
 
-func (a *Assistant) Stream() chan string {
+func (a *Assistant) Stream() chan any {
 	return a.agent.Stream
 }
 

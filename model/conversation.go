@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/linksort/linksort/agent"
 )
 
 type Conversation struct {
@@ -24,7 +26,9 @@ type Message struct {
 	SequenceNumber int                `json:"sequenceNumber"`
 	CreatedAt      time.Time          `json:"createdAt"`
 	Role           string             `json:"role" validate:"required,oneof=user assistant"`
-	Text           string             `json:"text"`
+	Text           *string            `json:"text,omitempty"`
+	IsToolUse      bool               `json:"isToolUse"`
+	ToolUse        *[]agent.ToolUse   `json:"toolUse,omitempty"`
 }
 
 type ConverseEvent struct {
@@ -36,4 +40,38 @@ type ConversationStore interface {
 	PutMessages(context.Context, *Conversation, []*Message) ([]*Message, error)
 	GetConversationByID(context.Context, string, *Pagination) (*Conversation, error)
 	GetConversationsByUser(context.Context, *User, *Pagination) ([]*Conversation, error)
+}
+
+func MapToModelMessage(msg agent.Message) *Message {
+	var role string
+	switch msg.Role {
+	case agent.RoleUser:
+		role = "user"
+	case agent.RoleAssistant:
+		role = "assistant"
+	}
+
+	return &Message{
+		Role:      role,
+		Text:      msg.Text,
+		IsToolUse: msg.IsToolUse,
+		ToolUse:   msg.ToolUse,
+	}
+}
+
+func MapToAgentMessage(msg *Message) agent.Message {
+	var role agent.Role
+	switch msg.Role {
+	case "user":
+		role = agent.RoleUser
+	case "assistant":
+		role = agent.RoleAssistant
+	}
+
+	return agent.Message{
+		Role:      role,
+		Text:      msg.Text,
+		IsToolUse: msg.IsToolUse,
+		ToolUse:   msg.ToolUse,
+	}
 }

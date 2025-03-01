@@ -100,7 +100,7 @@ func (s *ConversationStore) GetConversationByID(ctx context.Context, id string, 
 func (s *ConversationStore) PutMessages(ctx context.Context, conv *model.Conversation, msgs []*model.Message) ([]*model.Message, error) {
 	op := errors.Op("ConversationStore.PutMessages")
 
-	if len(msgs) != 2 {
+	if len(msgs) % 2 != 0 {
 		return nil, errors.E(op, errors.Str("messages must be in pairs"))
 	}
 
@@ -118,6 +118,9 @@ func (s *ConversationStore) PutMessages(ctx context.Context, conv *model.Convers
 		for i, msg := range msgs {
 			msg.ConversationID = freshConv.Key.Hex()
 			msg.SequenceNumber = freshConv.Length
+			if msg.CreatedAt.IsZero() {
+				msg.CreatedAt = time.Now()
+			}
 			msg.Key = primitive.NewObjectID()
 			msg.ID = msg.Key.Hex()
 			documents[i] = msg

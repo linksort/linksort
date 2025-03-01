@@ -15,7 +15,7 @@ type Agent struct {
 	System   string
 	Messages []Message
 	Tools    []Tool
-	Stream   chan string
+	Stream   chan any
 	Client   interface {
 		ConverseStream(
 			ctx context.Context,
@@ -54,13 +54,13 @@ const (
 )
 
 type ToolUse struct {
-	ID   string
-	Name string
+	ID   string `json:"id"`
+	Name string `json:"name"`
 	// If ToolUseType is "request", then the Request field must be populated.
 	// If ToolUseType is "response", then the Response field must be populated.
-	Type     ToolUseType
-	Request  *ToolUseRequest
-	Response *ToolUseResponse
+	Type     ToolUseType      `json:"type"`
+	Request  *ToolUseRequest  `json:"request,omitempty"`
+	Response *ToolUseResponse `json:"response,omitempty"`
 }
 
 type ToolUseType string
@@ -71,12 +71,12 @@ const (
 )
 
 type ToolUseRequest struct {
-	Text string
+	Text string `json:"text"`
 }
 
 type ToolUseResponse struct {
-	Status ToolUseStatus
-	Text   string
+	Status ToolUseStatus `json:"status"`
+	Text   string        `json:"text"`
 }
 
 type ToolUseStatus string
@@ -103,7 +103,7 @@ func New(c Config) *Agent {
 		System:   c.System,
 		Tools:    c.Tools,
 		Messages: c.Messages,
-		Stream:   make(chan string),
+		Stream:   make(chan any),
 		Client:   c.Client,
 	}
 }
@@ -213,6 +213,8 @@ func (a *Agent) Act(ctx context.Context) error {
 		}
 
 		a.Messages = append(a.Messages, nextMessage)
+		// Send completed message to the stream
+		a.Stream <- nextMessage
 
 		if nextMessage.IsToolUse {
 			toolUseList := make([]ToolUse, 0)
@@ -255,6 +257,8 @@ func (a *Agent) Act(ctx context.Context) error {
 			}
 
 			a.Messages = append(a.Messages, toolUseResponseMessage)
+			// Send tool response message to the stream
+			a.Stream <- toolUseResponseMessage
 		}
 
 		iterations++
