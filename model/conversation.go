@@ -20,7 +20,7 @@ type Conversation struct {
 type Message struct {
 	Key            primitive.ObjectID `json:"-" bson:"_id,omitempty"`
 	ID             string             `json:"id"`
-	ConversationID string             `json:"-"`
+	ConversationID string             `json:"-" bson:"conversationid"`
 	SequenceNumber int                `json:"sequenceNumber"`
 	CreatedAt      time.Time          `json:"createdAt"`
 	Role           string             `json:"role" validate:"required,oneof=user assistant"`

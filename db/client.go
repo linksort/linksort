@@ -103,5 +103,15 @@ func SetupIndexes(ctx context.Context, client *mongo.Client) error {
 		},
 	})
 
+	_, err = client.Database("test").
+		Collection("messages").
+		Indexes().CreateMany(ctx, []mongo.IndexModel{
+		{
+			Keys: bson.D{
+				primitive.E{Key: "conversationid", Value: 1},
+			},
+		},
+	})
+
 	return errors.Wrap(op, err)
 }

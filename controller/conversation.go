@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/linksort/linksort/assistant"
@@ -91,22 +92,72 @@ func (c *Conversation) Converse(
 ) (<-chan *model.ConverseEvent, error) {
 	op := errors.Op("controller.Converse")
 
-	_, err := c.GetConversation(ctx, usr, req.ID, &model.Pagination{})
+	// Get the conversation to ensure it exists and belongs to user
+	conversation, err := c.GetConversation(ctx, usr, req.ID, &model.Pagination{})
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
 
+	// Create user message
+	userMessage := &model.Message{
+		ConversationID: req.ID,
+		Role:           "user",
+		Text:           req.Message,
+		CreatedAt:      time.Now(),
+	}
+
+	// Create placeholder for assistant message, will be updated after generation
+	assistantMessage := &model.Message{
+		ConversationID: req.ID,
+		Role:           "assistant",
+		Text:           "", // Will be built incrementally as assistant produces content
+		CreatedAt:      time.Now(),
+	}
+
+	// Create a new assistant
 	asst := c.AssistantClient.NewAssistant(usr)
+
+	// Create output channel
 	outC := make(chan *model.ConverseEvent)
+
+	var assistantText strings.Builder
+
+	// Process assistant output in a goroutine
 	go func() {
 		defer close(outC)
+
+		// Start the assistant
 		err := asst.Act(ctx)
 		if err != nil {
 			log.AlarmWithContext(ctx, errors.Strf("error calling assistant.Act: %v", err))
 		}
+
+		// After all events, update the assistant message with full text
+		assistantMessage.Text = assistantText.String()
+
+		if len(assistantMessage.Text) == 0 {
+			assistantMessage.Text = "It seems that, due to a technical issue, I failed to complete my task. I am very sorry."
+		}
+
+		// Save both messages
+		updateMessages := []*model.Message{
+			userMessage,
+			assistantMessage,
+		}
+
+		_, err = c.ConversationStore.PutMessages(ctx, conversation, updateMessages)
+		if err != nil {
+			log.AlarmWithContext(ctx, errors.Strf("failed to update assistant message: %v", err))
+		}
 	}()
+
+	// Stream events to the client in a separate goroutine
 	go func() {
 		for event := range asst.Stream() {
+			// Build the assistant's response text incrementally
+			assistantText.WriteString(event)
+
+			// Send the event to the client
 			outC <- &model.ConverseEvent{
 				TextDelta: event,
 			}

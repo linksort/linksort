@@ -58,7 +58,7 @@ func (c *Client) NewAssistant(u *model.User) *Assistant {
 			{
 				Role:      agent.RoleUser,
 				IsToolUse: false,
-				Text:      aws.String("Help me organize the most recent link's I've saved."),
+				Text:      aws.String("Hi"),
 			},
 		},
 		Tools: []agent.Tool{

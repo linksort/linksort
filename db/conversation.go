@@ -83,8 +83,9 @@ func (s *ConversationStore) GetConversationByID(ctx context.Context, id string, 
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
+	defer cur.Close(ctx)
 
-	messages := make([]*model.Message, 0, cur.RemainingBatchLength())
+	messages := make([]*model.Message, cur.RemainingBatchLength())
 	if err := cur.All(ctx, &messages); err != nil {
 		return nil, errors.E(op, err)
 	}
@@ -112,15 +113,15 @@ func (s *ConversationStore) PutMessages(ctx context.Context, conv *model.Convers
 		}
 
 		freshConv.UpdatedAt = time.Now()
-		freshConv.Length = freshConv.Length + 2
 
 		documents := make([]interface{}, len(msgs))
 		for i, msg := range msgs {
-			msg.ConversationID = freshConv.ID
-			msg.SequenceNumber = freshConv.Length - i
+			msg.ConversationID = freshConv.Key.Hex()
+			msg.SequenceNumber = freshConv.Length
 			msg.Key = primitive.NewObjectID()
 			msg.ID = msg.Key.Hex()
 			documents[i] = msg
+			freshConv.Length++
 		}
 
 		_, err := s.messCol.InsertMany(sessCtx, documents)
