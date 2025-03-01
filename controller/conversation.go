@@ -101,7 +101,7 @@ func (c *Conversation) Converse(
 	messages := make([]*model.Message, 0)
 
 	// Create user message
-	userMessage := &model.Message{
+	newMessage := &model.Message{
 		ConversationID: req.ID,
 		Role:           "user",
 		Text:           &req.Message,
@@ -110,10 +110,10 @@ func (c *Conversation) Converse(
 	}
 
 	// Append to list of messages
-	messages = append(messages, userMessage)
+	messages = append(messages, newMessage)
 
 	// Create a new assistant
-	asst := c.AssistantClient.NewAssistant(usr)
+	asst := c.AssistantClient.NewAssistant(usr, conversation, newMessage)
 
 	// Create output channel
 	outC := make(chan *model.ConverseEvent)

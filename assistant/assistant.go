@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 
 	"github.com/linksort/linksort/agent"
@@ -51,16 +50,21 @@ type Client struct {
 	}
 }
 
-func (c *Client) NewAssistant(u *model.User) *Assistant {
+func (c *Client) NewAssistant(u *model.User, conv *model.Conversation, userMsg *model.Message) *Assistant {
+	// Convert existing conversation messages to agent messages
+	messages := []agent.Message{}
+
+	// First add existing conversation messages if any
+	for _, msg := range conv.Messages {
+		messages = append(messages, model.MapToAgentMessage(msg))
+	}
+
+	// Then add the new user message
+	messages = append(messages, model.MapToAgentMessage(userMsg))
+
 	return &Assistant{agent.New(agent.Config{
 		System: fmt.Sprintf(agenticSystemPrompt, userSummary(u)),
-		Messages: []agent.Message{
-			{
-				Role:      agent.RoleUser,
-				IsToolUse: false,
-				Text:      aws.String("What can you tell me about the most recent link I saved?"),
-			},
-		},
+		Messages: messages,
 		Tools: []agent.Tool{
 			&GetLinksTool{
 				User:           u,
