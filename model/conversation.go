@@ -32,7 +32,15 @@ type Message struct {
 }
 
 type ConverseEvent struct {
-	TextDelta string `json:"textDelta"`
+	TextDelta    *string       `json:"textDelta,omitempty"`
+	ToolUseDelta *ToolUseDelta `json:"toolUseDelta,omitempty"`
+}
+
+type ToolUseDelta struct {
+	ID     string  `json:"id"`
+	Name   string  `json:"name"`
+	Type   string  `json:"type"`
+	Status *string `json:"status,omitempty"`
 }
 
 type ConversationStore interface {

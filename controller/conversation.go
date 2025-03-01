@@ -136,13 +136,37 @@ func (c *Conversation) Converse(
 			case string:
 				// Send the text delta to the client
 				outC <- &model.ConverseEvent{
-					TextDelta: event,
+					TextDelta: &event,
 				}
 			case agent.Message:
 				msg := model.MapToModelMessage(event)
 				msg.CreatedAt = time.Now()
 				// Append to our list of messages
 				messages = append(messages, msg)
+
+				// If this message is a tool use, send a ToolUseDelta event
+				if msg.IsToolUse && msg.ToolUse != nil && len(*msg.ToolUse) > 0 {
+					// For each tool use in the message
+					for _, toolUse := range *msg.ToolUse {
+						// Create a tool use delta event
+						toolUseDelta := &model.ToolUseDelta{
+							ID:   toolUse.ID,
+							Name: toolUse.Name,
+							Type: string(toolUse.Type),
+						}
+						
+						// If it's a response, include the status
+						if toolUse.Type == agent.ToolUseTypeResponse && toolUse.Response != nil {
+							status := string(toolUse.Response.Status)
+							toolUseDelta.Status = &status
+						}
+						
+						// Send the event
+						outC <- &model.ConverseEvent{
+							ToolUseDelta: toolUseDelta,
+						}
+					}
+				}
 			default:
 				// Unknown event type, log it
 				log.AlarmWithContext(ctx, errors.Strf("unknown event type from assistant stream: %T", event))
