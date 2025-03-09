@@ -16,26 +16,26 @@ type Agent struct {
 	Messages []Message
 	Tools    []Tool
 	Stream   chan any
-	Client   interface {
-		ConverseStream(
-			ctx context.Context,
-			params *bedrockruntime.ConverseStreamInput,
-			optFns ...func(*bedrockruntime.Options),
-		) (*bedrockruntime.ConverseStreamOutput, error)
-	}
+	Client   ConverseStreamProvider
+}
+
+type ConverseStreamProvider interface {
+	ConverseStream(
+		ctx context.Context,
+		params *bedrockruntime.ConverseStreamInput,
+		optFns ...func(*bedrockruntime.Options),
+	) (ConverseStreamOutputStreamGetter, error)
+}
+
+type ConverseStreamOutputStreamGetter interface {
+	GetStream() *bedrockruntime.ConverseStreamEventStream
 }
 
 type Config struct {
 	System   string
 	Messages []Message
 	Tools    []Tool
-	Client   interface {
-		ConverseStream(
-			ctx context.Context,
-			params *bedrockruntime.ConverseStreamInput,
-			optFns ...func(*bedrockruntime.Options),
-		) (*bedrockruntime.ConverseStreamOutput, error)
-	}
+	Client   ConverseStreamProvider
 }
 
 type Message struct {
@@ -151,8 +151,9 @@ func (a *Agent) Act(ctx context.Context) error {
 			ll.Printf("error reading from ConverseStream response: %v", err)
 			return err
 		}
+		defer respStream.Close()
 
-		for ev := range respStream.Reader.Events() {
+		for ev := range respStream.Events() {
 			switch event := ev.(type) {
 			case *types.ConverseStreamOutputMemberMessageStart:
 				switch event.Value.Role {
@@ -262,6 +263,10 @@ func (a *Agent) Act(ctx context.Context) error {
 		}
 
 		iterations++
+
+		if iterations > 16 {
+			break
+		}
 	}
 
 	return nil

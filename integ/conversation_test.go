@@ -2,12 +2,16 @@ package integ_test
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/steinfletcher/apitest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 
+	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/testutil"
 )
 
@@ -186,6 +190,134 @@ func TestGetConversations(t *testing.T) {
 			test.Expect(t).
 				Status(tt.ExpectStatus).
 				End()
+		})
+	}
+}
+
+func TestConverse(t *testing.T) {
+	ctx := context.Background()
+	existingUser, _ := testutil.NewUser(t, ctx)
+	otherUser, _ := testutil.NewUser(t, ctx)
+
+	// Create a test conversation first
+	conv, err := testutil.NewConversation(t, ctx, existingUser)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		Name           string
+		GivenSessionID string
+		GivenID        string
+		GivenMessage   string
+		ExpectStatus   int
+		ExpectEvents   bool
+	}{
+		{
+			Name:           "success",
+			GivenSessionID: existingUser.SessionID,
+			GivenID:        conv.ID,
+			GivenMessage:   "Hello, assistant!",
+			ExpectStatus:   http.StatusOK,
+			ExpectEvents:   true,
+		},
+		{
+			Name:           "unauthorized",
+			GivenSessionID: "invalid-session-id",
+			GivenID:        conv.ID,
+			GivenMessage:   "Hello, assistant!",
+			ExpectStatus:   http.StatusUnauthorized,
+			ExpectEvents:   false,
+		},
+		{
+			Name:           "not found",
+			GivenSessionID: existingUser.SessionID,
+			GivenID:        "nonexistent-id",
+			GivenMessage:   "Hello, assistant!",
+			ExpectStatus:   http.StatusNotFound,
+			ExpectEvents:   false,
+		},
+		{
+			Name:           "conversation ownership",
+			GivenSessionID: otherUser.SessionID,
+			GivenID:        conv.ID,
+			GivenMessage:   "Hello, assistant!",
+			ExpectStatus:   http.StatusNotFound,
+			ExpectEvents:   false,
+		},
+		{
+			Name:           "empty message",
+			GivenSessionID: existingUser.SessionID,
+			GivenID:        conv.ID,
+			GivenMessage:   "",
+			ExpectStatus:   http.StatusBadRequest,
+			ExpectEvents:   false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			// Create request body
+			reqBody := map[string]string{
+				"message": tt.GivenMessage,
+			}
+			jsonBody, _ := json.Marshal(reqBody)
+
+			// For non-streaming tests, we can use apitest directly
+			if !tt.ExpectEvents {
+				apitest.New().
+					Handler(testutil.Handler()).
+					Put("/api/conversations/"+tt.GivenID+"/converse").
+					Header("X-Csrf-Token", testutil.UserCSRF(tt.GivenSessionID)).
+					Body(string(jsonBody)).
+					Cookie("session_id", tt.GivenSessionID).
+					Expect(t).
+					Status(tt.ExpectStatus).
+					End()
+				return
+			}
+
+			// For streaming tests, we need to use httptest directly
+			req := httptest.NewRequest(
+				http.MethodPut,
+				"/api/conversations/"+tt.GivenID+"/converse",
+				strings.NewReader(string(jsonBody)),
+			)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("X-Csrf-Token", testutil.UserCSRF(tt.GivenSessionID))
+			req.AddCookie(&http.Cookie{Name: "session_id", Value: tt.GivenSessionID})
+
+			recorder := httptest.NewRecorder()
+			testutil.Handler().ServeHTTP(recorder, req)
+
+			resp := recorder.Result()
+			defer resp.Body.Close()
+
+			// Check status code
+			if recorder.Code != tt.ExpectStatus {
+				t.Errorf("Expected status %d, got %d", tt.ExpectStatus, recorder.Code)
+				return
+			}
+
+			// For streaming responses, verify we get at least one event
+			if tt.ExpectEvents {
+				responseBody := recorder.Body.String()
+
+				// Check if we received any events
+				// We should at least have one event with either textDelta or toolUseDelta
+				var event model.ConverseEvent
+				err := json.Unmarshal([]byte(strings.Split(responseBody, "\n")[0]), &event)
+
+				if err != nil {
+					t.Errorf("Failed to parse event: %v", err)
+					return
+				}
+
+				// Verify we got either a textDelta or toolUseDelta
+				if event.TextDelta == nil && event.ToolUseDelta == nil {
+					t.Errorf("Expected either textDelta or toolUseDelta in event, got neither")
+				}
+			}
 		})
 	}
 }

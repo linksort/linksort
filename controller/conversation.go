@@ -93,7 +93,7 @@ func (c *Conversation) Converse(
 	op := errors.Op("controller.Converse")
 
 	// Get the conversation to ensure it exists and belongs to user
-	conversation, err := c.GetConversation(ctx, usr, req.ID, &model.Pagination{})
+	conversation, err := c.GetConversation(ctx, usr, req.ID, &model.Pagination{Page: 0, Size: 32})
 	if err != nil {
 		return nil, errors.E(op, err)
 	}

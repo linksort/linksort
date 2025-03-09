@@ -77,7 +77,7 @@ func (s *ConversationStore) GetConversationByID(ctx context.Context, id string, 
 	conv.Key = docID
 
 	cur, err := s.messCol.Find(ctx, bson.M{"conversationid": id}, options.Find().
-		SetSort(bson.D{{Key: "sequencenumber", Value: 1}}).
+		SetSort(bson.D{{Key: "sequencenumber", Value: -1}}).
 		SetLimit(int64(p.Limit())).
 		SetSkip(int64(p.Offset())))
 	if err != nil {
@@ -92,6 +92,12 @@ func (s *ConversationStore) GetConversationByID(ctx context.Context, id string, 
 	for i := range messages {
 		messages[i].ID = messages[i].Key.Hex()
 	}
+
+	// Reverse the order of messages in the slice
+	for i, j := 0, len(messages)-1; i < j; i, j = i+1, j-1 {
+		messages[i], messages[j] = messages[j], messages[i]
+	}
+
 	conv.Messages = messages
 
 	return conv, nil
@@ -100,7 +106,7 @@ func (s *ConversationStore) GetConversationByID(ctx context.Context, id string, 
 func (s *ConversationStore) PutMessages(ctx context.Context, conv *model.Conversation, msgs []*model.Message) ([]*model.Message, error) {
 	op := errors.Op("ConversationStore.PutMessages")
 
-	if len(msgs) % 2 != 0 {
+	if len(msgs)%2 != 0 {
 		return nil, errors.E(op, errors.Str("messages must be in pairs"))
 	}
 

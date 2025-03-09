@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
-
 	"github.com/linksort/linksort/agent"
 	"github.com/linksort/linksort/handler/folder"
 	"github.com/linksort/linksort/handler/link"
@@ -41,13 +39,7 @@ type Client struct {
 		UpdateFolder(context.Context, *model.User, *folder.UpdateFolderRequest) (*model.User, error)
 		DeleteFolder(context.Context, *model.User, string) (*model.User, error)
 	}
-	BedrockClient interface {
-		ConverseStream(
-			ctx context.Context,
-			params *bedrockruntime.ConverseStreamInput,
-			optFns ...func(*bedrockruntime.Options),
-		) (*bedrockruntime.ConverseStreamOutput, error)
-	}
+	BedrockClient agent.ConverseStreamProvider
 }
 
 func (c *Client) NewAssistant(u *model.User, conv *model.Conversation, userMsg *model.Message) *Assistant {

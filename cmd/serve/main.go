@@ -15,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/getsentry/raven-go"
 
+	"github.com/linksort/linksort/agent"
 	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/email"
@@ -101,7 +102,7 @@ func main() {
 			Magic:                 magic.New(getenv("APP_SECRET", "")),
 			Email:                 email.New(getenv("MAILGUN_KEY", "")),
 			Analyzer:              analyzer,
-			BedrockClient:         bedrockClient,
+			BedrockClient:         agent.AdaptBedrock(bedrockClient),
 			FrontendProxyHostname: getenv("FRONTEND_HOSTNAME", "localhost"),
 			FrontendProxyPort:     getenv("FRONTEND_PORT", "3000"),
 			IsProd:                isProd,

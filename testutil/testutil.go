@@ -79,6 +79,7 @@ func Handler() http.Handler {
 			Magic:             _magic,
 			Email:             _email,
 			Analyzer:          analyze.NewTestClient(),
+			BedrockClient:     &MockBedrockClient{},
 		})
 	})
 

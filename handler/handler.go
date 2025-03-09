@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
+	"github.com/linksort/linksort/agent"
 	"github.com/linksort/linksort/analyze"
 	"github.com/linksort/linksort/assistant"
 	"github.com/linksort/linksort/controller"
@@ -40,13 +40,7 @@ type Config struct {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
 		Summarize(context.Context, string) (string, error)
 	}
-	BedrockClient interface {
-		ConverseStream(
-			ctx context.Context,
-			params *bedrockruntime.ConverseStreamInput,
-			optFns ...func(*bedrockruntime.Options),
-		) (*bedrockruntime.ConverseStreamOutput, error)
-	}
+	BedrockClient         agent.ConverseStreamProvider
 	FrontendProxyHostname string
 	FrontendProxyPort     string
 	IsProd                bool
