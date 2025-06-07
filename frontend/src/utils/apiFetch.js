@@ -2,7 +2,7 @@ import CSRFStore from "./csrf";
 
 const API_ORIGIN = "";
 
-const csrfStore = new CSRFStore();
+export const csrfStore = new CSRFStore();
 
 class ApiError extends Error {
   constructor(json) {

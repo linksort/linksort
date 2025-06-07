@@ -145,7 +145,7 @@ export default function LinkView() {
           "calc(100vw)",
           "calc(100vw)",
           "calc(100vw)",
-          "calc(100vw - 18rem)",
+          "calc(100vw - 18rem - 25rem)",
         ]}
         translateY={scrollDirection === "DOWN" ? "-6rem" : "0"}
         transform="auto"
@@ -289,7 +289,7 @@ export default function LinkView() {
               <Heading as="h6" fontSize="sm">
                 Summary
               </Heading>
-              {hasSummary && link.summary.length > 0 ? (
+              {hasSummary && link && link.summary && link.summary.length > 0 ? (
                 <Box className="prose prose-serif" dangerouslySetInnerHTML={{ __html: link.summary }} />
               ) : (
                 <>

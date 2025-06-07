@@ -81,7 +81,7 @@ export default function Header() {
         "calc(100vw)",
         "calc(100vw)",
         "calc(100vw)",
-        "calc(100vw - 18rem)",
+        "calc(100vw - 18rem - 25rem)",
       ]}
     >
       <Flex

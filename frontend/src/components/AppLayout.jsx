@@ -3,6 +3,7 @@ import { Grid, GridItem, Container, Box } from "@chakra-ui/react";
 
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import ChatSidepanel from "./ChatSidepanel";
 import { HEADER_HEIGHT } from "../theme/theme";
 
 export default function AppLayout({ children }) {
@@ -12,7 +13,7 @@ export default function AppLayout({ children }) {
         maxWidth="100%"
         width="100%"
         minHeight="100vh"
-        templateColumns={["1fr", "1fr", "1fr", "1fr", "18rem 1fr"]}
+        templateColumns={["1fr", "1fr", "1fr", "1fr", "18rem 1fr 25rem"]}
       >
         <GridItem
           height="100%"
@@ -29,7 +30,7 @@ export default function AppLayout({ children }) {
             "calc(100vw)",
             "calc(100vw)",
             "calc(100vw)",
-            "calc(100vw - 18rem)",
+            "calc(100vw - 18rem - 25rem)",
           ]}
         >
           <Box
@@ -44,6 +45,13 @@ export default function AppLayout({ children }) {
           <Box as="main" marginTop={HEADER_HEIGHT} marginX="auto" width="100%">
             {children}
           </Box>
+        </GridItem>
+        <GridItem
+          width="25rem"
+          height="100vh"
+          display={["none", "none", "none", "none", "block"]}
+        >
+          <ChatSidepanel />
         </GridItem>
       </Grid>
     </Container>
