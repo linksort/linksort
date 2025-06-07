@@ -25,17 +25,17 @@ export default function ChatSidepanel() {
           borderBottom="1px"
           borderBottomColor="gray.100"
         >
-        <HStack
-          width="100%"
-          p={4}
-          justify="center"
-          height={HEADER_HEIGHT}
-        >
-          <Heading as="h3" fontWeight="bold" fontSize="lg">
-            Chat
-          </Heading>
-        </HStack>
-</Box>
+          <HStack
+            width="100%"
+            p={4}
+            justify="center"
+            height={HEADER_HEIGHT}
+          >
+            <Heading as="h3" fontWeight="bold" fontSize="lg">
+              Chat
+            </Heading>
+          </HStack>
+        </Box>
 
         {/* Messages Area */}
         <MessageList
