@@ -35,6 +35,7 @@ export default function MessageInput({ onSendMessage, isLoading, isStreaming, on
         <Flex gap={2} align="flex-end">
           <Box flex={1}>
             <Textarea
+              width="100%"
               display="block"
               value={message}
               onChange={(e) => setMessage(e.target.value)}

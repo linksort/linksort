@@ -12,7 +12,7 @@ import {
   Button,
   HStack,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, ChatIcon } from "@chakra-ui/icons";
 import { useParams, useRouteMatch } from "react-router-dom";
 
 import TopRightUserMenu from "./TopRightUserMenu";
@@ -21,12 +21,15 @@ import { HEADER_HEIGHT } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
 import { useLink } from "../hooks/links";
 import Sidebar from "./Sidebar";
+import ChatSidepanel from "./ChatSidepanel"
 import GiveFeedbackButton from "./GiveFeedbackButton";
 import { useScrollPosition } from "../hooks/utils";
 
 export default function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = useRef();
+  const { isOpen: isChatOpen, onOpen: onChatOpen, onClose: onChatClose } = useDisclosure();
+  const chatButtonRef = useRef();
   const { folderName, areFavoritesShowing, searchQuery, tagPath, userTagPath } =
     useFilters();
   const isSearching = searchQuery && searchQuery.length > 0;
@@ -140,6 +143,18 @@ export default function Header() {
             zIndex={10}
             icon={<HamburgerIcon />}
           />
+          <IconButton
+            id="mobile-nav"
+            display={["flex", "flex", "flex", "flex", "none"]}
+            borderRadius="none"
+            ref={chatButtonRef}
+            onClick={onChatOpen}
+            aria-label="nav"
+            zIndex={10}
+            borderLeftColor="gray.200"
+            borderLeftWidth="thin"
+            icon={<ChatIcon />}
+          />
           <TopRightUserMenu isMobile={true} />
         </Stack>
       </Flex>
@@ -155,6 +170,20 @@ export default function Header() {
           <Sidebar width="100%" isMobile={true} />
         </DrawerContent>
       </Drawer>
+
+      <Drawer
+        isOpen={isChatOpen}
+        placement="right"
+        onClose={onChatClose}
+        finalFocusRef={chatButtonRef}
+        autoFocus={false}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <ChatSidepanel />
+        </DrawerContent>
+      </Drawer>
+
     </Box>
   );
 }

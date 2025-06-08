@@ -14,7 +14,6 @@ export default function ChatSidepanel() {
     <Box
       position="fixed"
       height="100vh"
-      width="25rem"
       bg="white"
       borderLeft="1px"
       borderLeftColor="gray.100"

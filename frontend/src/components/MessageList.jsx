@@ -13,8 +13,10 @@ My core purpose is to help you:
 
 To get started, you might try asking me to:
 - Summarize your most recently saved links.
-- Ask about the key points of any articles you've saved. Or talk with an article.
-- Recommend a restaurant on the basis of the links you've saved.
+- Answer questions about articles and their content.
+- Organize your recently saved links into folders.
+- Explain my other features.
+- Or just say hi :)
 `
 
 // Helper function to group messages for proper display with ordered content
@@ -96,6 +98,12 @@ export default function MessageList({ messages = [], streamingResponse, isStream
   // Show empty state if no messages
   if (groupedMessages.length === 0 && !isStreaming) {
     return (
+    <Box
+      flex={1}
+      overflowY="auto"
+      py={4}
+      width="100%"
+    >
       <Box flex={1} display="flex" py={4} width="100%">
         <MessageItem
           message={{
@@ -105,6 +113,7 @@ export default function MessageList({ messages = [], streamingResponse, isStream
             isStreaming: false
           }}
         />
+      </Box>
       </Box>
     );
   }
