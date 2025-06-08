@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Text, Flex, Avatar, HStack, Spinner } from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, Spinner } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 
 // Helper component to render tool usage status
@@ -44,56 +44,115 @@ function ToolUseIndicator({ toolUse }) {
   );
 }
 
+// Helper to process tool use pairs and get final status
+function processToolUsePairs(toolUses) {
+  const toolMap = new Map();
+  
+  toolUses.forEach(toolUse => {
+    const existing = toolMap.get(toolUse.id);
+    
+    if (!existing) {
+      toolMap.set(toolUse.id, {
+        id: toolUse.id,
+        name: toolUse.name,
+        status: toolUse.type === 'request' ? 'pending' : (toolUse.response?.status || 'success')
+      });
+    } else {
+      // Update with response status if this is a response
+      if (toolUse.type === 'response') {
+        existing.status = toolUse.response?.status || 'success';
+      }
+    }
+  });
+  
+  return toolMap;
+}
+
 export default function MessageItem({ message }) {
   const isUser = message.role === "user";
-  
-  // Process tool uses to get final status for each tool
-  const processToolUses = (toolUses) => {
-    const toolMap = new Map();
+
+  // For messages with content array (grouped or streaming), render inline
+  if (message.content && Array.isArray(message.content) && message.content.length > 0) {
+    // For streaming messages, use tool use status directly
+    // For grouped messages, process tool use pairs for final status
+    const isStreamingMessage = message.isStreaming;
+    let toolStatusMap = new Map();
     
-    toolUses.forEach(toolUse => {
-      const existing = toolMap.get(toolUse.id);
-      
-      if (!existing) {
-        toolMap.set(toolUse.id, {
-          id: toolUse.id,
-          name: toolUse.name,
-          status: toolUse.type === 'request' ? 'pending' : (toolUse.response?.status || 'success')
-        });
-      } else {
-        // Update with response status if this is a response
-        if (toolUse.type === 'response') {
-          existing.status = toolUse.response?.status || 'success';
-        }
-      }
-    });
-    
-    return Array.from(toolMap.values());
-  };
-  
-  // Combine all tool uses from different sources
-  let combinedToolUses = [];
-  let finalToolUses = [];
-  
-  // For grouped messages, use allToolUses directly
-  if (message.allToolUses) {
-    combinedToolUses = message.allToolUses;
+    if (!isStreamingMessage) {
+      // Process all tool uses in grouped messages to get final statuses
+      const allToolUses = message.content.filter(c => c.type === 'toolUse').map(c => c.toolUse);
+      toolStatusMap = processToolUsePairs(allToolUses);
+    }
+
+    return (
+      <Flex
+        direction={isUser ? "row-reverse" : "row"}
+        align="flex-start"
+        gap={3}
+        px={4}
+      >
+        <Box
+          bg={isUser ? "brand.500" : "gray.50"}
+          borderRadius="lg"
+          px={4}
+          py={3}
+          maxWidth="90%"
+          wordBreak="break-word"
+          border="1px"
+          borderColor={isUser ? "brand.500" : "gray.200"}
+          color={isUser ? "white" : "default"}
+        >
+          {message.content.length === 0 && (
+            <Spinner size="xs" color="blue.500" />
+          )}
+          {message.content.map((contentItem, index) => {
+            if (contentItem.type === 'text') {
+              return (
+                <Text key={index} fontSize="sm" lineHeight="1.5" whiteSpace="pre-wrap">
+                  {contentItem.content.trim()}
+                </Text>
+              );
+            } else if (contentItem.type === 'toolUse') {
+              const toolUse = contentItem.toolUse;
+              
+              if (isStreamingMessage) {
+                // For streaming, show tool use as-is (status updates in real-time)
+                return (
+                  <Box key={index} my={2}>
+                    <ToolUseIndicator toolUse={toolUse} />
+                  </Box>
+                );
+              } else {
+                // For grouped messages, only show requests with their final status
+                const finalStatus = toolStatusMap.get(toolUse.id);
+                if (toolUse.type === 'request' && finalStatus) {
+                  return (
+                    <Box key={index} my={2}>
+                      <ToolUseIndicator toolUse={finalStatus} />
+                    </Box>
+                  );
+                }
+              }
+            }
+            return null;
+          })}
+        </Box>
+      </Flex>
+    );
   }
+
+  // Fallback for legacy message structure (streaming and old messages)
+  let displayToolUses = [];
   
-  // Add persisted tool uses (from saved messages - for non-grouped)
-  if (message.isToolUse && message.toolUse) {
-    combinedToolUses = [...combinedToolUses, ...message.toolUse];
-  }
-  
-  // Process persisted tool uses to get final status
-  if (combinedToolUses.length > 0) {
-    finalToolUses = processToolUses(combinedToolUses);
-  }
-  
-  // Add streaming tool uses (from live streaming) - these are already processed
+  // Handle streaming messages
   if (message.streamingToolUses) {
-    const streamingTools = Object.values(message.streamingToolUses);
-    finalToolUses = [...finalToolUses, ...streamingTools];
+    displayToolUses = Object.values(message.streamingToolUses);
+  }
+  
+  // Handle persisted tool uses
+  if (message.isToolUse && message.toolUse) {
+    const toolStatusMap = processToolUsePairs(message.toolUse);
+    displayToolUses = Array.from(toolStatusMap.values());
   }
 
   return (
@@ -101,27 +160,23 @@ export default function MessageItem({ message }) {
       direction={isUser ? "row-reverse" : "row"}
       align="flex-start"
       gap={3}
-      mb={4}
       px={4}
     >
-      <Avatar
-        size="sm"
-        name={isUser ? "You" : "AI"}
-        bg={isUser ? "brand.500" : "gray.500"}
-        color="white"
-        flexShrink={0}
-      />
       <Box
         bg={isUser ? "brand.500" : "gray.50"}
         borderRadius="lg"
         px={4}
         py={3}
-        maxWidth="75%"
+        maxWidth="90%"
         wordBreak="break-word"
         border="1px"
         borderColor={isUser ? "brand.500" : "gray.200"}
         color={isUser ? "white" : "default"}
       >
+        {message.text.length === 0 && (
+          <Spinner size="xs" color="blue.500" />
+        )}
+
         {message.text && (
           <Text fontSize="sm" lineHeight="1.5" whiteSpace="pre-wrap">
             {message.text}
@@ -129,9 +184,9 @@ export default function MessageItem({ message }) {
         )}
         
         {/* Render tool usage indicators inline */}
-        {finalToolUses.length > 0 && (
+        {displayToolUses.length > 0 && (
           <Box mt={message.text ? 2 : 0}>
-            {finalToolUses.map((toolUse) => (
+            {displayToolUses.map((toolUse) => (
               <ToolUseIndicator key={toolUse.id} toolUse={toolUse} />
             ))}
           </Box>

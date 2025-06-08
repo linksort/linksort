@@ -1,12 +1,25 @@
 import React, { useEffect, useRef } from "react";
-import { Box, VStack, Text } from "@chakra-ui/react";
+import { Box, VStack, Text, Button, Flex } from "@chakra-ui/react";
 
 import MessageItem from "./MessageItem";
 
-// Helper function to group messages for proper display
+// Helper function to group messages for proper display with ordered content
 function groupMessages(messages) {
   const grouped = [];
   let currentGroup = null;
+
+  // Helper to add ordered content to current group
+  const addContent = (type, content, toolUse = null) => {
+    if (!currentGroup.content) {
+      currentGroup.content = [];
+    }
+    
+    if (type === 'text' && content) {
+      currentGroup.content.push({ type: 'text', content });
+    } else if (type === 'toolUse' && toolUse) {
+      currentGroup.content.push({ type: 'toolUse', toolUse });
+    }
+  };
 
   for (const message of messages) {
     if (message.role === "user" && !message.isToolUse) {
@@ -24,22 +37,23 @@ function groupMessages(messages) {
         currentGroup = {
           id: message.id,
           role: "assistant",
-          text: message.text || "",
           sequenceNumber: message.sequenceNumber,
           createdAt: message.createdAt,
-          allToolUses: [],
+          content: [],
           isGrouped: true
         };
-      } else {
-        // Continue assistant group - append text
-        if (message.text) {
-          currentGroup.text += message.text;
-        }
       }
 
-      // Add tool uses to the group
+      // Add text content if present
+      if (message.text) {
+        addContent('text', message.text);
+      }
+
+      // Add tool uses if present
       if (message.isToolUse && message.toolUse) {
-        currentGroup.allToolUses.push(...message.toolUse);
+        message.toolUse.forEach(toolUse => {
+          addContent('toolUse', null, toolUse);
+        });
       }
     }
   }
@@ -52,7 +66,7 @@ function groupMessages(messages) {
   return grouped;
 }
 
-export default function MessageList({ messages = [], streamingResponse, isStreaming }) {
+export default function MessageList({ messages = [], streamingResponse, isStreaming, handleCreateConversation }) {
   const scrollRef = useRef(null);
   
   // Group messages to combine tool use sequences
@@ -83,7 +97,7 @@ export default function MessageList({ messages = [], streamingResponse, isStream
       overflowY="auto"
       py={4}
     >
-      <VStack spacing={0} align="stretch">
+      <VStack spacing={4} align="stretch">
         {groupedMessages.map((message) => (
           <MessageItem key={message.id} message={message} />
         ))}
@@ -96,9 +110,20 @@ export default function MessageList({ messages = [], streamingResponse, isStream
               role: "assistant",
               text: streamingResponse.text,
               streamingToolUses: streamingResponse.toolUses,
+              content: streamingResponse.content,
+              isStreaming: true
             }}
           />
         )}
+
+        {messages.length > 0 && !isStreaming && (
+          <Flex>
+            <Button onClick={handleCreateConversation} variant="ghost" margin="auto" size="sm">
+              New Conversation
+            </Button>
+          </Flex>
+        )}
+
       </VStack>
     </Box>
   );

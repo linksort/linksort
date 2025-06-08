@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, VStack, HStack, Text, Heading } from "@chakra-ui/react";
+import { Box, VStack, HStack, Heading, Button } from "@chakra-ui/react";
 
 import { useChat } from "../hooks/chat";
 import MessageList from "./MessageList";
@@ -8,6 +8,7 @@ import { HEADER_HEIGHT } from "../theme/theme";
 
 export default function ChatSidepanel() {
   const chat = useChat();
+  const messages = chat.activeConversation?.messages || [];
 
   return (
     <Box
@@ -39,9 +40,10 @@ export default function ChatSidepanel() {
 
         {/* Messages Area */}
         <MessageList
-          messages={chat.activeConversation?.messages || []}
+          messages={messages}
           streamingResponse={chat.streamingResponse}
           isStreaming={chat.isStreaming}
+          handleCreateConversation={chat.handleCreateConversation}
         />
 
         {/* Input Area */}

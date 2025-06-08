@@ -48,7 +48,7 @@ export function useCreateConversation() {
 
 export function useConverse() {
   const [status, setStatus] = useState('idle') // idle, connecting, streaming, done, error
-  const [response, setResponse] = useState({ text: '', toolUses: {} })
+  const [response, setResponse] = useState({ content: [], text: '', toolUses: {} })
   const [error, setError] = useState(null)
   const abortControllerRef = useRef(null)
   const queryClient = useQueryClient()
@@ -59,7 +59,7 @@ export function useConverse() {
     }
 
     setStatus('connecting')
-    setResponse({ text: '', toolUses: {} })
+    setResponse({ content: [], text: '', toolUses: {} })
     setError(null)
 
     try {
@@ -84,6 +84,8 @@ export function useConverse() {
 
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
+      let content = []
+      let currentTextContent = ''
       let accumulatedText = ''
       let toolUses = {}
 
@@ -91,6 +93,11 @@ export function useConverse() {
         const { done, value } = await reader.read()
 
         if (done) {
+          // Add final text content if any
+          if (currentTextContent) {
+            content = [...content, { type: 'text', content: currentTextContent }]
+          }
+          setResponse({ content, text: accumulatedText, toolUses })
           setStatus('done')
           break
         }
@@ -103,25 +110,68 @@ export function useConverse() {
             const event = JSON.parse(line)
             
             if (event.textDelta) {
+              currentTextContent += event.textDelta
               accumulatedText += event.textDelta
-              setResponse({ text: accumulatedText, toolUses })
+              
+              // Update content array with current text
+              const newContent = content.length > 0 && content[content.length - 1].type === 'text'
+                ? [...content.slice(0, -1), { type: 'text', content: currentTextContent }]
+                : [...content, { type: 'text', content: currentTextContent }]
+              
+              setResponse({ content: newContent, text: accumulatedText, toolUses })
             }
             
             if (event.toolUseDelta) {
               const toolUse = event.toolUseDelta
               
-              // Update tool use state
+              // Finalize current text segment before adding tool use
+              if (currentTextContent && (content.length === 0 || content[content.length - 1].type !== 'text')) {
+                content = [...content, { type: 'text', content: currentTextContent }]
+              }
+              
+              // Update tool use state for legacy support
               toolUses = {
                 ...toolUses,
                 [toolUse.id]: {
                   id: toolUse.id,
                   name: toolUse.name,
                   type: toolUse.type,
-                  status: toolUse.status || 'pending' // pending, success, error
+                  status: toolUse.status || 'pending'
                 }
               }
               
-              setResponse({ text: accumulatedText, toolUses })
+              // Add or update tool use in content array
+              const toolUseContent = {
+                type: 'toolUse',
+                toolUse: {
+                  id: toolUse.id,
+                  name: toolUse.name,
+                  type: toolUse.type,
+                  status: toolUse.status || 'pending'
+                }
+              }
+              
+              // Check if this tool use already exists (for status updates)
+              const existingIndex = content.findIndex(c => 
+                c.type === 'toolUse' && c.toolUse.id === toolUse.id
+              )
+              
+              if (existingIndex >= 0) {
+                // Update existing tool use status
+                content = content.map((c, i) => 
+                  i === existingIndex 
+                    ? { ...c, toolUse: { ...c.toolUse, status: toolUse.status || 'pending' } }
+                    : c
+                )
+              } else {
+                // Add new tool use after current text
+                content = [...content, toolUseContent]
+              }
+              
+              // Reset current text for next segment
+              currentTextContent = ''
+              
+              setResponse({ content, text: accumulatedText, toolUses })
             }
           } catch (parseError) {
             console.warn('Failed to parse SSE event:', line, parseError)
@@ -170,6 +220,7 @@ export function useConverse() {
 export function useChat() {
   const [activeConversationId, setActiveConversationId] = useState(null)
   const toast = useToast()
+  const queryClient = useQueryClient()
 
   const conversationsQuery = useListConversations()
   // Only call useConversation when we have a valid ID
@@ -234,8 +285,37 @@ export function useChat() {
           conversationId = conversation.id
         }
 
+        // Create optimistic user message
+        const tempUserMessage = {
+          id: `temp-${Date.now()}`,
+          sequenceNumber: -1, // Will be updated when server responds
+          createdAt: new Date().toISOString(),
+          role: "user",
+          text: message,
+          isToolUse: false
+        }
+
+        // Optimistically add user message to conversation
+        queryClient.setQueryData(
+          ["conversations", "detail", conversationId],
+          (oldConversation) => {
+            if (!oldConversation) return oldConversation
+            
+            return {
+              ...oldConversation,
+              messages: [...(oldConversation.messages || []), tempUserMessage]
+            }
+          }
+        )
+
+        // Start streaming AI response
         return converse.sendMessage(conversationId, message)
       } catch (error) {
+        // Rollback optimistic update on error
+        if (activeConversationId) {
+          queryClient.invalidateQueries(['conversations', 'detail', activeConversationId])
+        }
+        
         toast({
           title: "Failed to send message",
           description: error.message,
@@ -291,6 +371,7 @@ export function useChat() {
     converse.isStreaming,
     converse.abort,
     converse.sendMessage,
-    toast
+    toast,
+    queryClient
   ])
 }

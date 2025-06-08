@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Flex, IconButton } from "@chakra-ui/react";
-import { ArrowUpIcon, CloseIcon } from "@chakra-ui/icons";
+import { ArrowUpIcon } from "@chakra-ui/icons";
 
 import Textarea from "./Textarea";
 
@@ -13,7 +13,7 @@ export default function MessageInput({ onSendMessage, isLoading, isStreaming, on
 
     const messageText = message.trim();
     setMessage("");
-    
+
     try {
       await onSendMessage(messageText);
     } catch (error) {
@@ -59,29 +59,17 @@ export default function MessageInput({ onSendMessage, isLoading, isStreaming, on
               }}
             />
           </Box>
-          
+
           <Box>
-            {isStreaming ? (
-              <IconButton
-                icon={<CloseIcon />}
-                onClick={onAbort}
-                size="sm"
-                colorScheme="red"
-                variant="outline"
-              >
-                Stop
-              </IconButton>
-            ) : (
-              <IconButton
-                icon={<ArrowUpIcon />}
-                type="submit"
-                size="sm"
-                colorScheme="brand"
-                isDisabled={!message.trim() || isLoading}
-                isLoading={isLoading}
-                aria-label="Send message"
-              />
-            )}
+            <IconButton
+              icon={<ArrowUpIcon />}
+              type="submit"
+              size="sm"
+              colorScheme="brand"
+              isDisabled={!message.trim() || isLoading || isStreaming}
+              isLoading={isLoading}
+              aria-label="Send message"
+            />
           </Box>
         </Flex>
       </form>

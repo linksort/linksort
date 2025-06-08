@@ -102,10 +102,23 @@ func New(c Config) *Agent {
 	return &Agent{
 		System:   c.System,
 		Tools:    c.Tools,
-		Messages: c.Messages,
+		Messages: trim(c.Messages),
 		Stream:   make(chan any),
 		Client:   c.Client,
 	}
+}
+
+func trim(messages []Message) []Message {
+	if len(messages) > 0 {
+		if messages[0].IsToolUse {
+			message := messages[0]
+			toolUseList := *message.ToolUse
+			if toolUseList[0].Type == ToolUseTypeResponse {
+				return messages[1:]
+			}
+		}
+	}
+	return messages
 }
 
 func nonTerminalStopReason(stopReson string) bool {
