@@ -3,6 +3,20 @@ import { Box, VStack, Text, Button, Flex } from "@chakra-ui/react";
 
 import MessageItem from "./MessageItem";
 
+const INTRO = `Hello! I'm your friendly Linksort AI assistant, designed to help you efficiently manage and learn about your saved web links. Think of me as your personal digital librarian and organizational companion.
+
+My core purpose is to help you:
+- Keep your links neatly organized. I can create, update, and delete folders and move links into fitting locations.
+- Discover insights from your saved content. I can summarize, compare, and analyze your links.
+- Easily navigate and understand your collection.
+- Explain Linksort's features and how to use them.
+
+To get started, you might try asking me to:
+- Summarize your most recently saved links.
+- Ask about the key points of any articles you've saved. Or talk with an article.
+- Recommend a restaurant on the basis of the links you've saved.
+`
+
 // Helper function to group messages for proper display with ordered content
 function groupMessages(messages) {
   const grouped = [];
@@ -13,7 +27,7 @@ function groupMessages(messages) {
     if (!currentGroup.content) {
       currentGroup.content = [];
     }
-    
+
     if (type === 'text' && content) {
       currentGroup.content.push({ type: 'text', content });
     } else if (type === 'toolUse' && toolUse) {
@@ -68,7 +82,7 @@ function groupMessages(messages) {
 
 export default function MessageList({ messages = [], streamingResponse, isStreaming, handleCreateConversation }) {
   const scrollRef = useRef(null);
-  
+
   // Group messages to combine tool use sequences
   const groupedMessages = groupMessages(messages);
 
@@ -82,10 +96,15 @@ export default function MessageList({ messages = [], streamingResponse, isStream
   // Show empty state if no messages
   if (groupedMessages.length === 0 && !isStreaming) {
     return (
-      <Box flex={1} display="flex" alignItems="center" justifyContent="center" p={4}>
-        <Text color="gray.500" textAlign="center">
-          Start a conversation by sending a message below
-        </Text>
+      <Box flex={1} display="flex" py={4} width="100%">
+        <MessageItem
+          message={{
+            id: "intro",
+            role: "assistant",
+            text: INTRO,
+            isStreaming: false
+          }}
+        />
       </Box>
     );
   }
@@ -96,12 +115,13 @@ export default function MessageList({ messages = [], streamingResponse, isStream
       flex={1}
       overflowY="auto"
       py={4}
+      width="100%"
     >
       <VStack spacing={4} align="stretch">
         {groupedMessages.map((message) => (
           <MessageItem key={message.id} message={message} />
         ))}
-        
+
         {/* Show streaming response as a temporary message */}
         {isStreaming && streamingResponse && (
           <MessageItem
@@ -119,7 +139,7 @@ export default function MessageList({ messages = [], streamingResponse, isStream
         {messages.length > 0 && !isStreaming && (
           <Flex>
             <Button onClick={handleCreateConversation} variant="ghost" margin="auto" size="sm">
-              New Conversation
+              Clear Chat
             </Button>
           </Flex>
         )}

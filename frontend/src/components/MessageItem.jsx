@@ -47,10 +47,10 @@ function ToolUseIndicator({ toolUse }) {
 // Helper to process tool use pairs and get final status
 function processToolUsePairs(toolUses) {
   const toolMap = new Map();
-  
+
   toolUses.forEach(toolUse => {
     const existing = toolMap.get(toolUse.id);
-    
+
     if (!existing) {
       toolMap.set(toolUse.id, {
         id: toolUse.id,
@@ -64,7 +64,7 @@ function processToolUsePairs(toolUses) {
       }
     }
   });
-  
+
   return toolMap;
 }
 
@@ -77,7 +77,7 @@ export default function MessageItem({ message }) {
     // For grouped messages, process tool use pairs for final status
     const isStreamingMessage = message.isStreaming;
     let toolStatusMap = new Map();
-    
+
     if (!isStreamingMessage) {
       // Process all tool uses in grouped messages to get final statuses
       const allToolUses = message.content.filter(c => c.type === 'toolUse').map(c => c.toolUse);
@@ -90,6 +90,7 @@ export default function MessageItem({ message }) {
         align="flex-start"
         gap={3}
         px={4}
+        width="100%"
       >
         <Box
           bg={isUser ? "brand.500" : "gray.50"}
@@ -114,7 +115,7 @@ export default function MessageItem({ message }) {
               );
             } else if (contentItem.type === 'toolUse') {
               const toolUse = contentItem.toolUse;
-              
+
               if (isStreamingMessage) {
                 // For streaming, show tool use as-is (status updates in real-time)
                 return (
@@ -143,12 +144,12 @@ export default function MessageItem({ message }) {
 
   // Fallback for legacy message structure (streaming and old messages)
   let displayToolUses = [];
-  
+
   // Handle streaming messages
   if (message.streamingToolUses) {
     displayToolUses = Object.values(message.streamingToolUses);
   }
-  
+
   // Handle persisted tool uses
   if (message.isToolUse && message.toolUse) {
     const toolStatusMap = processToolUsePairs(message.toolUse);
@@ -161,6 +162,7 @@ export default function MessageItem({ message }) {
       align="flex-start"
       gap={3}
       px={4}
+      width="100%"
     >
       <Box
         bg={isUser ? "brand.500" : "gray.50"}
@@ -182,7 +184,7 @@ export default function MessageItem({ message }) {
             {message.text}
           </Text>
         )}
-        
+
         {/* Render tool usage indicators inline */}
         {displayToolUses.length > 0 && (
           <Box mt={message.text ? 2 : 0}>

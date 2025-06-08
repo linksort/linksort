@@ -108,27 +108,27 @@ export function useConverse() {
         for (const line of lines) {
           try {
             const event = JSON.parse(line)
-            
+
             if (event.textDelta) {
               currentTextContent += event.textDelta
               accumulatedText += event.textDelta
-              
+
               // Update content array with current text
               const newContent = content.length > 0 && content[content.length - 1].type === 'text'
                 ? [...content.slice(0, -1), { type: 'text', content: currentTextContent }]
                 : [...content, { type: 'text', content: currentTextContent }]
-              
+
               setResponse({ content: newContent, text: accumulatedText, toolUses })
             }
-            
+
             if (event.toolUseDelta) {
               const toolUse = event.toolUseDelta
-              
+
               // Finalize current text segment before adding tool use
               if (currentTextContent && (content.length === 0 || content[content.length - 1].type !== 'text')) {
                 content = [...content, { type: 'text', content: currentTextContent }]
               }
-              
+
               // Update tool use state for legacy support
               toolUses = {
                 ...toolUses,
@@ -139,7 +139,7 @@ export function useConverse() {
                   status: toolUse.status || 'pending'
                 }
               }
-              
+
               // Add or update tool use in content array
               const toolUseContent = {
                 type: 'toolUse',
@@ -150,16 +150,16 @@ export function useConverse() {
                   status: toolUse.status || 'pending'
                 }
               }
-              
+
               // Check if this tool use already exists (for status updates)
-              const existingIndex = content.findIndex(c => 
+              const existingIndex = content.findIndex(c =>
                 c.type === 'toolUse' && c.toolUse.id === toolUse.id
               )
-              
+
               if (existingIndex >= 0) {
                 // Update existing tool use status
-                content = content.map((c, i) => 
-                  i === existingIndex 
+                content = content.map((c, i) =>
+                  i === existingIndex
                     ? { ...c, toolUse: { ...c.toolUse, status: toolUse.status || 'pending' } }
                     : c
                 )
@@ -167,10 +167,10 @@ export function useConverse() {
                 // Add new tool use after current text
                 content = [...content, toolUseContent]
               }
-              
+
               // Reset current text for next segment
               currentTextContent = ''
-              
+
               setResponse({ content, text: accumulatedText, toolUses })
             }
           } catch (parseError) {
@@ -300,7 +300,7 @@ export function useChat() {
           ["conversations", "detail", conversationId],
           (oldConversation) => {
             if (!oldConversation) return oldConversation
-            
+
             return {
               ...oldConversation,
               messages: [...(oldConversation.messages || []), tempUserMessage]
@@ -315,7 +315,7 @@ export function useChat() {
         if (activeConversationId) {
           queryClient.invalidateQueries(['conversations', 'detail', activeConversationId])
         }
-        
+
         toast({
           title: "Failed to send message",
           description: error.message,
