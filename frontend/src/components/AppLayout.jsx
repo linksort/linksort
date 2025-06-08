@@ -13,11 +13,11 @@ export default function AppLayout({ children }) {
         maxWidth="100%"
         width="100%"
         minHeight="100vh"
-        templateColumns={["1fr", "1fr", "1fr", "1fr", "18rem 1fr 25rem"]}
+        templateColumns={["1fr", "1fr", "1fr", "1fr", "18rem 1fr", "18rem 1fr 25rem"]}
       >
         <GridItem
           height="100%"
-          display={["none", "none", "none", "none", "block"]}
+          display={["none", "none", "none", "none", "block", "block"]}
           borderRight="1px"
           borderRightColor="gray.100"
         >
@@ -30,6 +30,7 @@ export default function AppLayout({ children }) {
             "calc(100vw)",
             "calc(100vw)",
             "calc(100vw)",
+            "calc(100vw - 18rem)",
             "calc(100vw - 18rem - 25rem)",
           ]}
         >
@@ -37,7 +38,7 @@ export default function AppLayout({ children }) {
             position="fixed"
             width="100%"
             top="0"
-            left={["0", "0", "0", "0", "18rem"]}
+            left={["0", "0", "0", "0", "18rem", "18rem"]}
             zIndex={10}
           >
             <Header />
@@ -49,7 +50,7 @@ export default function AppLayout({ children }) {
         <GridItem
           width="25rem"
           height="100vh"
-          display={["none", "none", "none", "none", "block"]}
+          display={["none", "none", "none", "none", "none", "block"]}
         >
           <ChatSidepanel />
         </GridItem>
