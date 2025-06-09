@@ -3,7 +3,9 @@ package assistant
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 
 	"github.com/linksort/linksort/agent"
 	"github.com/linksort/linksort/handler/folder"
@@ -55,7 +57,7 @@ func (c *Client) NewAssistant(u *model.User, conv *model.Conversation, userMsg *
 	messages = append(messages, model.MapToAgentMessage(userMsg))
 
 	return &Assistant{agent.New(agent.Config{
-		System: fmt.Sprintf(agenticSystemPrompt, userSummary(u)),
+		System:   fmt.Sprintf(agenticSystemPrompt, userSummary(u)),
 		Messages: messages,
 		Tools: []agent.Tool{
 			&GetLinksTool{
@@ -109,26 +111,146 @@ type GetLinksTool struct {
 func (t *GetLinksTool) Spec() agent.Spec {
 	return agent.Spec{
 		Name:        "get_links",
-		Description: "Use this tool to query the user's links. This will give you information about many links at a time, but it will not give you all details about each link. If you need more information, use the get_link tool.",
+		Description: "Use this tool to query and filter the user's links. Supports search, sorting, filtering by favorites/annotations/folders/tags, and pagination. Returns basic link information - use get_link for full details.",
 		InputSchema: map[string]any{
 			"type": "object",
-			"properties": map[string]any{},
+			"properties": map[string]any{
+				"search": map[string]any{
+					"type":        "string",
+					"description": "Text search across link content",
+				},
+				"sort": map[string]any{
+					"type":        "string",
+					"description": "Sort order: '1' for ascending by creation date, '-1' for descending",
+					"enum":        []string{"1", "-1"},
+				},
+				"favorites": map[string]any{
+					"type":        "string",
+					"description": "Filter favorites: '1' to show only favorites",
+					"enum":        []string{"1"},
+				},
+				"annotations": map[string]any{
+					"type":        "string",
+					"description": "Filter annotated links: '1' to show only annotated",
+					"enum":        []string{"1"},
+				},
+				"folderId": map[string]any{
+					"type":        "string",
+					"description": "Filter by folder ID",
+				},
+				"tagPath": map[string]any{
+					"type":        "string",
+					"description": "Filter by tag path",
+				},
+				"userTag": map[string]any{
+					"type":        "string",
+					"description": "Filter by user tag",
+				},
+				"page": map[string]any{
+					"type":        "integer",
+					"description": "Page number (0-based)",
+					"minimum":     0,
+				},
+				"size": map[string]any{
+					"type":        "integer",
+					"description": "Page size (default 18, max 1000)",
+					"minimum":     1,
+					"maximum":     1000,
+				},
+			},
+			"required": []string{},
 		},
 	}
 }
 
 func (t *GetLinksTool) Use(ctx context.Context, id, input string) agent.ToolUseResponse {
-	// typedInput := make(map[string]string)
-	// err := json.Unmarshal([]byte(input), &typedInput)
-	// if err != nil {
-	// 	return agent.ToolUseResponse{
-	// 		Status: agent.ToolUseStatusError,
-	// 		Text:   err.Error(),
-	// 	}
-	// }
-	//
+	// Parse input as generic map to handle mixed types
+	typedInput := make(map[string]any)
+	err := json.Unmarshal([]byte(input), &typedInput)
+	if err != nil && !errors.Is(err, io.EOF) {
+		return agent.ToolUseResponse{
+			Status: agent.ToolUseStatusError,
+			Text:   err.Error(),
+		}
+	}
+
+	// Build GetLinksRequest from parsed input
 	req := &link.GetLinksRequest{
 		Pagination: &model.Pagination{},
+	}
+
+	// Extract and validate string parameters
+	if search, ok := typedInput["search"].(string); ok {
+		req.Search = search
+	}
+
+	if sort, ok := typedInput["sort"].(string); ok {
+		if sort == "1" || sort == "-1" {
+			req.Sort = sort
+		} else {
+			return agent.ToolUseResponse{
+				Status: agent.ToolUseStatusError,
+				Text:   "sort parameter must be '1' (ascending) or '-1' (descending)",
+			}
+		}
+	}
+
+	if favorites, ok := typedInput["favorites"].(string); ok {
+		if favorites == "1" {
+			req.Favorites = favorites
+		} else {
+			return agent.ToolUseResponse{
+				Status: agent.ToolUseStatusError,
+				Text:   "favorites parameter must be '1' to filter favorites",
+			}
+		}
+	}
+
+	if annotations, ok := typedInput["annotations"].(string); ok {
+		if annotations == "1" {
+			req.Annotations = annotations
+		} else {
+			return agent.ToolUseResponse{
+				Status: agent.ToolUseStatusError,
+				Text:   "annotations parameter must be '1' to filter annotated links",
+			}
+		}
+	}
+
+	if folderId, ok := typedInput["folderId"].(string); ok {
+		req.FolderID = folderId
+	}
+	if tagPath, ok := typedInput["tagPath"].(string); ok {
+		req.TagPath = tagPath
+	}
+	if userTag, ok := typedInput["userTag"].(string); ok {
+		req.UserTag = userTag
+	}
+
+	// Extract and validate pagination parameters (can be float64 from JSON)
+	if pageVal, ok := typedInput["page"]; ok {
+		if pageFloat, ok := pageVal.(float64); ok {
+			page := int(pageFloat)
+			if page < 0 {
+				return agent.ToolUseResponse{
+					Status: agent.ToolUseStatusError,
+					Text:   "page parameter must be >= 0",
+				}
+			}
+			req.Pagination.Page = page
+		}
+	}
+	if sizeVal, ok := typedInput["size"]; ok {
+		if sizeFloat, ok := sizeVal.(float64); ok {
+			size := int(sizeFloat)
+			if size < 1 || size > 1000 {
+				return agent.ToolUseResponse{
+					Status: agent.ToolUseStatusError,
+					Text:   "size parameter must be between 1 and 1000",
+				}
+			}
+			req.Pagination.Size = size
+		}
 	}
 
 	links, err := t.LinkController.GetLinks(ctx, t.User, req)
