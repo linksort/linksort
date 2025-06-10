@@ -112,8 +112,17 @@ func (c *Conversation) Converse(
 	// Append to list of messages
 	messages = append(messages, newMessage)
 
-	// Create a new assistant
-	asst := c.AssistantClient.NewAssistant(usr, conversation, newMessage)
+	// Convert page context to map for assistant
+	var pageContextMap map[string]any
+	if req.PageContext != nil {
+		pageContextMap = map[string]any{
+			"route": req.PageContext.Route,
+			"query": req.PageContext.Query,
+		}
+	}
+
+	// Create a new assistant with page context
+	asst := c.AssistantClient.NewAssistant(usr, conversation, newMessage, pageContextMap)
 
 	// Create output channel
 	outC := make(chan *model.ConverseEvent)

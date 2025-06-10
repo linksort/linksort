@@ -1,8 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useToast } from "@chakra-ui/react";
+import { useLocation, useParams } from "react-router-dom";
 
 import apiFetch, { csrfStore } from "../utils/apiFetch";
+import useQueryString from "./queryString";
+
+function usePageContext() {
+  const location = useLocation();
+  const params = useParams();
+  const queryString = useQueryString();
+
+  return useMemo(() => {
+    // Merge URL parameters and query string into one query object
+    const query = { ...params, ...queryString };
+    
+    return {
+      route: location.pathname,
+      query
+    };
+  }, [location.pathname, params, queryString]);
+}
 
 export function useListConversations() {
   return useQuery(
@@ -52,6 +70,7 @@ export function useConverse() {
   const [error, setError] = useState(null)
   const abortControllerRef = useRef(null)
   const queryClient = useQueryClient()
+  const pageContext = usePageContext()
 
   const sendMessage = useCallback(async (conversationId, message) => {
     if (status === 'streaming' || status === 'connecting') {
@@ -72,7 +91,10 @@ export function useConverse() {
           'Content-Type': 'application/json',
           'X-Csrf-Token': csrfStore.get(),
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ 
+          message,
+          pageContext: Object.keys(pageContext.query).length > 0 ? pageContext : { route: pageContext.route, query: {} }
+        }),
         signal: abortControllerRef.current.signal
       })
 
@@ -190,7 +212,7 @@ export function useConverse() {
         setStatus('error')
       }
     }
-  }, [status, queryClient])
+  }, [status, queryClient, pageContext])
 
   const abort = useCallback(() => {
     if (abortControllerRef.current) {
@@ -371,6 +393,7 @@ export function useChat() {
     converse.isStreaming,
     converse.abort,
     converse.sendMessage,
+    converse,
     toast,
     queryClient
   ])

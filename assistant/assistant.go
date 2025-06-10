@@ -45,7 +45,7 @@ type Client struct {
 	BedrockClient agent.ConverseStreamProvider
 }
 
-func (c *Client) NewAssistant(u *model.User, conv *model.Conversation, userMsg *model.Message) *Assistant {
+func (c *Client) NewAssistant(u *model.User, conv *model.Conversation, userMsg *model.Message, pageContext map[string]any) *Assistant {
 	// Convert existing conversation messages to agent messages
 	messages := []agent.Message{}
 
@@ -58,7 +58,7 @@ func (c *Client) NewAssistant(u *model.User, conv *model.Conversation, userMsg *
 	messages = append(messages, model.MapToAgentMessage(userMsg))
 
 	return &Assistant{agent.New(agent.Config{
-		System:   fmt.Sprintf(agenticSystemPrompt, userSummary(u)),
+		System:   fmt.Sprintf(agenticSystemPrompt, userSummary(u, pageContext)),
 		Messages: messages,
 		Tools: []agent.Tool{
 			&GetLinksTool{
@@ -756,11 +756,40 @@ func (t *SummarizeLinkTool) Use(ctx context.Context, id, input string) agent.Too
 	}
 }
 
-func userSummary(u *model.User) string {
-	name := fmt.Sprintf("%s%s", u.FirstName, u.LastName)
+func userSummary(u *model.User, pageContext map[string]any) string {
 	bFolderTree, err := json.MarshalIndent(u.FolderTree, "", "  ")
 	if err != nil {
 		bFolderTree = []byte("Whoops! We failed to retrieve the user's folders.")
 	}
-	return fmt.Sprintf("- The current user's name is %s\n- %s's folder tree is this:\n%s", name, name, string(bFolderTree))
+	
+	summary := fmt.Sprintf("- The current user's name is %s", u.FirstName)
+	
+	// Add page context if available
+	if pageContext != nil {
+		if route, ok := pageContext["route"].(string); ok && route != "" {
+			summary += fmt.Sprintf("\n- The user is currently on page: %s", route)
+			
+			// Extract link ID from route if present
+			if route != "/" && len(route) > 1 {
+				// For routes like /links/abc123, extract the link ID
+				if route[:7] == "/links/" && len(route) > 7 {
+					linkID := route[7:]
+					summary += fmt.Sprintf("\n- The user is currently viewing link ID: %s", linkID)
+				}
+			}
+		}
+		
+		if query, ok := pageContext["query"].(map[string]string); ok && len(query) > 0 {
+			summary += "\n- Current page filters/parameters:"
+			for key, value := range query {
+				if value != "" {
+					summary += fmt.Sprintf("\n  - %s: %s", key, value)
+				}
+			}
+		}
+	}
+
+	summary += fmt.Sprintf("- The user's folder tree is this:\n%s", string(bFolderTree))
+	
+	return summary
 }

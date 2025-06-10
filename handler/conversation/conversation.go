@@ -145,11 +145,18 @@ func (s *config) GetConversations(w http.ResponseWriter, r *http.Request) {
 	payload.Write(w, r, &GetConversationsResponse{convs}, http.StatusOK)
 }
 
+type PageContext struct {
+	Route string            `json:"route"`
+	Query map[string]string `json:"query"`
+}
+
 type ConverseRequest struct {
 	// The ID of the conversation, will be populated from the URL parameter
 	ID string `json:"-"`
 	// The message to send in the conversation
 	Message string `json:"message" validate:"required"`
+	// The page context where the user is sending the message from
+	PageContext *PageContext `json:"pageContext,omitempty"`
 }
 
 // Converse godoc
