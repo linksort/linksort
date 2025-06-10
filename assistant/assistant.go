@@ -43,11 +43,6 @@ Features:
 - Quick Actions: Add links, create folders, add links to folders, favorite links
 - Search: Full-text search across link content and metadata
 
-AI Features:
-- Automatic content analysis and tagging
-- Link summarization
-- Content classification
-
 ### Link Detail View (/links/:linkId)
 
 Individual link viewing and management
@@ -96,22 +91,6 @@ Browser extension information
 Features:
 - Browser Extension Downloads: Chrome, Firefox, Safari, Brave
 - Installation Guides: Links to step-by-step setup instructions
-
-### AI Chat Features (Available on all pages)
-
-Contextual AI Assistant with tools and features for:
-- Link Querying: Search and filter links with natural language
-- Content Analysis: Get summaries and explanations
-- Organization: Create folders, move links, manage tags
-- Context Awareness: AI knows which page you're on for contextual commands
-
-Example AI Commands:
-- "Explain this article" (when viewing a link)
-- "Find my AI research papers"
-- "Summarize this link" (when viewing a link)
-- "Create a folder for machine learning"
-- "Move this to my research folder"
-- "Organize my recently saved links into folders"
 
 ## Current User
 
@@ -422,6 +401,10 @@ func (t *GetLinkTool) Use(ctx context.Context, id, input string) agent.ToolUseRe
 			Status: agent.ToolUseStatusError,
 			Text:   err.Error(),
 		}
+	}
+
+	if len(link.Corpus) > 75000 {
+		link.Corpus = link.Corpus[:75000] + "\n\nTHIS CONTENT IS TOO LONG AND HAS BEEN TRUNCATED."
 	}
 
 	b, err := json.MarshalIndent(link, "", "  ")
@@ -870,6 +853,7 @@ func userSummary(u *model.User, pageContext map[string]any) string {
 					linkID := route[7:]
 					summary += fmt.Sprintf("\n- IMPORTANT: The user is currently viewing link ID: %s", linkID)
 					summary += fmt.Sprintf("\n- CRITICAL: Use this link (%s) when responding and not other links from the conversation history. The user may have navigated to a different page since the last message.", linkID)
+					summary += fmt.Sprintf("\n- CRITICAL: Do not ask the user for a link ID. Use this link ID: %s", linkID)
 				}
 			}
 		}
