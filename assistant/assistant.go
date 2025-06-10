@@ -35,6 +35,7 @@ type Client struct {
 		GetLinks(context.Context, *model.User, *link.GetLinksRequest) ([]*model.Link, error)
 		GetLink(context.Context, *model.User, string) (*model.Link, error)
 		UpdateLink(context.Context, *model.User, *link.UpdateLinkRequest) (*model.Link, *model.User, error)
+		SummarizeLink(context.Context, *model.User, string) (*model.Link, error)
 	}
 	FolderController interface {
 		CreateFolder(context.Context, *model.User, *folder.CreateFolderRequest) (*model.User, error)
@@ -65,6 +66,10 @@ func (c *Client) NewAssistant(u *model.User, conv *model.Conversation, userMsg *
 				LinkController: c.LinkController,
 			},
 			&GetLinkTool{
+				User:           u,
+				LinkController: c.LinkController,
+			},
+			&SummarizeLinkTool{
 				User:           u,
 				LinkController: c.LinkController,
 			},
@@ -685,6 +690,69 @@ func (t *RemoveLinkFromFolderTool) Use(ctx context.Context, id, input string) ag
 	return agent.ToolUseResponse{
 		Status: agent.ToolUseStatusSuccess,
 		Text:   fmt.Sprintf("Successfully removed link %s from its folder", linkID),
+	}
+}
+
+// SummarizeLinkTool handles generating AI summaries for links
+type SummarizeLinkTool struct {
+	User           *model.User
+	LinkController interface {
+		SummarizeLink(context.Context, *model.User, string) (*model.Link, error)
+	}
+}
+
+func (t *SummarizeLinkTool) Spec() agent.Spec {
+	return agent.Spec{
+		Name:        "summarize_link",
+		Description: "Use this tool to generate an AI summary for a specific link. Only works on article links that have content. If the link is already summarized, returns the existing summary.",
+		InputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"linkId": map[string]any{
+					"type": "string",
+				},
+			},
+			"required": []string{"linkId"},
+		},
+	}
+}
+
+func (t *SummarizeLinkTool) Use(ctx context.Context, id, input string) agent.ToolUseResponse {
+	payload := make(map[string]any)
+	if err := json.Unmarshal([]byte(input), &payload); err != nil {
+		return agent.ToolUseResponse{
+			Status: agent.ToolUseStatusError,
+			Text:   fmt.Sprintf("Failed to parse input: %v", err),
+		}
+	}
+
+	linkID, ok := payload["linkId"].(string)
+	if !ok {
+		return agent.ToolUseResponse{
+			Status: agent.ToolUseStatusError,
+			Text:   "linkId is required and must be a string",
+		}
+	}
+
+	link, err := t.LinkController.SummarizeLink(ctx, t.User, linkID)
+	if err != nil {
+		return agent.ToolUseResponse{
+			Status: agent.ToolUseStatusError,
+			Text:   fmt.Sprintf("Failed to summarize link: %v", err),
+		}
+	}
+
+	linkJSON, err := json.MarshalIndent(link, "", "  ")
+	if err != nil {
+		return agent.ToolUseResponse{
+			Status: agent.ToolUseStatusError,
+			Text:   fmt.Sprintf("Failed to serialize link: %v", err),
+		}
+	}
+
+	return agent.ToolUseResponse{
+		Status: agent.ToolUseStatusSuccess,
+		Text:   string(linkJSON),
 	}
 }
 
