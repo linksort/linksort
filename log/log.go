@@ -62,13 +62,14 @@ func Alarm(err error) {
 // AlarmWithContext logs the error to stderr and triggers an alarm that includes information,
 // such as the request ID, from the given context.
 func AlarmWithContext(ctx context.Context, err error) {
-	raven.CaptureError(errors.E(errors.Opf("RequestID=%s", requestIDFromContext(ctx)), err), nil)
 	FromContext(ctx).Print(err.Error())
+	raven.CaptureError(errors.E(errors.Opf("RequestID=%s", RequestIDFromContext(ctx)), err), nil)
 }
 
 type Printer interface {
 	Print(v ...interface{})
 	Printf(format string, i ...interface{})
+	WithContext(ctx context.Context) context.Context
 }
 
 // FromContext returns a Printer from the given request.
@@ -110,7 +111,7 @@ func WithAccessLogging(h http.Handler) http.Handler {
 }
 
 // RequestIDFromContext gets the request's ID from the context, if there is one.
-func requestIDFromContext(ctx context.Context) string {
+func RequestIDFromContext(ctx context.Context) string {
 	id, ok := hlog.IDFromCtx(ctx)
 	if ok {
 		return id.String()

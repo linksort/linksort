@@ -50,7 +50,7 @@ export default function MessageInput({ onSendMessage, isLoading, isStreaming, on
               borderRadius="md"
               px={3}
               py={2}
-              fontSize="sm"
+              fontSize="md"
               _focus={{
                 borderColor: "brand.300",
                 boxShadow: "0 0 0 1px #63b3ed",

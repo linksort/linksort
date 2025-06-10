@@ -115,7 +115,7 @@ Example AI Commands:
 
 ## Current User
 
-Below is some relevent information about the current user.
+Here is important information about the current user.
 
 %s
 `
@@ -868,7 +868,8 @@ func userSummary(u *model.User, pageContext map[string]any) string {
 				// For routes like /links/abc123, extract the link ID
 				if route[:7] == "/links/" && len(route) > 7 {
 					linkID := route[7:]
-					summary += fmt.Sprintf("\n- The user is currently viewing link ID: %s", linkID)
+					summary += fmt.Sprintf("\n- IMPORTANT: The user is currently viewing link ID: %s", linkID)
+					summary += fmt.Sprintf("\n- CRITICAL: Use this link (%s) when responding and not other links from the conversation history. The user may have navigated to a different page since the last message.", linkID)
 				}
 			}
 		}

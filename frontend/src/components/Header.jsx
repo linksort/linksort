@@ -98,7 +98,14 @@ export default function Header() {
         alignItems="center"
         backgroundColor="white"
       >
-        <HStack maxWidth="60%">
+        <HStack maxWidth={[
+          "calc(100% - 12rem)",
+          "calc(100% - 12rem)",
+          "calc(100% - 12rem)",
+          "calc(100% - 16rem)",
+          "calc(100% - 26rem)",
+          "calc(100% - 26rem)",
+        ]}>
           <Heading
             as="h2"
             size="md"
@@ -124,6 +131,15 @@ export default function Header() {
           <GiveFeedbackButton>
             <Button>Give Feedback</Button>
           </GiveFeedbackButton>
+          <IconButton
+            display={["flex", "flex", "flex", "flex", "flex", "none"]}
+            id="mobile-nav"
+            ref={chatButtonRef}
+            onClick={onChatOpen}
+            aria-label="nav"
+            zIndex={10}
+            icon={<ChatIcon />}
+          />
           <TopRightUserMenu />
         </Stack>
         <Stack

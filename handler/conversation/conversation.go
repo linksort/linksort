@@ -186,8 +186,13 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 	}
 	req.ID = id
 
+	// Create a new context that doesn't get canceled in case of disconnects
+	ll := log.FromRequest(r)
+	newCtx := ll.WithContext(context.Background())
+	log.UpdateContext(newCtx, "UserID", u.ID)
+
 	// Get event channel from controller
-	events, err := s.ConversationController.Converse(context.Background(), u, req)
+	events, err := s.ConversationController.Converse(newCtx, u, req)
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))
 		return

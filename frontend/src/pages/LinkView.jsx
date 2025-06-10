@@ -145,6 +145,7 @@ export default function LinkView() {
           "calc(100vw)",
           "calc(100vw)",
           "calc(100vw)",
+          "calc(100vw - 18rem)",
           "calc(100vw - 18rem - 25rem)",
         ]}
         translateY={scrollDirection === "DOWN" ? "-6rem" : "0"}

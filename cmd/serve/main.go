@@ -108,7 +108,7 @@ func main() {
 			IsProd:                isProd,
 		}),
 		ReadTimeout:  time.Duration(5 * time.Second),
-		WriteTimeout: time.Duration(30 * time.Second),
+		WriteTimeout: time.Duration(120 * time.Second),
 		Addr:         fmt.Sprintf(":%s", port),
 	}
 
