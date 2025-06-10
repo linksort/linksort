@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Box, VStack, Text, Button, Flex } from "@chakra-ui/react";
+import { Box, VStack, Button, Flex } from "@chakra-ui/react";
 
 import MessageItem from "./MessageItem";
 
@@ -104,7 +104,7 @@ export default function MessageList({ messages = [], streamingResponse, isStream
       py={4}
       width="100%"
     >
-      <Box flex={1} display="flex" py={4} width="100%">
+      <Box flex={1} display="flex" width="100%">
         <MessageItem
           message={{
             id: "intro",

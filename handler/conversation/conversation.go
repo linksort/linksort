@@ -186,14 +186,8 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 	}
 	req.ID = id
 
-	// Set headers for SSE
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	w.Header().Set("Transfer-Encoding", "chunked")
-
 	// Get event channel from controller
-	events, err := s.ConversationController.Converse(ctx, u, req)
+	events, err := s.ConversationController.Converse(context.Background(), u, req)
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))
 		return
@@ -201,6 +195,8 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 
 	// Create a channel to detect client disconnect
 	done := r.Context().Done()
+	isDisconnected := false
+	isFirstEvent := true
 
 	// Stream events to client
 	for {
@@ -209,8 +205,25 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				// Channel closed, end stream
 				log.FromRequest(r).Print("channel closed, end stream")
+				if isFirstEvent {
+					payload.WriteError(w, r, errors.E(op, errors.Str("channel closed before first event")))
+				}
 				return
 			}
+
+			if isDisconnected {
+				continue
+			}
+
+			if isFirstEvent {
+				// Set headers for SSE
+				w.Header().Set("Content-Type", "text/event-stream")
+				w.Header().Set("Cache-Control", "no-cache")
+				w.Header().Set("Connection", "keep-alive")
+				w.Header().Set("Transfer-Encoding", "chunked")
+				isFirstEvent = false
+			}
+
 			// Write event as JSON
 			if err := json.NewEncoder(w).Encode(event); err != nil {
 				// Client connection error, end stream
@@ -222,8 +235,10 @@ func (s *config) Converse(w http.ResponseWriter, r *http.Request) {
 			}
 		case <-done:
 			// Client disconnected
-			log.FromRequest(r).Print("client disconnected")
-			return
+			if !isDisconnected {
+				log.FromRequest(r).Print("client disconnected")
+				isDisconnected = true
+			}
 		}
 	}
 }

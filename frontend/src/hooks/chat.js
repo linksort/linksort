@@ -387,12 +387,6 @@ export function useChat() {
     conversationQuery.error,
     createConversation,
     isCreatingConversation,
-    converse.status,
-    converse.response,
-    converse.error,
-    converse.isStreaming,
-    converse.abort,
-    converse.sendMessage,
     converse,
     toast,
     queryClient

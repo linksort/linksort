@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, VStack, HStack, Heading, Button } from "@chakra-ui/react";
+import { Box, VStack, HStack, Heading } from "@chakra-ui/react";
 
 import { useChat } from "../hooks/chat";
 import MessageList from "./MessageList";
