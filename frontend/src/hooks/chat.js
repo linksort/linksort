@@ -14,7 +14,7 @@ function usePageContext() {
   return useMemo(() => {
     // Merge URL parameters and query string into one query object
     const query = { ...params, ...queryString };
-    
+
     return {
       route: location.pathname,
       query
@@ -64,6 +64,48 @@ export function useCreateConversation() {
   })
 }
 
+function convertToMessages(content) {
+  return content.map((el, idx) => {
+    if (el.type === "toolUse") {
+      return {
+        id: `temp-${Date.now()}-${idx}`,
+        createdAt: new Date().toISOString(),
+        role: "user",
+        sequenceNumber: -1,
+        isToolUse: true,
+        toolUse: [
+          {
+            id: el.toolUse.id,
+            name: el.toolUse.name,
+            request: {
+              text: "{}"
+            },
+            type: "request",
+          },
+          {
+            id: el.toolUse.id,
+            name: el.toolUse.name,
+            response: {
+              status: el.toolUse.status,
+              text: "{}"
+            },
+            type: "response",
+          }
+        ]
+      }
+    } else {
+      return {
+        id: `temp-${Date.now()}-${idx}`,
+        createdAt: new Date().toISOString(),
+        role: "assistant",
+        sequenceNumber: -1,
+        text: el.content,
+        isToolUse: false,
+      }
+    }
+  })
+}
+
 export function useConverse() {
   const [status, setStatus] = useState('idle') // idle, connecting, streaming, done, error
   const [response, setResponse] = useState({ content: [], text: '', toolUses: {} })
@@ -85,26 +127,26 @@ export function useConverse() {
       // Create abort controller for this request
       abortControllerRef.current = new AbortController()
 
-      const response = await fetch(`/api/conversations/${conversationId}/converse`, {
+      const httpResponse = await fetch(`/api/conversations/${conversationId}/converse`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'X-Csrf-Token': csrfStore.get(),
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           message,
           pageContext: Object.keys(pageContext.query).length > 0 ? pageContext : { route: pageContext.route, query: {} }
         }),
         signal: abortControllerRef.current.signal
       })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+      if (!httpResponse.ok) {
+        throw new Error(`HTTP error! status: ${httpResponse.status}`)
       }
 
       setStatus('streaming')
 
-      const reader = response.body.getReader()
+      const reader = httpResponse.body.getReader()
       const decoder = new TextDecoder()
       let content = []
       let currentTextContent = ''
@@ -201,8 +243,15 @@ export function useConverse() {
         }
       }
 
-      // Invalidate conversation data to refresh with new messages
-      queryClient.invalidateQueries(['conversations', 'detail', conversationId])
+      queryClient.setQueryData(
+        ["conversations", "detail", conversationId],
+        (oldConversation) => {
+          return {
+            ...oldConversation,
+            messages: [...(oldConversation.messages || []), ...convertToMessages(content)]
+          }
+        }
+      )
 
     } catch (err) {
       if (err.name === 'AbortError') {
