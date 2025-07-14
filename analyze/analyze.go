@@ -124,7 +124,7 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	// context is cancelled.
 	nctx := context.Background()
 
-	urlobj, err := url.ParseRequestURI(req.URL)
+	urlobj, err := url.Parse(req.URL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrUnparsableURI, err.Error())
 	}
