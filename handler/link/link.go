@@ -55,9 +55,9 @@ func Handler(c *Config) *mux.Router {
 type CreateLinkRequest struct {
 	URL         string `json:"url" validate:"required,url,startswith=http,max=2048"`
 	Title       string `json:"title" validate:"omitempty,max=512"`
-	Favicon     string `json:"favicon" validate:"omitempty,url,max=512"`
+	Favicon     string `json:"favicon" validate:"omitempty,len=0|url,max=512"`
 	Description string `json:"description" validate:"omitempty,max=2048"`
-	Image       string `json:"image" validate:"omitempty,url,max=512"`
+	Image       string `json:"image" validate:"omitempty,len=0|url,max=512"`
 	Site        string `json:"site" validate:"omitempty,max=512"`
 	Corpus      string `json:"corpus" validate:"omitempty,max=500000"`
 }
@@ -215,7 +215,7 @@ type UpdateLinkRequest struct {
 	ID          string    `json:"-"`
 	Title       *string   `json:"title" validate:"omitempty,max=512"`
 	URL         *string   `json:"url" validate:"omitempty,url,max=2048"`
-	Favicon     *string   `json:"favicon" validate:"omitempty,url,max=512"`
+	Favicon     *string   `json:"favicon" validate:"omitempty,len=0|url,max=512"`
 	IsFavorite  *bool     `json:"isFavorite"`
 	FolderID    *string   `json:"folderId" validate:"omitempty,uuid|eq=root"`
 	Description *string   `json:"description" validate:"omitempty,max=2048"`
