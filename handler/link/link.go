@@ -47,7 +47,7 @@ func Handler(c *Config) *mux.Router {
 	r.HandleFunc("/api/links", cc.GetLinks).Methods("GET")
 	r.HandleFunc("/api/links/{linkID}/summarize", cc.SummarizeLink).Methods("POST")
 	r.HandleFunc("/api/links/{linkID}", cc.UpdateLink).Methods("PATCH")
-	r.HandleFunc("/api/links/{linkID}", cc.DelteLink).Methods("DELETE")
+	r.HandleFunc("/api/links/{linkID}", cc.DeleteLink).Methods("DELETE")
 
 	return r
 }
@@ -298,7 +298,7 @@ type DeleteLinkResponse struct {
 //	@Failure	500					{object}	payload.Error
 //	@Security		ApiKeyAuth
 //	@Router	/links/{id}				[delete]
-func (s *config) DelteLink(w http.ResponseWriter, r *http.Request) {
+func (s *config) DeleteLink(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.DeleteLink")
 	ctx := r.Context()
 	u := middleware.UserFromContext(ctx)
@@ -329,7 +329,7 @@ type SummarizeLinkResponse struct {
 //	@Failure		404			{object}	payload.Error
 //	@Failure		500			{object}	payload.Error
 //	@Security		ApiKeyAuth
-//	@Router		/links/{id}/summarize	[get]
+//	@Router		/links/{id}/summarize	[post]
 func (s *config) SummarizeLink(w http.ResponseWriter, r *http.Request) {
 	op := errors.Op("handler.SummarizeLink")
 	ctx := r.Context()
