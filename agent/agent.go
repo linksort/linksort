@@ -336,11 +336,9 @@ func mapMessages(messages []Message) []types.Message {
 					contextText += "\n- Current page: " + route
 					
 					// Extract link ID from route if present
-					if route != "/" && len(route) > 1 {
-						if route[:7] == "/links/" && len(route) > 7 {
-							linkID := route[7:]
-							contextText += "\n- Current link ID: " + linkID
-						}
+					if len(route) > 7 && route[:7] == "/links/" {
+						linkID := route[7:]
+						contextText += "\n- Current link ID: " + linkID
 					}
 				}
 				
