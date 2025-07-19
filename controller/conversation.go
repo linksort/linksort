@@ -110,10 +110,11 @@ func (c *Conversation) Converse(
 	}
 
 	// Create user message
+	textArray := []string{req.Message}
 	newMessage := &model.Message{
 		ConversationID: req.ID,
 		Role:           "user",
-		Text:           &req.Message,
+		Text:           &textArray,
 		CreatedAt:      time.Now(),
 		IsToolUse:      false,
 		PageContext:    pageContextMap,
