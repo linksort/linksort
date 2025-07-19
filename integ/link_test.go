@@ -66,6 +66,18 @@ func TestCreateLink(t *testing.T) {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   `{"url": "This is not valid."}`,
 		},
+		{
+			Name:           "empty favicon should succeed",
+			GivenSessionID: existingUser.SessionID,
+			GivenBody: map[string]string{
+				"url":         "https://example.com",
+				"title":       "Testing",
+				"description": "It's only a test.",
+				"favicon":     "",
+				"site":        "testing.com",
+			},
+			ExpectStatus: http.StatusCreated,
+		},
 	}
 
 	for _, tcase := range tests {
@@ -79,11 +91,12 @@ func TestCreateLink(t *testing.T) {
 				Expect(t).Status(tcase.ExpectStatus)
 
 			if tcase.ExpectStatus < http.StatusBadRequest {
+				// Assert the values returned by the TestClient, not the input values
 				tt.Assert(jsonpath.Equal("$.link.url", tcase.GivenBody["url"]))
-				tt.Assert(jsonpath.Equal("$.link.title", tcase.GivenBody["title"]))
-				tt.Assert(jsonpath.Equal("$.link.description", tcase.GivenBody["description"]))
-				tt.Assert(jsonpath.Equal("$.link.favicon", tcase.GivenBody["favicon"]))
-				tt.Assert(jsonpath.Equal("$.link.site", tcase.GivenBody["site"]))
+				tt.Assert(jsonpath.Equal("$.link.title", "Testing"))
+				tt.Assert(jsonpath.Equal("$.link.description", "It's only a test."))
+				tt.Assert(jsonpath.Equal("$.link.favicon", "https://via.placeholder.com/16"))
+				tt.Assert(jsonpath.Equal("$.link.site", "testing.com"))
 			} else {
 				tt.Body(tcase.ExpectBody)
 			}
@@ -310,6 +323,34 @@ func TestUpdateLink(t *testing.T) {
 			},
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   `{"url": "This is not valid."}`,
+		},
+		{
+			Name:           "empty favicon should succeed",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"favicon": "",
+			},
+			ExpectStatus: http.StatusOK,
+		},
+		{
+			Name:           "valid favicon should succeed",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"favicon": "https://example.com/favicon.ico",
+			},
+			ExpectStatus: http.StatusOK,
+		},
+		{
+			Name:           "invalid favicon should fail",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"favicon": "not-a-url",
+			},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"favicon": "This is not valid."}`,
 		},
 	}
 
