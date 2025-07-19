@@ -29,6 +29,7 @@ type Message struct {
 	Text           *string            `json:"text,omitempty"`
 	IsToolUse      bool               `json:"isToolUse"`
 	ToolUse        *[]agent.ToolUse   `json:"toolUse,omitempty"`
+	PageContext    map[string]any     `json:"pageContext,omitempty" bson:"pageContext,omitempty"`
 }
 
 type ConverseEvent struct {
@@ -60,10 +61,11 @@ func MapToModelMessage(msg agent.Message) *Message {
 	}
 
 	return &Message{
-		Role:      role,
-		Text:      msg.Text,
-		IsToolUse: msg.IsToolUse,
-		ToolUse:   msg.ToolUse,
+		Role:        role,
+		Text:        msg.Text,
+		IsToolUse:   msg.IsToolUse,
+		ToolUse:     msg.ToolUse,
+		PageContext: msg.PageContext,
 	}
 }
 
@@ -77,9 +79,10 @@ func MapToAgentMessage(msg *Message) agent.Message {
 	}
 
 	return agent.Message{
-		Role:      role,
-		Text:      msg.Text,
-		IsToolUse: msg.IsToolUse,
-		ToolUse:   msg.ToolUse,
+		Role:        role,
+		Text:        msg.Text,
+		IsToolUse:   msg.IsToolUse,
+		ToolUse:     msg.ToolUse,
+		PageContext: msg.PageContext,
 	}
 }

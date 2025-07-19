@@ -41,9 +41,10 @@ type Config struct {
 type Message struct {
 	Role Role
 	// If IsToolUse is true, then the ToolUse field must be populated. Otherwise, the Text field must be populated.
-	IsToolUse bool
-	ToolUse   *[]ToolUse
-	Text      *string
+	IsToolUse   bool
+	ToolUse     *[]ToolUse
+	Text        *string
+	PageContext map[string]any
 }
 
 type Role string
@@ -327,6 +328,35 @@ func mapMessages(messages []Message) []types.Message {
 			typesMsg.Content = append(typesMsg.Content, &types.ContentBlockMemberText{
 				Value: *msg.Text,
 			})
+			
+			// Add page context if present and this is a user message
+			if msg.PageContext != nil && msg.Role == RoleUser {
+				contextText := "Current page context:"
+				if route, ok := msg.PageContext["route"].(string); ok && route != "" {
+					contextText += "\n- Current page: " + route
+					
+					// Extract link ID from route if present
+					if route != "/" && len(route) > 1 {
+						if route[:7] == "/links/" && len(route) > 7 {
+							linkID := route[7:]
+							contextText += "\n- Current link ID: " + linkID
+						}
+					}
+				}
+				
+				if query, ok := msg.PageContext["query"].(map[string]string); ok && len(query) > 0 {
+					contextText += "\n- Page filters/parameters:"
+					for key, value := range query {
+						if value != "" {
+							contextText += "\n  - " + key + ": " + value
+						}
+					}
+				}
+				
+				typesMsg.Content = append(typesMsg.Content, &types.ContentBlockMemberText{
+					Value: contextText,
+				})
+			}
 		}
 
 		result = append(result, typesMsg)
