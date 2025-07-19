@@ -311,6 +311,16 @@ func TestUpdateLink(t *testing.T) {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   `{"url": "This is not valid."}`,
 		},
+		{
+			Name:           "empty favicon should fail (reproduce bug)",
+			GivenSessionID: usr.SessionID,
+			GivenLinkID:    lnk1.ID,
+			GivenBody: map[string]interface{}{
+				"favicon": "",
+			},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"favicon": "This is not valid."}`,
+		},
 	}
 
 	for _, tcase := range tests {
