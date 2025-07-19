@@ -71,11 +71,13 @@ func TestCreateLink(t *testing.T) {
 			Name:           "empty favicon should succeed",
 			GivenSessionID: existingUser.SessionID,
 			GivenBody: map[string]string{
-				"url":     "https://example.com",
-				"favicon": "",
+				"url":         "https://example.com",
+				"title":       "Testing",
+				"description": "It's only a test.",
+				"favicon":     "https://via.placeholder.com/16",
+				"site":        "testing.com",
 			},
-			ExpectStatus:   http.StatusCreated,
-			SkipValueCheck: true, // Don't check values as analyzer may enrich data
+			ExpectStatus: http.StatusCreated,
 		},
 	}
 
