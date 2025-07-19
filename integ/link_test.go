@@ -1,8 +1,11 @@
 package integ_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"testing"
 	"time"
@@ -496,4 +499,42 @@ func TestSummarizeLink(t *testing.T) {
 			tt.End()
 		})
 	}
+}
+
+func TestImportPocket(t *testing.T) {
+	ctx := context.Background()
+	usr, _ := testutil.NewUser(t, ctx)
+
+	csvData := "title,url,time_added,cursor,tags,status\n" +
+		"Example,https://example.com,1728576752,1,tag1|tag2,unread\n" +
+		"Second,https://second.com,1728576753,2,,unread\n"
+
+	apitest.New("import").
+		Handler(testutil.Handler()).
+		Intercept(func(req *http.Request) {
+			buf := new(bytes.Buffer)
+			w := multipart.NewWriter(buf)
+			part, _ := w.CreateFormFile("file", "links.csv")
+			part.Write([]byte(csvData))
+			w.Close()
+			req.Body = io.NopCloser(buf)
+			req.Header.Set("Content-Type", w.FormDataContentType())
+			req.ContentLength = int64(buf.Len())
+		}).
+		Post("/api/links/import-pocket").
+		Header("X-Csrf-Token", testutil.UserCSRF(usr.SessionID)).
+		Cookie("session_id", usr.SessionID).
+		Expect(t).
+		Status(http.StatusOK).
+		Assert(jsonpath.Equal("$.imported", 2)).
+		End()
+
+	apitest.New("list").
+		Handler(testutil.Handler()).
+		Get("/api/links").
+		Cookie("session_id", usr.SessionID).
+		Expect(t).
+		Status(http.StatusOK).
+		Assert(jsonpath.Len("$.links", 2)).
+		End()
 }
