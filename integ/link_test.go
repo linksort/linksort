@@ -23,7 +23,6 @@ func TestCreateLink(t *testing.T) {
 		GivenBody      map[string]string
 		ExpectStatus   int
 		ExpectBody     string
-		SkipValueCheck bool
 	}{
 		{
 			Name:           "success",
@@ -74,7 +73,7 @@ func TestCreateLink(t *testing.T) {
 				"url":         "https://example.com",
 				"title":       "Testing",
 				"description": "It's only a test.",
-				"favicon":     "https://via.placeholder.com/16",
+				"favicon":     "",
 				"site":        "testing.com",
 			},
 			ExpectStatus: http.StatusCreated,
@@ -92,17 +91,12 @@ func TestCreateLink(t *testing.T) {
 				Expect(t).Status(tcase.ExpectStatus)
 
 			if tcase.ExpectStatus < http.StatusBadRequest {
-				if !tcase.SkipValueCheck {
-					tt.Assert(jsonpath.Equal("$.link.url", tcase.GivenBody["url"]))
-					tt.Assert(jsonpath.Equal("$.link.title", tcase.GivenBody["title"]))
-					tt.Assert(jsonpath.Equal("$.link.description", tcase.GivenBody["description"]))
-					tt.Assert(jsonpath.Equal("$.link.favicon", tcase.GivenBody["favicon"]))
-					tt.Assert(jsonpath.Equal("$.link.site", tcase.GivenBody["site"]))
-				} else {
-					// Just check that link was created successfully
-					tt.Assert(jsonpath.Present("$.link.id"))
-					tt.Assert(jsonpath.Equal("$.link.url", tcase.GivenBody["url"]))
-				}
+				// Assert the values returned by the TestClient, not the input values
+				tt.Assert(jsonpath.Equal("$.link.url", tcase.GivenBody["url"]))
+				tt.Assert(jsonpath.Equal("$.link.title", "Testing"))
+				tt.Assert(jsonpath.Equal("$.link.description", "It's only a test."))
+				tt.Assert(jsonpath.Equal("$.link.favicon", "https://via.placeholder.com/16"))
+				tt.Assert(jsonpath.Equal("$.link.site", "testing.com"))
 			} else {
 				tt.Body(tcase.ExpectBody)
 			}
