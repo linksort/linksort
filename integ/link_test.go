@@ -485,7 +485,7 @@ func TestImportPocket(t *testing.T) {
 		Cookie("session_id", usr.SessionID).
 		Expect(t).
 		Status(http.StatusOK).
-		Assert(jsonpath.Equal("$.imported", 2)).
+		Assert(jsonpath.Equal("$.imported", float64(2))).
 		End()
 
 	apitest.New("list").
