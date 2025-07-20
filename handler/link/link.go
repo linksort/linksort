@@ -45,7 +45,6 @@ func Handler(c *Config) *mux.Router {
 	r.Use(middleware.WithUser(c.AuthController, c.CSRF))
 
 	r.HandleFunc("/api/links", cc.CreateLink).Methods("POST")
-	r.HandleFunc("/api/links/import-pocket", cc.ImportPocket).Methods("POST")
 	r.HandleFunc("/api/links/{linkID}", cc.GetLink).Methods("GET")
 	r.HandleFunc("/api/links", cc.GetLinks).Methods("GET")
 	r.HandleFunc("/api/links/{linkID}/summarize", cc.SummarizeLink).Methods("POST")
@@ -316,41 +315,6 @@ func (s *config) DeleteLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload.Write(w, r, &DeleteLinkResponse{user}, http.StatusOK)
-}
-
-type ImportPocketResponse struct {
-	Imported int `json:"imported"`
-}
-
-// ImportPocket godoc
-//
-//	@Summary        Import links from Pocket CSV
-//	@Param  file    formData        file    true    "CSV file"
-//	@Success        200     {object}        ImportPocketResponse
-//	@Failure        400     {object}        payload.Error
-//	@Failure        401     {object}        payload.Error
-//	@Failure        500     {object}        payload.Error
-//	@Security       ApiKeyAuth
-//	@Router /links/import-pocket  [post]
-func (s *config) ImportPocket(w http.ResponseWriter, r *http.Request) {
-	op := errors.Op("handler.ImportPocket")
-	ctx := r.Context()
-	u := middleware.UserFromContext(ctx)
-
-	f, _, err := r.FormFile("file")
-	if err != nil {
-		payload.WriteError(w, r, errors.E(op, err, http.StatusBadRequest))
-		return
-	}
-	defer f.Close()
-
-	n, err := s.LinkController.ImportPocket(ctx, u, f)
-	if err != nil {
-		payload.WriteError(w, r, errors.E(op, err))
-		return
-	}
-
-	payload.Write(w, r, &ImportPocketResponse{Imported: n}, http.StatusOK)
 }
 
 type SummarizeLinkResponse struct {

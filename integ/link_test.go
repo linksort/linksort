@@ -521,7 +521,7 @@ func TestImportPocket(t *testing.T) {
 			req.Header.Set("Content-Type", w.FormDataContentType())
 			req.ContentLength = int64(buf.Len())
 		}).
-		Post("/api/links/import-pocket").
+		Post("/api/users/import-pocket").
 		Header("X-Csrf-Token", testutil.UserCSRF(usr.SessionID)).
 		Cookie("session_id", usr.SessionID).
 		Expect(t).
