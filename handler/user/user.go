@@ -31,6 +31,9 @@ type Config struct {
 		CreateSession(context.Context, *CreateSessionRequest) (*model.User, error)
 		DeleteSession(context.Context, *model.User) error
 	}
+	LinkController interface {
+		ImportPocket(context.Context, *model.User, io.Reader) (int, error)
+	}
 	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)
 		WithToken(context.Context, string) (*model.User, error)
@@ -67,6 +70,7 @@ func Handler(c *Config) *mux.Router {
 	t.HandleFunc("/api/users", cc.UpdateUser).Methods("PATCH")
 	t.HandleFunc("/api/users", cc.DeleteUser).Methods("DELETE")
 	t.HandleFunc("/api/users/download", cc.DownloadUserData).Methods("GET")
+	t.HandleFunc("/api/users/import-pocket", cc.ImportPocket).Methods("POST")
 
 	return r
 }
@@ -320,4 +324,39 @@ func (s *config) DownloadUserData(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+}
+
+type ImportPocketResponse struct {
+	Imported int `json:"imported"`
+}
+
+// ImportPocket godoc
+//
+//	@Summary        Import links from Pocket CSV
+//	@Param  file    formData        file    true    "CSV file"
+//	@Success        200     {object}        ImportPocketResponse
+//	@Failure        400     {object}        payload.Error
+//	@Failure        401     {object}        payload.Error
+//	@Failure        500     {object}        payload.Error
+//	@Security       ApiKeyAuth
+//	@Router /users/import-pocket  [post]
+func (s *config) ImportPocket(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.ImportPocket")
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+
+	f, _, err := r.FormFile("file")
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err, http.StatusBadRequest))
+		return
+	}
+	defer f.Close()
+
+	n, err := s.LinkController.ImportPocket(ctx, u, f)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+		return
+	}
+
+	payload.Write(w, r, &ImportPocketResponse{Imported: n}, http.StatusOK)
 }

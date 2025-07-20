@@ -189,7 +189,7 @@ function ImportPocket() {
     form.append("file", file);
     setIsUploading(true);
     try {
-      await fetch("/api/links/import-pocket", {
+      await fetch("/api/users/import-pocket", {
         method: "POST",
         body: form,
         headers: { "X-Csrf-Token": csrfStore.get() },
