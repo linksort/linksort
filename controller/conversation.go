@@ -100,18 +100,6 @@ func (c *Conversation) Converse(
 
 	messages := make([]*model.Message, 0)
 
-	// Create user message
-	newMessage := &model.Message{
-		ConversationID: req.ID,
-		Role:           "user",
-		Text:           &req.Message,
-		CreatedAt:      time.Now(),
-		IsToolUse:      false,
-	}
-
-	// Append to list of messages
-	messages = append(messages, newMessage)
-
 	// Convert page context to map for assistant
 	var pageContextMap map[string]any
 	if req.PageContext != nil {
@@ -120,6 +108,20 @@ func (c *Conversation) Converse(
 			"query": req.PageContext.Query,
 		}
 	}
+
+	// Create user message
+	textArray := []string{req.Message}
+	newMessage := &model.Message{
+		ConversationID: req.ID,
+		Role:           "user",
+		Text:           &textArray,
+		CreatedAt:      time.Now(),
+		IsToolUse:      false,
+		PageContext:    pageContextMap,
+	}
+
+	// Append to list of messages
+	messages = append(messages, newMessage)
 
 	// Create a new assistant with page context
 	asst := c.AssistantClient.NewAssistant(usr, conversation, newMessage, pageContextMap)

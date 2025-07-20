@@ -43,7 +43,7 @@ type Message struct {
 	// If IsToolUse is true, then the ToolUse field must be populated. Otherwise, the Text field must be populated.
 	IsToolUse bool
 	ToolUse   *[]ToolUse
-	Text      *string
+	Text      *[]string
 }
 
 type Role string
@@ -205,11 +205,15 @@ func (a *Agent) Act(ctx context.Context) error {
 				switch delta := event.Value.Delta.(type) {
 				case *types.ContentBlockDeltaMemberText:
 					if nextMessage.Text == nil {
-						text := ""
-						nextMessage.Text = &text
+						textArray := []string{""}
+						nextMessage.Text = &textArray
+					} else if len(*nextMessage.Text) == 0 {
+						*nextMessage.Text = append(*nextMessage.Text, "")
 					}
 
-					*nextMessage.Text += delta.Value
+					// Append to the last text entry
+					lastIndex := len(*nextMessage.Text) - 1
+					(*nextMessage.Text)[lastIndex] += delta.Value
 					a.Stream <- delta.Value
 				case *types.ContentBlockDeltaMemberToolUse:
 					toolUseList := *nextMessage.ToolUse
@@ -323,10 +327,12 @@ func mapMessages(messages []Message) []types.Message {
 				}
 			}
 		} else if msg.Text != nil {
-			// Handle text messages
-			typesMsg.Content = append(typesMsg.Content, &types.ContentBlockMemberText{
-				Value: *msg.Text,
-			})
+			// Handle text messages - iterate through all text entries
+			for _, text := range *msg.Text {
+				typesMsg.Content = append(typesMsg.Content, &types.ContentBlockMemberText{
+					Value: text,
+				})
+			}
 		}
 
 		result = append(result, typesMsg)
