@@ -324,104 +324,94 @@ func (l *Link) ImportPocket(ctx context.Context, u *model.User, r io.Reader) (in
 
 	count := 0
 
-	err = l.Transactor.DoInTransaction(context.Background(), func(sessCtx context.Context) error {
-		innerOp := errors.Opf("%s.innerTxn", op)
-
-		user, err := l.UserStore.GetUserByEmail(sessCtx, u.Email)
-		if err != nil {
-			return errors.E(innerOp, err)
-		}
-
-		for {
-			rec, err := reader.Read()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				return errors.E(innerOp, err)
-			}
-
-			url := rec[idx["url"]]
-			title := ""
-			if i, ok := idx["title"]; ok {
-				title = rec[i]
-			}
-			ts := int64(0)
-			if i, ok := idx["time_added"]; ok {
-				ts, _ = strconv.ParseInt(rec[i], 10, 64)
-			}
-			tagsStr := ""
-			if i, ok := idx["tags"]; ok {
-				tagsStr = rec[i]
-			}
-
-			created := time.Unix(ts, 0)
-			if ts == 0 {
-				created = time.Now()
-			}
-
-			tagDetails := make(model.TagDetailList, 0)
-			pathsSet := map[string]struct{}{}
-			if tagsStr != "" {
-				for _, t := range strings.Split(tagsStr, "|") {
-					t = strings.TrimSpace(t)
-					if t == "" {
-						continue
-					}
-					tagDetails = append(tagDetails, &model.TagDetail{Name: t, Path: t, Confidence: 1})
-					parts := strings.Split(t, "/")
-					if len(parts) > 0 && parts[0] == "" {
-						parts = parts[1:]
-					}
-					for i := range parts {
-						pathsSet[strings.Join(parts[:i+1], "/")] = struct{}{}
-					}
-				}
-			}
-
-			tagPaths := make([]string, 0, len(pathsSet))
-			for p := range pathsSet {
-				tagPaths = append(tagPaths, p)
-			}
-
-			link := &model.Link{
-				UserID:     u.ID,
-				CreatedAt:  created,
-				UpdatedAt:  created,
-				URL:        url,
-				Title:      title,
-				TagDetails: tagDetails,
-				TagPaths:   tagPaths,
-			}
-
-			newLink, err := l.Store.CreateLink(sessCtx, link)
-			if err != nil {
-				if e, ok := err.(*errors.Error); ok {
-					if e.Status() == http.StatusBadRequest && e.Message()["url"] == "This link has already been saved." {
-						// skip duplicates
-						continue
-					}
-				}
-				return errors.E(innerOp, err)
-			}
-
-			if err := user.TagTree.UpdateWithNewTagDetails(newLink.TagDetails); err != nil {
-				return errors.E(innerOp, err)
-			}
-
-			count++
-		}
-
-		if _, err = l.UserStore.UpdateUser(sessCtx, user); err != nil {
-			return errors.E(innerOp, err)
-		}
-
-		*u = *user
-		return nil
-	})
+	user, err := l.UserStore.GetUserByEmail(ctx, u.Email)
 	if err != nil {
+		return 0, errors.E(op, err)
+	}
+
+	for {
+		rec, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return count, errors.E(op, err)
+		}
+
+		url := rec[idx["url"]]
+		title := ""
+		if i, ok := idx["title"]; ok {
+			title = rec[i]
+		}
+		ts := int64(0)
+		if i, ok := idx["time_added"]; ok {
+			ts, _ = strconv.ParseInt(rec[i], 10, 64)
+		}
+		tagsStr := ""
+		if i, ok := idx["tags"]; ok {
+			tagsStr = rec[i]
+		}
+		created := time.Unix(ts, 0)
+		if ts == 0 {
+			created = time.Now()
+		}
+
+		tagDetails := make(model.TagDetailList, 0)
+		pathsSet := map[string]struct{}{}
+		if tagsStr != "" {
+			for _, t := range strings.Split(tagsStr, "|") {
+				t = strings.TrimSpace(t)
+				if t == "" {
+					continue
+				}
+				tagDetails = append(tagDetails, &model.TagDetail{Name: t, Path: t, Confidence: 1})
+				parts := strings.Split(t, "/")
+				if len(parts) > 0 && parts[0] == "" {
+					parts = parts[1:]
+				}
+				for i := range parts {
+					pathsSet[strings.Join(parts[:i+1], "/")] = struct{}{}
+				}
+			}
+		}
+
+		tagPaths := make([]string, 0, len(pathsSet))
+		for p := range pathsSet {
+			tagPaths = append(tagPaths, p)
+		}
+
+		link := &model.Link{
+			UserID:     u.ID,
+			CreatedAt:  created,
+			UpdatedAt:  created,
+			URL:        url,
+			Title:      title,
+			TagDetails: tagDetails,
+			TagPaths:   tagPaths,
+		}
+
+		newLink, err := l.Store.CreateLink(ctx, link)
+		if err != nil {
+			if e, ok := err.(*errors.Error); ok {
+				if e.Status() == http.StatusBadRequest && e.Message()["url"] == "This link has already been saved." {
+					// skip duplicates
+					continue
+				}
+			}
+			return count, errors.E(op, err)
+		}
+
+		if err := user.TagTree.UpdateWithNewTagDetails(newLink.TagDetails); err != nil {
+			return count, errors.E(op, err)
+		}
+
+		count++
+	}
+
+	if _, err = l.UserStore.UpdateUser(ctx, user); err != nil {
 		return count, errors.E(op, err)
 	}
 
+	*u = *user
 	return count, nil
 }
