@@ -106,6 +106,16 @@ function convertToMessages(content) {
   })
 }
 
+// Define write-action tools that should trigger query refreshes when successful
+const WRITE_ACTION_TOOLS = new Set([
+  'create_folder',
+  'delete_folder', 
+  'rename_folder',
+  'add_link_to_folder',
+  'remove_link_from_folder',
+  'summarize_link'
+])
+
 export function useConverse() {
   const [status, setStatus] = useState('idle') // idle, connecting, streaming, done, error
   const [response, setResponse] = useState({ content: [], text: '', toolUses: {} })
@@ -234,6 +244,20 @@ export function useConverse() {
 
               // Reset current text for next segment
               currentTextContent = ''
+
+              // Invalidate queries when write-action tools complete successfully
+              if (toolUse.status === 'success' && WRITE_ACTION_TOOLS.has(toolUse.name)) {
+                // Invalidate user query for folder-related changes
+                if (['create_folder', 'delete_folder', 'rename_folder', 'add_link_to_folder', 'remove_link_from_folder'].includes(toolUse.name)) {
+                  queryClient.invalidateQueries('user')
+                }
+                
+                // Invalidate links queries for link-related changes
+                if (['add_link_to_folder', 'remove_link_from_folder', 'summarize_link'].includes(toolUse.name)) {
+                  queryClient.invalidateQueries(['links', 'list'])
+                  queryClient.invalidateQueries(['links', 'detail'])
+                }
+              }
 
               setResponse({ content, text: accumulatedText, toolUses })
             }

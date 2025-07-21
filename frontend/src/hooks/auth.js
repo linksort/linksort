@@ -9,11 +9,11 @@ const USER_SHAPE = {
 };
 
 export function useUser() {
-  const { data } = useQuery("user", () => apiFetch("/api/users"), {
+  const { data } = useQuery("user", () => apiFetch("/api/users").then(data => data.user), {
     initialData: () => {
       return Object.assign({}, USER_SHAPE, window.__SERVER_DATA__.user);
     },
-    enabled: false,
+    enabled: true,
   });
 
   return data;
