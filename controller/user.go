@@ -26,6 +26,7 @@ type User struct {
 		CreateLink(ctx context.Context, link *model.Link) (*model.Link, error)
 		DeleteAllLinksByUser(ctx context.Context, u *model.User) error
 		GetAllLinksByUser(ctx context.Context, u *model.User, p *model.Pagination) ([]*model.Link, error)
+		GetTotalLinksCountByUser(ctx context.Context, u *model.User) (int, error)
 	}
 	Email interface {
 		SendForgotPassword(context.Context, *model.User, string) error
@@ -74,10 +75,26 @@ func (u *User) CreateUser(ctx context.Context, req *handler.CreateUserRequest) (
 	return usr, nil
 }
 
+func (u *User) populateLinksCount(ctx context.Context, usr *model.User) error {
+	if usr.LinksCount == 0 {
+		count, err := u.LinkStore.GetTotalLinksCountByUser(ctx, usr)
+		if err != nil {
+			return err
+		}
+		usr.LinksCount = count
+	}
+	return nil
+}
+
 func (u *User) GetUserBySessionID(ctx context.Context, sessionID string) (*model.User, error) {
 	op := errors.Opf("controller.GetUserBySessionID(%q)", sessionID)
 
 	usr, err := u.Store.GetUserBySessionID(ctx, sessionID)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	err = u.populateLinksCount(ctx, usr)
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
@@ -89,6 +106,11 @@ func (u *User) GetUserByToken(ctx context.Context, token string) (*model.User, e
 	op := errors.Opf("controller.GetUserByToken()")
 
 	usr, err := u.Store.GetUserByToken(ctx, token)
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	err = u.populateLinksCount(ctx, usr)
 	if err != nil {
 		return nil, errors.E(op, err)
 	}

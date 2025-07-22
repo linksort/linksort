@@ -225,6 +225,17 @@ func (s *LinkStore) DeleteAllLinksByUser(ctx context.Context, u *model.User) err
 	return nil
 }
 
+func (s *LinkStore) GetTotalLinksCountByUser(ctx context.Context, u *model.User) (int, error) {
+	op := errors.Opf("LinkStore.GetTotalLinksCountByUser(%q)", u.Email)
+
+	count, err := s.col.CountDocuments(ctx, bson.M{"userid": u.ID})
+	if err != nil {
+		return 0, errors.E(op, err)
+	}
+
+	return int(count), nil
+}
+
 func GetLinksSort(val string) model.GetLinksOption {
 	return func(m map[string]interface{}) {
 		if len(val) > 0 && (val == "1" || val == "-1") {
