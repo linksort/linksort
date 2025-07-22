@@ -218,17 +218,24 @@ function ImportPocket() {
       <Heading as="h2" size="md">
         Import from Pocket
       </Heading>
-      <input
-        ref={inputRef}
-        id="pocket-file"
-        type="file"
-        accept=".csv"
-        style={{ display: "none" }}
-        onChange={handleChange}
-      />
-      <Button as="label" htmlFor="pocket-file" isLoading={isUploading}>
-        Upload CSV
-      </Button>
+
+      <Text>
+        Upload the CSV you exported from Pocket to import your links to Linksort.
+      </Text>
+
+      <Box>
+        <input
+          ref={inputRef}
+          id="pocket-file"
+          type="file"
+          accept=".csv"
+          style={{ display: "none" }}
+          onChange={handleChange}
+        />
+        <Button as="label" htmlFor="pocket-file" isLoading={isUploading} cursor="pointer">
+          Upload CSV
+        </Button>
+      </Box>
     </VStack>
   );
 }

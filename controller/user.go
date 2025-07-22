@@ -3,11 +3,13 @@ package controller
 import (
 	"archive/zip"
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +23,7 @@ import (
 type User struct {
 	Store     model.UserStore
 	LinkStore interface {
+		CreateLink(ctx context.Context, link *model.Link) (*model.Link, error)
 		DeleteAllLinksByUser(ctx context.Context, u *model.User) error
 		GetAllLinksByUser(ctx context.Context, u *model.User, p *model.Pagination) ([]*model.Link, error)
 	}
@@ -239,4 +242,101 @@ func (u *User) DownloadUserData(ctx context.Context, usr *model.User, w io.Write
 	zipW.Close()
 	flusher.Flush()
 	return nil
+}
+
+func (u *User) ImportPocket(ctx context.Context, usr *model.User, r io.Reader) (int, error) {
+	op := errors.Op("controller.ImportPocket")
+
+	reader := csv.NewReader(r)
+
+	headers, err := reader.Read()
+	if err != nil {
+		return 0, errors.E(op, err, http.StatusBadRequest)
+	}
+
+	idx := map[string]int{}
+	for i, h := range headers {
+		idx[strings.ToLower(strings.TrimSpace(h))] = i
+	}
+
+	count := 0
+
+	user, err := u.Store.GetUserByEmail(ctx, usr.Email)
+	if err != nil {
+		return 0, errors.E(op, err)
+	}
+
+	for {
+		rec, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return count, errors.E(op, err)
+		}
+
+		url := rec[idx["url"]]
+		title := ""
+		if i, ok := idx["title"]; ok {
+			title = rec[i]
+		}
+		ts := int64(0)
+		if i, ok := idx["time_added"]; ok {
+			ts, _ = strconv.ParseInt(rec[i], 10, 64)
+		}
+		tagsStr := ""
+		if i, ok := idx["tags"]; ok {
+			tagsStr = rec[i]
+		}
+		created := time.Unix(ts, 0)
+		if ts == 0 {
+			created = time.Now()
+		}
+
+		tags := make([]string, 0)
+		isFav := false
+		if tagsStr != "" {
+			for _, t := range strings.Split(tagsStr, "|") {
+				t = strings.TrimSpace(t)
+				if t == "" {
+					continue
+				}
+				if t == "starred" {
+					isFav = true
+				} else {
+					tags = append(tags, t)
+					user.UserTags.Add(t)
+				}
+			}
+		}
+
+		link := &model.Link{
+			UserID:     usr.ID,
+			CreatedAt:  created,
+			UpdatedAt:  created,
+			URL:        url,
+			Title:      title,
+			IsFavorite: isFav,
+			UserTags:   tags,
+		}
+
+		_, err = u.LinkStore.CreateLink(ctx, link)
+		if err != nil {
+			if e, ok := err.(*errors.Error); ok {
+				if e.Status() == http.StatusBadRequest && e.Message()["url"] == "This link has already been saved." {
+					// skip duplicates
+					continue
+				}
+			}
+			return count, errors.E(op, err)
+		}
+
+		count++
+	}
+
+	if _, err = u.Store.UpdateUser(ctx, user); err != nil {
+		return count, errors.E(op, err)
+	}
+
+	return count, nil
 }

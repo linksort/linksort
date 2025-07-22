@@ -3,7 +3,6 @@ package link
 import (
 	"context"
 	"html"
-	"io"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -25,7 +24,6 @@ type Config struct {
 		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, *model.User, error)
 		DeleteLink(context.Context, *model.User, string) (*model.User, error)
 		SummarizeLink(context.Context, *model.User, string) (*model.Link, error)
-		ImportPocket(context.Context, *model.User, io.Reader) (int, error)
 	}
 	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)

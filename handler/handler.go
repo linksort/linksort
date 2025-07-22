@@ -85,7 +85,6 @@ func New(c *Config) http.Handler {
 		AuthController:    authC,
 		UserController:    userC,
 		SessionController: sessionC,
-		LinkController:    linkC,
 		CSRF:              c.Magic,
 	})))
 	api.PathPrefix("/links").Handler(wrap(link.Handler(&link.Config{

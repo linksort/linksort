@@ -26,13 +26,11 @@ type Config struct {
 		ForgotPassword(context.Context, *ForgotPasswordRequest) error
 		ChangePassword(context.Context, *ChangePasswordRequest) (*model.User, error)
 		DownloadUserData(context.Context, *model.User, io.Writer) error
+		ImportPocket(context.Context, *model.User, io.Reader) (int, error)
 	}
 	SessionController interface {
 		CreateSession(context.Context, *CreateSessionRequest) (*model.User, error)
 		DeleteSession(context.Context, *model.User) error
-	}
-	LinkController interface {
-		ImportPocket(context.Context, *model.User, io.Reader) (int, error)
 	}
 	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)
@@ -352,7 +350,7 @@ func (s *config) ImportPocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 
-	n, err := s.LinkController.ImportPocket(ctx, u, f)
+	n, err := s.UserController.ImportPocket(ctx, u, f)
 	if err != nil {
 		payload.WriteError(w, r, errors.E(op, err))
 		return
