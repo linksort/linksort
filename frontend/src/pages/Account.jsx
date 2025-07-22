@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { pick } from "lodash";
 import { useFormik } from "formik";
 import {
@@ -22,6 +22,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { csrfStore } from "../utils/apiFetch";
 
 import { suppressMutationErrors } from "../utils/mutations";
 import { useUpdateUser, useDeleteUser, useUser } from "../hooks/auth";
@@ -126,18 +127,30 @@ function APIAccess() {
         API Access
       </Heading>
 
-      <Text>
-        Use this API key to access Linksort programatically.
-      </Text>
+      <Text>Use this API key to access Linksort programatically.</Text>
 
       <Input
-        value={isShowing ? user.token : user.token.slice(-4).padStart(user.token.length, '*')}
+        value={
+          isShowing
+            ? user.token
+            : user.token.slice(-4).padStart(user.token.length, "*")
+        }
         isReadOnly
-        fontFamily={"mono"} />
+        fontFamily={"mono"}
+      />
 
       <HStack>
-        <Button onClick={() => setIsShowing(!isShowing)}>{isShowing ? "Hide" : "Show"} Key</Button>
-        <Button as="a" href="/docs" target="_blank" rightIcon={<ArrowForwardIcon />} >API Docs</Button>
+        <Button onClick={() => setIsShowing(!isShowing)}>
+          {isShowing ? "Hide" : "Show"} Key
+        </Button>
+        <Button
+          as="a"
+          href="/docs"
+          target="_blank"
+          rightIcon={<ArrowForwardIcon />}
+        >
+          API Docs
+        </Button>
       </HStack>
     </VStack>
   );
@@ -151,11 +164,77 @@ function DownloadData() {
       </Heading>
 
       <Text>
-        This will download a ZIP file containing all of your data in JSON format.
+        This will download a ZIP file containing all of your data in JSON
+        format.
       </Text>
 
       <Box>
-        <Button as="a" href="/api/users/download" download="linksort-data.zip">Download Data</Button>
+        <Button as="a" href="/api/users/download" download="linksort-data.zip">
+          Download Data
+        </Button>
+      </Box>
+    </VStack>
+  );
+}
+
+function ImportPocket() {
+  const inputRef = useRef();
+  const toast = useToast();
+  const [isUploading, setIsUploading] = useState(false);
+
+  async function handleChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const form = new FormData();
+    form.append("file", file);
+    setIsUploading(true);
+    try {
+      await fetch("/api/users/import-pocket", {
+        method: "POST",
+        body: form,
+        headers: { "X-Csrf-Token": csrfStore.get() },
+        credentials: "same-origin",
+      });
+      toast({
+        title: "Import complete",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    } catch (e) {
+      toast({
+        title: "Import failed",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+    setIsUploading(false);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  return (
+    <VStack maxWidth="40ch" spacing={4} align="left">
+      <Heading as="h2" size="md">
+        Import from Pocket
+      </Heading>
+
+      <Text>
+        Upload the CSV you exported from Pocket to import your links to Linksort.
+      </Text>
+
+      <Box>
+        <input
+          ref={inputRef}
+          id="pocket-file"
+          type="file"
+          accept=".csv"
+          style={{ display: "none" }}
+          onChange={handleChange}
+        />
+        <Button as="label" htmlFor="pocket-file" isLoading={isUploading} cursor="pointer">
+          Upload CSV
+        </Button>
       </Box>
     </VStack>
   );
@@ -170,11 +249,7 @@ function Danger() {
   });
 
   return (
-    <VStack
-      maxWidth="40ch"
-      spacing={4}
-      align="left"
-    >
+    <VStack maxWidth="40ch" spacing={4} align="left">
       <Heading as="h2" size="md">
         Danger
       </Heading>
@@ -193,7 +268,8 @@ function Danger() {
               Are you sure you want to delete your account?
             </Text>
             <Text fontSize={"md"} fontWeight={"normal"}>
-              This action cannot be reversed and it will not be possible to recover your data.
+              This action cannot be reversed and it will not be possible to
+              recover your data.
             </Text>
             <HStack justifyContent={"flex-end"}>
               <Button
@@ -201,10 +277,13 @@ function Danger() {
                 color={"white"}
                 type="submit"
                 onClick={formik.handleSubmit}
-                isLoading={formik.isSubmitting}>
+                isLoading={formik.isSubmitting}
+              >
                 Yes, Delete
               </Button>
-              <Button onClick={onClose} autoFocus>No, Cancel</Button>
+              <Button onClick={onClose} autoFocus>
+                No, Cancel
+              </Button>
             </HStack>
           </VStack>
         </ModalContent>
@@ -238,6 +317,7 @@ export default function Account() {
     >
       <Profile />
       <APIAccess />
+      <ImportPocket />
       <DownloadData />
       <Danger />
     </VStack>
