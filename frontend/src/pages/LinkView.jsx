@@ -37,7 +37,7 @@ import {
   MinimizeIcon,
 } from "../components/CustomIcons";
 import { useFilters } from "../hooks/filters";
-import { isoDateToHeading } from "../utils/time";
+import { isoDateToAtTimeOnDate } from "../utils/time";
 
 const NOTE_PANEL_NORMAL = "normal";
 const NOTE_PANEL_MAXIMIZED = "maximized";
@@ -219,7 +219,7 @@ export default function LinkView() {
               <Heading as="h6" fontSize="sm">
                 Saved At
               </Heading>
-              <Text>{isoDateToHeading(link.createdAt)}</Text>
+              <Text>{isoDateToAtTimeOnDate(link.createdAt)}</Text>
             </VStack>
 
             <VStack align="left">
