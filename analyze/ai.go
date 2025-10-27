@@ -49,7 +49,7 @@ type bedrockClient struct {
 
 func (c *bedrockClient) Summarize(ctx context.Context, text string) (string, error) {
 	resp, err := c.client.Converse(ctx, &bedrockruntime.ConverseInput{
-		ModelId: aws.String("us.anthropic.claude-3-5-haiku-20241022-v1:0"),
+		ModelId: aws.String("us.anthropic.claude-haiku-4-5-20251001-v1:0"),
 		System: []types.SystemContentBlock{
 			&types.SystemContentBlockMemberText{
 				Value: systemPrompt,

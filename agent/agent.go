@@ -142,7 +142,7 @@ func (a *Agent) Act(ctx context.Context) error {
 		ll.Printf("calling ConverseStream: [iteration=%d]", iterations)
 		resp, err := a.Client.ConverseStream(ctx, &bedrockruntime.ConverseStreamInput{
 			// ModelId: aws.String("us.anthropic.claude-3-5-sonnet-20241022-v2:0"),
-			ModelId: aws.String("us.anthropic.claude-3-5-haiku-20241022-v1:0"),
+			ModelId: aws.String("us.anthropic.claude-haiku-4-5-20251001-v1:0"),
 			System: []types.SystemContentBlock{
 				&types.SystemContentBlockMemberText{
 					Value: a.System,
