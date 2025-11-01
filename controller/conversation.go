@@ -66,6 +66,18 @@ func (c *Conversation) GetConversation(
 		)
 	}
 
+	for i := range conv.Messages {
+		if conv.Messages[i].IsToolUse {
+			for j := range *conv.Messages[i].ToolUse {
+				if (*conv.Messages[i].ToolUse)[j].Type == agent.ToolUseTypeResponse {
+					if len((*conv.Messages[i].ToolUse)[j].Response.Text) > 1024 {
+						(*conv.Messages[i].ToolUse)[j].Response.Text = "RESPONSE OMITTED FOR BREVITY"
+					}
+				}
+			}
+		}
+	}
+
 	return conv, nil
 }
 
@@ -93,7 +105,7 @@ func (c *Conversation) Converse(
 	op := errors.Op("controller.Converse")
 
 	// Get the conversation to ensure it exists and belongs to user
-	conversation, err := c.GetConversation(ctx, usr, req.ID, &model.Pagination{Page: 0, Size: 32})
+	conversation, err := c.GetConversation(ctx, usr, req.ID, &model.Pagination{Page: 0, Size: 16})
 	if err != nil {
 		return nil, errors.E(op, err)
 	}
