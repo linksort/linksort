@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code and other AI agents when working with code in this repository.
 
 ## Project Overview
 
@@ -27,13 +27,13 @@ Linksort is an open source bookmarking application with AI-powered features. It 
 
 ## Development Commands
 
-### Full Development Setup (Recommended)
+### Full Development Setup
 ```bash
 docker compose up
 ```
 Access at http://localhost:8000
 
-### Backend Development (without Docker)
+### Backend Development (without Docker Compose)
 ```bash
 # Setup MongoDB replica set
 docker build -f docker/mongo.Dockerfile -t mongo-rs .
@@ -42,9 +42,8 @@ docker run -p 27017:27017 -v db-data:/data/db -d mongo-rs
 # Set environment variables
 export PRODUCTION=0
 export ANALYZER_KEY=$(cat /path/to/key)  # Optional
-export DIFFBOT_TOKEN="<YOUR KEY>"
-export ANTHROPIC_API_KEY="<YOUR KEY>"
-export LOG_PUTTER="<AWS IAM ROLE ARN>"
+export DIFFBOT_TOKEN="<YOUR KEY>"  # Optional
+export LOG_PUTTER="<AWS IAM ROLE ARN>"  # Optional
 export FRONTEND_HOSTNAME=localhost
 export FRONTEND_PORT=3000
 
@@ -95,7 +94,6 @@ swag init --dir cmd/serve/,handler,model,payload
 
 - `PRODUCTION` - Set to "0" for development mode
 - `DB_CONNECTION` - MongoDB connection string
-- `ANTHROPIC_API_KEY` - Required for AI features (analysis, conversation)
 - `ANALYZER_KEY` - Google Cloud Platform key for content classification
 - `DIFFBOT_TOKEN` - Diffbot API key for enhanced content extraction
 - `MAILGUN_KEY` - Email service for password resets
