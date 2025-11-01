@@ -371,6 +371,7 @@ func (t *GetLinkTool) Spec() agent.Spec {
 			"properties": map[string]any{
 				"id": map[string]string{
 					"type": "string",
+					"pattern": "^[0-9a-f]{24}$",
 				},
 			},
 			"required": []string{"id"},
@@ -654,7 +655,7 @@ func (t *AddLinkToFolderTool) Spec() agent.Spec {
 			"properties": map[string]any{
 				"linkId": map[string]any{
 					"type":    "string",
-					"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+					"pattern": "^[0-9a-f]{24}$",
 				},
 				"folderId": map[string]any{
 					"type":    "string",
@@ -727,7 +728,7 @@ func (t *RemoveLinkFromFolderTool) Spec() agent.Spec {
 			"properties": map[string]any{
 				"linkId": map[string]any{
 					"type":    "string",
-					"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+					"pattern": "^[0-9a-f]{24}$",
 				},
 			},
 			"required": []string{"linkId"},
@@ -752,9 +753,10 @@ func (t *RemoveLinkFromFolderTool) Use(ctx context.Context, id, input string) ag
 		}
 	}
 
+	rootFolder := "root"
 	updateReq := &link.UpdateLinkRequest{
 		ID:       linkID,
-		FolderID: nil,
+		FolderID: &rootFolder,
 	}
 
 	_, _, err := t.LinkController.UpdateLink(ctx, t.User, updateReq)
@@ -788,6 +790,7 @@ func (t *SummarizeLinkTool) Spec() agent.Spec {
 			"properties": map[string]any{
 				"linkId": map[string]any{
 					"type": "string",
+					"pattern": "^[0-9a-f]{24}$",
 				},
 			},
 			"required": []string{"linkId"},
