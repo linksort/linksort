@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -157,8 +158,26 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 }
 
 func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.URL) (*Response, error) {
-	simpleRes, simpleErr := c.simpleExtract(ctx, inputURL.String())
-	diffbotRes, diffbotErr := c.diffbot(ctx, inputURL.String())
+	var simpleRes *Response
+	var simpleErr error
+	var diffbotRes *Response
+	var diffbotErr error
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	// Start both requests in parallel
+	go func() {
+		defer wg.Done()
+		simpleRes, simpleErr = c.simpleExtract(ctx, inputURL.String())
+	}()
+
+	go func() {
+		defer wg.Done()
+		diffbotRes, diffbotErr = c.diffbot(ctx, inputURL.String())
+	}()
+
+	wg.Wait()
 	if simpleErr != nil && diffbotErr != nil {
 		return nil, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, diffbotErr)
 	}
