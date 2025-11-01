@@ -176,13 +176,13 @@ func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.UR
 	}
 
 	return &Response{
-		Title:       getNonZeroString(diffbotRes.Title, simpleRes.Title),
-		URL:         getNonZeroString(simpleRes.URL, diffbotRes.URL),
-		Site:        getNonZeroString(simpleRes.Site, diffbotRes.Site),
-		Description: getNonZeroString(simpleRes.Description, diffbotRes.Description),
-		Favicon:     getNonZeroString(simpleRes.Favicon, diffbotRes.Favicon),
-		Image:       getNonZeroString(simpleRes.Image, diffbotRes.Image),
-		Corpus:      getNonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
+		Title:       getValidUTF8NonZeroString(diffbotRes.Title, simpleRes.Title),
+		URL:         getValidUTF8NonZeroString(simpleRes.URL, diffbotRes.URL),
+		Site:        getValidUTF8NonZeroString(simpleRes.Site, diffbotRes.Site),
+		Description: getValidUTF8NonZeroString(simpleRes.Description, diffbotRes.Description),
+		Favicon:     getValidUTF8NonZeroString(simpleRes.Favicon, diffbotRes.Favicon),
+		Image:       getValidUTF8NonZeroString(simpleRes.Image, diffbotRes.Image),
+		Corpus:      getValidUTF8NonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
 		Original:    inputURL.String(),
 		IsArticle:   true,
 	}, nil
@@ -367,6 +367,10 @@ func getNonZeroString(v ...string) string {
 	}
 
 	return ""
+}
+
+func getValidUTF8NonZeroString(v ...string) string {
+	return strings.ToValidUTF8(getNonZeroString(v...), "")
 }
 
 func getOpenGraphImageURL(images []*opengraph.Image) string {
