@@ -83,6 +83,7 @@ Features:
 - Data Export: Download user data
 - Account Deletion: Remove account and data
 - API Access: Information for developers
+- Import from Pocket: Users can import links from a CSV from Pocket
 
 ### Extensions Page (/extensions)
 
@@ -849,7 +850,7 @@ func userSummary(u *model.User, pageContext map[string]any) string {
 			// Extract link ID from route if present
 			if route != "/" && len(route) > 1 {
 				// For routes like /links/abc123, extract the link ID
-				if route[:7] == "/links/" && len(route) > 7 {
+				if len(route) > 7 && route[:7] == "/links/" {
 					linkID := route[7:]
 					summary += fmt.Sprintf("\n- IMPORTANT: The user is currently viewing link ID: %s", linkID)
 					summary += fmt.Sprintf("\n- CRITICAL: Use this link (%s) when responding and not other links from the conversation history. The user may have navigated to a different page since the last message.", linkID)
