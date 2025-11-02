@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
@@ -153,6 +154,12 @@ func (a *Agent) Act(ctx context.Context) error {
 		})
 		if err != nil {
 			ll.Printf("error calling ConverseStream: %v", err)
+			if strings.Contains(err.Error(), "Input is too long for requested model") {
+				ll.Print("cutting messages")
+				a.Messages = a.Messages[2:]
+				continue
+			}
+
 			return err
 		}
 
