@@ -19,6 +19,7 @@ var agenticSystemPrompt string = `## Identity
 - Provide helpful and insightful information about the contents of the user's links when you can, using the tools at your disposal.
 - Only answer questions and commands that are about Linksort and/or the user's links and their contents. If the user asks unrelated question, remind them that your purpose is to help the user use Linksort and its features.
 - Remember to always be friendly and cordial.
+- IMPORTANT: When working with many links (>16), do NOT attempt to operate on all of them at the same time. Work through them in batches of at most 10 links and confirm with the user when you're proceeding to the next batch.
 
 ## Linksort Application Summary
 
@@ -232,9 +233,9 @@ func (t *GetLinksTool) Spec() agent.Spec {
 				},
 				"size": map[string]any{
 					"type":        "integer",
-					"description": "Page size (default 18, max 1000)",
+					"description": "Page size (default 18, max 32)",
 					"minimum":     1,
-					"maximum":     1000,
+					"maximum":     32,
 				},
 			},
 			"required": []string{},
@@ -322,10 +323,10 @@ func (t *GetLinksTool) Use(ctx context.Context, id, input string) agent.ToolUseR
 	if sizeVal, ok := typedInput["size"]; ok {
 		if sizeFloat, ok := sizeVal.(float64); ok {
 			size := int(sizeFloat)
-			if size < 1 || size > 1000 {
+			if size < 1 || size > 32 {
 				return agent.ToolUseResponse{
 					Status: agent.ToolUseStatusError,
-					Text:   "size parameter must be between 1 and 1000",
+					Text:   "size parameter must be between 1 and 32",
 				}
 			}
 			req.Pagination.Size = size
