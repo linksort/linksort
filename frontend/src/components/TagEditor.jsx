@@ -66,7 +66,7 @@ export default function TagEditor({ tags, onChange }) {
         {tags.map((tag) => (
           <WrapItem key={tag}>
             <Button as={"div"} size={"sm"}>
-              <Text mr={1}>{tag}</Text>
+              <Text mr={1} fontWeight="medium">{tag}</Text>
               <IconButton
                 variant="inherit"
                 size="xs"
@@ -93,7 +93,7 @@ export default function TagEditor({ tags, onChange }) {
                 onClick={handleAddTag} />
             </Button>
           ) : (
-            <Button size="sm" colorScheme="brand" onClick={() => setIsEditing(true)}>Add Tag</Button>
+            <Button size="sm" fontWeight="medium" colorScheme="brand" onClick={() => setIsEditing(true)}>Add Tag</Button>
           )}
         </WrapItem>
       </Wrap>

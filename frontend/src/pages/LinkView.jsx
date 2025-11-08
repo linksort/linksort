@@ -259,6 +259,7 @@ export default function LinkView() {
                       whiteSpace="nowrap"
                       overflow="hidden"
                       transition="all 0.2s"
+                      padding={2}
                       _hover={{ backgroundColor: "gray.200" }}
                     >
                       {detail.path
