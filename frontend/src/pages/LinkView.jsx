@@ -31,6 +31,7 @@ import ErrorScreen from "../components/ErrorScreen";
 import LinkItemFavicon from "../components/LinkItemFavicon";
 import CoverImage from "../components/CoverImage";
 import LinkControlsMenu from "../components/LinkControlsMenu";
+import InlineTagEditor from "../components/InlineTagEditor";
 import {
   DotDotDotVert,
   MaximizeIcon,
@@ -240,28 +241,7 @@ export default function LinkView() {
               <Heading as="h6" fontSize="sm">
                 Personal Tags
               </Heading>
-              {link.userTags.length > 0 ? (
-                <Wrap>
-                  {link.userTags.map((tag) => (
-                    <Tag
-                      as={RouterLink}
-                      to={`/?usertag=${encodeURIComponent(tag)}`}
-                      key={tag}
-                      marginRight={2}
-                      whiteSpace="nowrap"
-                      overflow="hidden"
-                      transition="all 0.2s"
-                      _hover={{ backgroundColor: "gray.200" }}
-                    >
-                      {tag}
-                    </Tag>
-                  ))}
-                </Wrap>
-              ) : (
-                <Text color="gray.600">
-                  No personal tags have been assigned to this link.
-                </Text>
-              )}
+              <InlineTagEditor linkId={link.id} />
             </VStack>
 
             <VStack align="left">
