@@ -19,9 +19,12 @@
   font-family: var(--font-serif);
 }
 
-.prose.prose-serif {
-  font-size: 1rem;
+.prose.prose-sans-serif {
   font-family: var(--font-sans);
+}
+
+.prose.prose-1rem {
+  font-size: 1rem;
 }
 
 .prose .message {

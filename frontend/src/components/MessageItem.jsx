@@ -116,7 +116,7 @@ export default function MessageItem({ message }) {
                 return (
                   <Box
                     key={index}
-                    className="prose"
+                    className="prose prose-sans-serif"
                     fontSize="sm"
                     dangerouslySetInnerHTML={{ __html: marked(textContent) }}
                   />
@@ -196,7 +196,7 @@ export default function MessageItem({ message }) {
 
         {message.text && !isUser && (
           <Box
-            className="prose"
+            className="prose prose-sans-serif"
             fontSize="sm"
             dangerouslySetInnerHTML={{ __html: marked(message.text) }}
           />
