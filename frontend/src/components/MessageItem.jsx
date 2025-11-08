@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Text, Flex, HStack, Spinner } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { marked } from "marked";
 
 // Helper component to render tool usage status
 function ToolUseIndicator({ toolUse }) {
@@ -108,9 +109,23 @@ export default function MessageItem({ message }) {
           )}
           {message.content.map((contentItem, index) => {
             if (contentItem.type === 'text') {
+              const textContent = contentItem.content.trim();
+
+              // Render markdown for assistant messages, plain text for user messages
+              if (!isUser) {
+                return (
+                  <Box
+                    key={index}
+                    className="prose prose-sans-serif"
+                    fontSize="sm"
+                    dangerouslySetInnerHTML={{ __html: marked(textContent) }}
+                  />
+                );
+              }
+
               return (
                 <Text key={index} fontSize="sm" lineHeight="1.5" whiteSpace="pre-wrap">
-                  {contentItem.content.trim()}
+                  {textContent}
                 </Text>
               );
             } else if (contentItem.type === 'toolUse') {
@@ -179,7 +194,15 @@ export default function MessageItem({ message }) {
           <Spinner size="xs" color="blue.500" />
         )}
 
-        {message.text && (
+        {message.text && !isUser && (
+          <Box
+            className="prose prose-sans-serif"
+            fontSize="sm"
+            dangerouslySetInnerHTML={{ __html: marked(message.text) }}
+          />
+        )}
+
+        {message.text && isUser && (
           <Text fontSize="sm" lineHeight="1.5" whiteSpace="pre-wrap">
             {message.text}
           </Text>

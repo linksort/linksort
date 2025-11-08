@@ -24,6 +24,7 @@ services:
       context: "."
     volumes:
       - ".:/opt/linksort/"
+      - "~/.aws:/root/.aws"
     ports:
       - "8000:8000"
     environment:
@@ -34,7 +35,7 @@ services:
       - "FRONTEND_PORT=3000"
       - "ANALYZER_KEY=${ANALYZER_KEY}"
       - "DIFFBOT_TOKEN=${DIFFBOT_TOKEN}"
-      - "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}"
+      - "LOG_PUTTER=${LOG_PUTTER}"
     links:
       - "db"
       - "frontend"

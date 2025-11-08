@@ -299,7 +299,7 @@ export default function LinkView() {
                 Summary
               </Heading>
               {hasSummary && link && link.summary && link.summary.length > 0 ? (
-                <Box className="prose prose-serif" dangerouslySetInnerHTML={{ __html: link.summary }} />
+                <Box className="prose prose-sans-serif prose-1rem" dangerouslySetInnerHTML={{ __html: link.summary }} />
               ) : (
                 <>
                   {isGeneratingSummary ? (

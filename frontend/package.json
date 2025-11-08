@@ -16,6 +16,7 @@
     "formik": "^2.2.8",
     "framer-motion": "^4",
     "lodash": "^4.17.21",
+    "marked": "^17.0.0",
     "query-string": "^7.0.0",
     "react": "^17.0.2",
     "react-dnd": "^14.0.5",
