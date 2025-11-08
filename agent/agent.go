@@ -157,6 +157,9 @@ func (a *Agent) Act(ctx context.Context) error {
 			if strings.Contains(err.Error(), "Input is too long for requested model") {
 				ll.Print("cutting messages")
 				a.Messages = a.Messages[2:]
+				if a.Messages[0].IsToolUse && (*a.Messages[0].ToolUse)[0].Type == ToolUseTypeResponse {
+					a.Messages = a.Messages[1:]
+				}
 				continue
 			}
 
