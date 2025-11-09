@@ -248,6 +248,8 @@ func (u *User) ImportPocket(ctx context.Context, usr *model.User, r io.Reader) (
 	op := errors.Op("controller.ImportPocket")
 
 	reader := csv.NewReader(r)
+	// Allow variable number of fields per record
+	reader.FieldsPerRecord = -1
 
 	headers, err := reader.Read()
 	if err != nil {
@@ -257,6 +259,14 @@ func (u *User) ImportPocket(ctx context.Context, usr *model.User, r io.Reader) (
 	idx := map[string]int{}
 	for i, h := range headers {
 		idx[strings.ToLower(strings.TrimSpace(h))] = i
+	}
+
+	// Helper function to safely get field value
+	getField := func(rec []string, fieldName string) string {
+		if i, ok := idx[fieldName]; ok && i < len(rec) {
+			return rec[i]
+		}
+		return ""
 	}
 
 	count := 0
@@ -275,19 +285,20 @@ func (u *User) ImportPocket(ctx context.Context, usr *model.User, r io.Reader) (
 			return count, errors.E(op, err)
 		}
 
-		url := rec[idx["url"]]
-		title := ""
-		if i, ok := idx["title"]; ok {
-			title = rec[i]
+		url := getField(rec, "url")
+		if url == "" {
+			// Skip records without a URL
+			continue
 		}
+
+		title := getField(rec, "title")
+
 		ts := int64(0)
-		if i, ok := idx["time_added"]; ok {
-			ts, _ = strconv.ParseInt(rec[i], 10, 64)
+		if timeStr := getField(rec, "time_added"); timeStr != "" {
+			ts, _ = strconv.ParseInt(timeStr, 10, 64)
 		}
-		tagsStr := ""
-		if i, ok := idx["tags"]; ok {
-			tagsStr = rec[i]
-		}
+
+		tagsStr := getField(rec, "tags")
 		created := time.Unix(ts, 0)
 		if ts == 0 {
 			created = time.Now()
