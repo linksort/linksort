@@ -538,3 +538,45 @@ func TestImportPocket(t *testing.T) {
 		Assert(jsonpath.Len("$.links", 2)).
 		End()
 }
+
+func TestImportPocketVariableFields(t *testing.T) {
+	ctx := context.Background()
+	usr, _ := testutil.NewUser(t, ctx)
+
+	// Test CSV with variable field counts - some rows missing trailing fields
+	csvData := "title,url,time_added,cursor,tags,status\n" +
+		"Example,https://example.com,1728576752,1,tag1|tag2,unread\n" +
+		"NoTags,https://notags.com,1728576753,2\n" + // Missing tags and status
+		"OnlyURL,https://onlyurl.com\n" + // Only URL after title
+		"WithStarred,https://starred.com,1728576754,3,starred,unread\n" +
+		"PartialFields,https://partial.com,1728576755\n" // Missing cursor, tags, status
+
+	apitest.New("import with variable fields").
+		Handler(testutil.Handler()).
+		Intercept(func(req *http.Request) {
+			buf := new(bytes.Buffer)
+			w := multipart.NewWriter(buf)
+			part, _ := w.CreateFormFile("file", "links.csv")
+			part.Write([]byte(csvData))
+			w.Close()
+			req.Body = io.NopCloser(buf)
+			req.Header.Set("Content-Type", w.FormDataContentType())
+			req.ContentLength = int64(buf.Len())
+		}).
+		Post("/api/users/import-pocket").
+		Header("X-Csrf-Token", testutil.UserCSRF(usr.SessionID)).
+		Cookie("session_id", usr.SessionID).
+		Expect(t).
+		Status(http.StatusOK).
+		Assert(jsonpath.Equal("$.imported", float64(5))).
+		End()
+
+	apitest.New("list imported links").
+		Handler(testutil.Handler()).
+		Get("/api/links").
+		Cookie("session_id", usr.SessionID).
+		Expect(t).
+		Status(http.StatusOK).
+		Assert(jsonpath.Len("$.links", 5)).
+		End()
+}
