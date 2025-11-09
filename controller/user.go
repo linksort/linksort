@@ -248,6 +248,11 @@ func (u *User) ImportPocket(ctx context.Context, usr *model.User, r io.Reader) (
 	op := errors.Op("controller.ImportPocket")
 
 	reader := csv.NewReader(r)
+	// Allow variable number of fields per record since Pocket CSV exports may have
+	// missing fields at the end of some rows
+	reader.FieldsPerRecord = -1
+	// Be more lenient with quotes to handle various CSV formats
+	reader.LazyQuotes = true
 
 	headers, err := reader.Read()
 	if err != nil {
@@ -275,17 +280,22 @@ func (u *User) ImportPocket(ctx context.Context, usr *model.User, r io.Reader) (
 			return count, errors.E(op, err)
 		}
 
+		// Ensure we have at least the url field
+		if i, ok := idx["url"]; !ok || i >= len(rec) {
+			// Skip rows without a URL field
+			continue
+		}
 		url := rec[idx["url"]]
 		title := ""
-		if i, ok := idx["title"]; ok {
+		if i, ok := idx["title"]; ok && i < len(rec) {
 			title = rec[i]
 		}
 		ts := int64(0)
-		if i, ok := idx["time_added"]; ok {
+		if i, ok := idx["time_added"]; ok && i < len(rec) {
 			ts, _ = strconv.ParseInt(rec[i], 10, 64)
 		}
 		tagsStr := ""
-		if i, ok := idx["tags"]; ok {
+		if i, ok := idx["tags"]; ok && i < len(rec) {
 			tagsStr = rec[i]
 		}
 		created := time.Unix(ts, 0)
