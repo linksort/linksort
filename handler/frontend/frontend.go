@@ -16,6 +16,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
+	"github.com/linksort/linksort/cookie"
 	"github.com/linksort/linksort/errors"
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/magic"
@@ -42,6 +43,7 @@ type Config struct {
 	Magic                 *magic.Client
 	AuthController        interface {
 		WithCookie(context.Context, string) (*model.User, error)
+		WithToken(context.Context, string) (*model.User, error)
 	}
 }
 
@@ -80,6 +82,11 @@ func ReverseProxy(c *Config) http.Handler {
 					return errors.E(op, err)
 				}
 
+				// Set session cookie if a new session was created (e.g., from Bearer token)
+				if d.sessionID != "" {
+					r.Header.Add("Set-Cookie", cookie.NewSessionCookie(r.Request.Host, d.sessionID).String())
+				}
+
 				b = bytes.Replace(b, []byte("//SERVER_DATA//"), d.userData, 1)
 				b = bytes.Replace(b, []byte("//CSRF//"), d.csrf, 1)
 				r.Body = io.NopCloser(bytes.NewReader(b))
@@ -107,10 +114,21 @@ func (c *Config) withIndexHandler() mux.MiddlewareFunc {
 				d, found, err := c.getUserData(r)
 				if err != nil {
 					log.FromRequest(r).Print(err)
+					lserr := new(errors.Error)
+					if errors.As(err, &lserr) && lserr.Status() == http.StatusBadRequest {
+						http.Error(w, "Invalid request", http.StatusBadRequest)
+						return
+					}
 					http.Error(w, "Uh oh!", http.StatusInternalServerError)
+					return
 				}
 
 				if found || isAppRoute {
+					// Set session cookie if a new session was created (e.g., from Bearer token)
+					if d.sessionID != "" {
+						cookie.SetSession(r, w, d.sessionID)
+					}
+
 					b := make([]byte, len(dat))
 					_ = copy(b, dat)
 					b = bytes.Replace(b, []byte("//SERVER_DATA//"), d.userData, 1)
@@ -187,12 +205,45 @@ func with404Handler(assetsPath, notFoundPath string) mux.MiddlewareFunc {
 }
 
 type getUserDataResponse struct {
-	userData json.RawMessage
-	csrf     []byte
+	userData  json.RawMessage
+	csrf      []byte
+	sessionID string
 }
 
 func (c *Config) getUserData(r *http.Request) (*getUserDataResponse, bool, error) {
 	op := errors.Op("getUserData")
+
+	// Check for Authorization header with Bearer token
+	authHeader := r.Header.Get("Authorization")
+	if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+
+		usr, err := c.AuthController.WithToken(r.Context(), token)
+		if err != nil {
+			lserr := new(errors.Error)
+			if errors.As(err, &lserr) && lserr.Status() == http.StatusInternalServerError {
+				return nil, false, errors.E(op, err)
+			}
+			// Return error for invalid bearer token
+			return nil, false, errors.E(op, err, http.StatusBadRequest, errors.M{
+				"message": "Invalid request",
+			})
+		}
+
+		// Token is valid, return user data with session ID for cookie setting
+		encodedUser, err := json.Marshal(struct {
+			User *model.User `json:"user"`
+		}{usr})
+		if err != nil {
+			return nil, false, errors.E(op, err)
+		}
+
+		return &getUserDataResponse{
+			userData:  encodedUser,
+			csrf:      c.Magic.UserCSRF(usr.SessionID),
+			sessionID: usr.SessionID,
+		}, true, nil
+	}
 
 	cookie, err := r.Cookie("session_id")
 	if err != nil {

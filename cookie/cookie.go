@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-func SetSession(r *http.Request, w http.ResponseWriter, sessionID string) {
-	http.SetCookie(w, &http.Cookie{
-		Domain:   r.Host,
+func NewSessionCookie(host, sessionID string) *http.Cookie {
+	return &http.Cookie{
+		Domain:   host,
 		Path:     "/",
 		Name:     "session_id",
 		Value:    sessionID,
@@ -15,7 +15,11 @@ func SetSession(r *http.Request, w http.ResponseWriter, sessionID string) {
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
-	})
+	}
+}
+
+func SetSession(r *http.Request, w http.ResponseWriter, sessionID string) {
+	http.SetCookie(w, NewSessionCookie(r.Host, sessionID))
 }
 
 func UnsetSession(r *http.Request, w http.ResponseWriter) {
