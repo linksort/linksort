@@ -63,7 +63,7 @@ func (s *config) Oauth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	redirectURI := r.URL.Query().Get("redirect_uri")
-	if !strings.HasPrefix(redirectURI, "https://linksort.com") || !strings.HasPrefix(redirectURI, "linksort://oauth-callback") {
+	if !(strings.HasPrefix(redirectURI, "https://linksort.com") || strings.HasPrefix(redirectURI, "linksort://oauth-callback")) {
 		s.handleError(w, r,
 			errors.Strf("invalid redirect uri: %s", redirectURI),
 			"Invalid redirect URI.")
