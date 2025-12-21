@@ -72,6 +72,26 @@ func TestCreateFolder(t *testing.T) {
 	}
 }
 
+func TestCreateFolderLimit(t *testing.T) {
+	ctx := context.Background()
+	usr, _ := testutil.NewUser(t, ctx)
+
+	for i := 0; i < 99; i++ {
+		testutil.NewFolder(t, ctx, usr, "")
+	}
+
+	apitest.New("folder-limit").
+		Handler(testutil.Handler()).
+		Post("/api/folders").
+		Header("X-Csrf-Token", testutil.UserCSRF(usr.SessionID)).
+		JSON(map[string]string{"name": "too-many"}).
+		Cookie("session_id", usr.SessionID).
+		Expect(t).
+		Status(http.StatusBadRequest).
+		Body(`{"message": "You have reached the folder limit of 100 folders."}`).
+		End()
+}
+
 func TestUpdateFolder(t *testing.T) {
 	ctx := context.Background()
 	usr1, _ := testutil.NewUser(t, ctx)

@@ -13,6 +13,8 @@ type Folder struct {
 	Store model.UserStore
 }
 
+const maxFolderCount = 100
+
 func (f *Folder) CreateFolder(
 	ctx context.Context,
 	usr *model.User,
@@ -23,6 +25,13 @@ func (f *Folder) CreateFolder(
 	parentID := "root"
 	if req.ParentID != "" {
 		parentID = req.ParentID
+	}
+
+	if usr.FolderTree.Count() >= maxFolderCount {
+		return nil, errors.E(op,
+			errors.Str("folder limit reached"),
+			errors.M{"message": "You have reached the folder limit of 100 folders."},
+			http.StatusBadRequest)
 	}
 
 	parent := usr.FolderTree.BFS(parentID)
