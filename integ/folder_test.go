@@ -243,10 +243,7 @@ func TestTopLevelFolderLimit(t *testing.T) {
 	}
 
 	// Refresh user to get updated folder tree
-	usr, err := testutil.UpdateUser(t, ctx, usr)
-	if err != nil {
-		t.Fatal(err)
-	}
+	usr = testutil.UpdateUser(t, ctx, usr)
 
 	// Try to create the 101st top-level folder - should fail
 	apitest.New("exceed top-level folder limit").
@@ -264,9 +261,6 @@ func TestTopLevelFolderLimit(t *testing.T) {
 
 	// Create a nested folder - should succeed
 	folder := testutil.NewFolder(t, ctx, usr, "")
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	apitest.New("create nested folder when at top-level limit").
 		Handler(testutil.Handler()).
@@ -294,10 +288,7 @@ func TestFolderDepthLimit(t *testing.T) {
 	}
 
 	// Refresh user to get updated folder tree
-	usr, err := testutil.UpdateUser(t, ctx, usr)
-	if err != nil {
-		t.Fatal(err)
-	}
+	usr = testutil.UpdateUser(t, ctx, usr)
 
 	// Try to create an 11th level folder - should fail
 	apitest.New("exceed depth limit").
@@ -329,13 +320,10 @@ func TestMoveFolderDepthLimit(t *testing.T) {
 	// Create a folder with 2 levels of children in another branch
 	branch2Folder1 := testutil.NewFolder(t, ctx, usr, "")
 	branch2Folder2 := testutil.NewFolder(t, ctx, usr, branch2Folder1.ID)
-	branch2Folder3 := testutil.NewFolder(t, ctx, usr, branch2Folder2.ID)
+	_ = testutil.NewFolder(t, ctx, usr, branch2Folder2.ID) // branch2Folder3
 
 	// Refresh user to get updated folder tree
-	usr, err := testutil.UpdateUser(t, ctx, usr)
-	if err != nil {
-		t.Fatal(err)
-	}
+	usr = testutil.UpdateUser(t, ctx, usr)
 
 	// Try to move branch2Folder1 (which has 2 children below it) under branch1's deepest folder
 	// This would create depths: 9 (branch2Folder1), 10 (branch2Folder2), 11 (branch2Folder3) - should fail
@@ -361,10 +349,7 @@ func TestMoveFolderDepthLimit(t *testing.T) {
 	}
 
 	// Refresh user again
-	usr, err = testutil.UpdateUser(t, ctx, usr)
-	if err != nil {
-		t.Fatal(err)
-	}
+	usr = testutil.UpdateUser(t, ctx, usr)
 
 	// Moving branch2Folder1 under this parent should succeed
 	// Depths would be: 8 (branch2Folder1), 9 (branch2Folder2), 10 (branch2Folder3)
@@ -396,10 +381,7 @@ func TestMoveToRootWithTopLevelLimit(t *testing.T) {
 	folder2 := testutil.NewFolder(t, ctx, usr, folder1.ID)
 
 	// Refresh user to get updated folder tree
-	usr, err := testutil.UpdateUser(t, ctx, usr)
-	if err != nil {
-		t.Fatal(err)
-	}
+	usr = testutil.UpdateUser(t, ctx, usr)
 
 	// Moving folder2 to root should succeed (bringing total to 100)
 	apitest.New("move to root at limit succeeds").
@@ -419,10 +401,7 @@ func TestMoveToRootWithTopLevelLimit(t *testing.T) {
 	folder3 := testutil.NewFolder(t, ctx, usr, folder1.ID)
 
 	// Refresh user again
-	usr, err = testutil.UpdateUser(t, ctx, usr)
-	if err != nil {
-		t.Fatal(err)
-	}
+	usr = testutil.UpdateUser(t, ctx, usr)
 
 	// Now we have 100 top-level folders. Moving folder3 to root should fail
 	apitest.New("move to root exceeds limit").
