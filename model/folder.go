@@ -140,3 +140,54 @@ func (f *Folder) Remove(id string) *Folder {
 
 	return found
 }
+
+// GetDepth returns the depth of a folder in the tree.
+// Returns -1 if the folder is not found.
+// The root folder has depth 0, its children have depth 1, etc.
+func (f *Folder) GetDepth(id string) int {
+	type queueItem struct {
+		folder *Folder
+		depth  int
+	}
+
+	queue := []queueItem{{folder: f, depth: 0}}
+
+	for len(queue) > 0 {
+		item := queue[0]
+		queue = queue[1:]
+
+		if item.folder.ID == id {
+			return item.depth
+		}
+
+		for _, child := range item.folder.Children {
+			queue = append(queue, queueItem{folder: child, depth: item.depth + 1})
+		}
+	}
+
+	return -1
+}
+
+// CountTopLevelFolders returns the number of direct children of this folder.
+func (f *Folder) CountTopLevelFolders() int {
+	return len(f.Children)
+}
+
+// GetMaxDepthOfSubtree returns the maximum depth of the subtree rooted at this folder.
+// A folder with no children has a max depth of 0.
+// A folder with children has max depth = 1 + max(child depths).
+func (f *Folder) GetMaxDepthOfSubtree() int {
+	if len(f.Children) == 0 {
+		return 0
+	}
+
+	maxChildDepth := 0
+	for _, child := range f.Children {
+		childDepth := child.GetMaxDepthOfSubtree()
+		if childDepth > maxChildDepth {
+			maxChildDepth = childDepth
+		}
+	}
+
+	return 1 + maxChildDepth
+}
