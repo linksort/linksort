@@ -14,7 +14,13 @@ import (
 )
 
 func TestCreateFolder(t *testing.T) {
-	usr1, _ := testutil.NewUser(t, context.Background())
+	ctx := context.Background()
+	usr1, _ := testutil.NewUser(t, ctx)
+	limitUser, _ := testutil.NewUser(t, ctx)
+
+	for i := 0; i < 99; i++ {
+		testutil.NewFolder(t, ctx, limitUser, "")
+	}
 
 	tests := []struct {
 		Name           string
@@ -39,6 +45,15 @@ func TestCreateFolder(t *testing.T) {
 			},
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   `{"name":"This field must be less than 128 characters long."}`,
+		},
+		{
+			Name:           "folder limit reached",
+			GivenSessionID: limitUser.SessionID,
+			GivenBody: map[string]string{
+				"name": "too-many",
+			},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"message": "You have reached the folder limit of 100 folders."}`,
 		},
 	}
 
@@ -70,26 +85,6 @@ func TestCreateFolder(t *testing.T) {
 			tt.End()
 		})
 	}
-}
-
-func TestCreateFolderLimit(t *testing.T) {
-	ctx := context.Background()
-	usr, _ := testutil.NewUser(t, ctx)
-
-	for i := 0; i < 99; i++ {
-		testutil.NewFolder(t, ctx, usr, "")
-	}
-
-	apitest.New("folder-limit").
-		Handler(testutil.Handler()).
-		Post("/api/folders").
-		Header("X-Csrf-Token", testutil.UserCSRF(usr.SessionID)).
-		JSON(map[string]string{"name": "too-many"}).
-		Cookie("session_id", usr.SessionID).
-		Expect(t).
-		Status(http.StatusBadRequest).
-		Body(`{"message": "You have reached the folder limit of 100 folders."}`).
-		End()
 }
 
 func TestUpdateFolder(t *testing.T) {
