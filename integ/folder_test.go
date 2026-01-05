@@ -14,7 +14,13 @@ import (
 )
 
 func TestCreateFolder(t *testing.T) {
-	usr1, _ := testutil.NewUser(t, context.Background())
+	ctx := context.Background()
+	usr1, _ := testutil.NewUser(t, ctx)
+	limitUser, _ := testutil.NewUser(t, ctx)
+
+	for i := 0; i < 99; i++ {
+		testutil.NewFolder(t, ctx, limitUser, "")
+	}
 
 	tests := []struct {
 		Name           string
@@ -39,6 +45,15 @@ func TestCreateFolder(t *testing.T) {
 			},
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   `{"name":"This field must be less than 128 characters long."}`,
+		},
+		{
+			Name:           "folder limit reached",
+			GivenSessionID: limitUser.SessionID,
+			GivenBody: map[string]string{
+				"name": "too-many",
+			},
+			ExpectStatus: http.StatusBadRequest,
+			ExpectBody:   `{"message": "You have reached the folder limit of 100 folders."}`,
 		},
 	}
 

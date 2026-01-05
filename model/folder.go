@@ -72,6 +72,18 @@ func (f *Folder) BFS(id string) *Folder {
 	return nil
 }
 
+// Count returns the total number of folders in the tree, including the root.
+func (f *Folder) Count() int {
+	count := 1
+
+	f.Walk(func(_, node *Folder) bool {
+		count++
+		return true
+	})
+
+	return count
+}
+
 func (f *Folder) Walk(callback func(parent, node *Folder) bool) {
 	queue := []*Folder{f}
 
