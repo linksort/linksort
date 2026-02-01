@@ -16,8 +16,6 @@ func (c *Client) diffbot(ctx context.Context, inputUrl string) (*Response, error
 
 	q := urlobj.Query()
 	q.Set("url", inputUrl)
-	q.Set("discussion", "false")
-	q.Set("mode", "article")
 	q.Set("token", c.diffbotToken)
 	urlobj.RawQuery = q.Encode()
 
@@ -65,7 +63,7 @@ func (c *Client) diffbot(ctx context.Context, inputUrl string) (*Response, error
 		Image:     image,
 		Corpus:    applyReadability(diffbotRes.Objects[0].Html),
 		Original:  inputUrl,
-		IsArticle: true,
+		IsArticle: diffbotRes.Type == "article",
 	}, nil
 }
 

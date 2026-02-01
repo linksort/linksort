@@ -203,7 +203,7 @@ func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.UR
 		Image:       getValidUTF8NonZeroString(simpleRes.Image, diffbotRes.Image),
 		Corpus:      getValidUTF8NonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
 		Original:    inputURL.String(),
-		IsArticle:   true,
+		IsArticle:   diffbotRes.IsArticle,
 	}, nil
 }
 
@@ -346,6 +346,8 @@ func (c *Client) doSimpleHTTPHTMLRequest(ctx context.Context, url string) (strin
 		return "", fmt.Errorf("failed to do http request: %w", err)
 	}
 	defer resp.Body.Close()
+
+	log.FromContext(ctx).Printf("doSimpleHTTPHTMLRequest: got status code=%d", resp.StatusCode)
 
 	buf := new(bytes.Buffer)
 
