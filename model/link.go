@@ -42,4 +42,5 @@ type LinkStore interface {
 	UpdateLink(context.Context, *Link) (*Link, error)
 	DeleteLink(context.Context, *Link) error
 	DeleteAllLinksByUser(ctx context.Context, u *User) error
+	GetTotalLinksCountByUser(ctx context.Context, u *User) (int, error)
 }
