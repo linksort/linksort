@@ -23,7 +23,7 @@ Before you begin, take a deep breath and think carefully about how to best accom
 
 # FORMAT
 
-- Output a bulleted list of at most 7 points summarizing the content in a clear and concise manner.
+- Output a bulleted list of at most 5 points summarizing the content in a clear and concise manner.
 - In the first bullet point, combine all of your understanding of the content into one to three sentences that express the primary thesis of the text.
 - In the remaining bullet points, output the most important points of the content. If there is a core argument expressed in the text, express that argument in these points.
 

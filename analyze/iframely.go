@@ -26,7 +26,7 @@ func (c *Client) iframely(ctx context.Context, inputUrl string) (*Response, erro
 
 	httpReq.Header.Add("accept", "application/json")
 
-	resp, err := http.DefaultClient.Do(httpReq)
+	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to do iFramely http request: %w", err)
 	}

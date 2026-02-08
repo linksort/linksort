@@ -199,12 +199,12 @@ func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.UR
 
 	return &Response{
 		Title:       getValidUTF8NonZeroString(iframelyRes.Title, simpleRes.Title),
-		URL:         getValidUTF8NonZeroString(simpleRes.URL, iframelyRes.URL),
-		Site:        getValidUTF8NonZeroString(simpleRes.Site, iframelyRes.Site),
+		URL:         getValidUTF8NonZeroString(iframelyRes.URL, simpleRes.URL),
+		Site:        getValidUTF8NonZeroString(iframelyRes.Site, simpleRes.Site),
 		Description: getValidUTF8NonZeroString(iframelyRes.Description, simpleRes.Description),
-		Favicon:     getValidUTF8NonZeroString(simpleRes.Favicon, iframelyRes.Favicon),
+		Favicon:     getValidUTF8NonZeroString(iframelyRes.Favicon, simpleRes.Favicon),
 		Image:       getValidUTF8NonZeroString(iframelyRes.Image, simpleRes.Image),
-		Corpus:      getValidUTF8NonZeroString(simpleRes.Corpus, iframelyRes.Corpus),
+		Corpus:      getValidUTF8NonZeroString(iframelyRes.Corpus, simpleRes.Corpus),
 		Original:    inputURL.String(),
 		IsArticle:   iframelyRes.IsArticle,
 	}, nil
