@@ -43,6 +43,7 @@ docker run -p 27017:27017 -v db-data:/data/db -d mongo-rs
 export PRODUCTION=0
 export ANALYZER_KEY=$(cat /path/to/key)  # Optional
 export DIFFBOT_TOKEN="<YOUR KEY>"  # Optional
+export IFRAMELY_KEY="<YOUR KEY>"  # Optional
 export LOG_PUTTER="<AWS IAM ROLE ARN>"  # Optional
 export FRONTEND_HOSTNAME=localhost
 export FRONTEND_PORT=3000
@@ -96,6 +97,7 @@ swag init --dir cmd/serve/,handler,model,payload
 - `DB_CONNECTION` - MongoDB connection string
 - `ANALYZER_KEY` - Google Cloud Platform key for content classification
 - `DIFFBOT_TOKEN` - Diffbot API key for enhanced content extraction
+- `IFRAMELY_KEY` - iFramely API key for enhanced content extraction (used in place of Diffbot in extract)
 - `MAILGUN_KEY` - Email service for password resets
 - `APP_SECRET` - Application secret for CSRF tokens
 - `FRONTEND_HOSTNAME` and `FRONTEND_PORT` - Frontend proxy configuration for development

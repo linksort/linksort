@@ -32,6 +32,7 @@ var (
 	ErrNoClassify               = errors.New("could not classify")
 	errUnexpectedOembedResponse = errors.New("unexpected oembed response")
 	errNoDiffbotResult          = errors.New("no result from diffbot")
+	errNoIframelyResult         = errors.New("no result from iframely")
 )
 
 type Request struct {
@@ -72,6 +73,7 @@ type Client struct {
 	classifer    classifer
 	httpClient   *http.Client
 	diffbotToken string
+	iframelyKey  string
 	aiClient     aiClient
 }
 
@@ -93,6 +95,7 @@ func New(ctx context.Context, bedrockC *bedrockruntime.Client) (*Client, error) 
 		httpClient:   c,
 		classifer:    classiferBackend,
 		diffbotToken: os.Getenv("DIFFBOT_TOKEN"),
+		iframelyKey:  os.Getenv("IFRAMELY_KEY"),
 		aiClient:     aiClient,
 	}, nil
 }
@@ -160,8 +163,8 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.URL) (*Response, error) {
 	var simpleRes *Response
 	var simpleErr error
-	var diffbotRes *Response
-	var diffbotErr error
+	var iframelyRes *Response
+	var iframelyErr error
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -174,36 +177,36 @@ func (c *Client) extract(ctx context.Context, rlog log.Printer, inputURL *url.UR
 
 	go func() {
 		defer wg.Done()
-		diffbotRes, diffbotErr = c.diffbot(ctx, inputURL.String())
+		iframelyRes, iframelyErr = c.iframely(ctx, inputURL.String())
 	}()
 
 	wg.Wait()
-	if simpleErr != nil && diffbotErr != nil {
-		return nil, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, diffbotErr)
+	if simpleErr != nil && iframelyErr != nil {
+		return nil, fmt.Errorf("multiple errors: (1) %s (2) %s", simpleErr, iframelyErr)
 	}
 
 	if simpleErr != nil {
 		rlog.Printf("error when executing simpleExtract: %v", simpleErr)
-		return diffbotRes, nil
+		return iframelyRes, nil
 	}
-	if diffbotErr != nil {
-		if !errors.Is(diffbotErr, errNoDiffbotResult) {
-			rlog.Printf("error when executing diffbot: %v", diffbotErr)
+	if iframelyErr != nil {
+		if !errors.Is(iframelyErr, errNoIframelyResult) {
+			rlog.Printf("error when executing iframely: %v", iframelyErr)
 		}
-		rlog.Printf("not an article: %v", diffbotErr)
+		rlog.Printf("not an article: %v", iframelyErr)
 		return simpleRes, nil
 	}
 
 	return &Response{
-		Title:       getValidUTF8NonZeroString(diffbotRes.Title, simpleRes.Title),
-		URL:         getValidUTF8NonZeroString(simpleRes.URL, diffbotRes.URL),
-		Site:        getValidUTF8NonZeroString(simpleRes.Site, diffbotRes.Site),
-		Description: getValidUTF8NonZeroString(simpleRes.Description, diffbotRes.Description),
-		Favicon:     getValidUTF8NonZeroString(simpleRes.Favicon, diffbotRes.Favicon),
-		Image:       getValidUTF8NonZeroString(simpleRes.Image, diffbotRes.Image),
-		Corpus:      getValidUTF8NonZeroString(diffbotRes.Corpus, simpleRes.Corpus),
+		Title:       getValidUTF8NonZeroString(iframelyRes.Title, simpleRes.Title),
+		URL:         getValidUTF8NonZeroString(simpleRes.URL, iframelyRes.URL),
+		Site:        getValidUTF8NonZeroString(simpleRes.Site, iframelyRes.Site),
+		Description: getValidUTF8NonZeroString(iframelyRes.Description, simpleRes.Description),
+		Favicon:     getValidUTF8NonZeroString(simpleRes.Favicon, iframelyRes.Favicon),
+		Image:       getValidUTF8NonZeroString(iframelyRes.Image, simpleRes.Image),
+		Corpus:      getValidUTF8NonZeroString(simpleRes.Corpus, iframelyRes.Corpus),
 		Original:    inputURL.String(),
-		IsArticle:   diffbotRes.IsArticle,
+		IsArticle:   iframelyRes.IsArticle,
 	}, nil
 }
 
