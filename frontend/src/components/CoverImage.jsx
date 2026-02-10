@@ -14,16 +14,24 @@ const COLORS = [
   "#D69E2E", // yellow
 ];
 
-function hashChar(ch) {
-  return ch ? ch.charCodeAt(0) : 0;
+function hash(str, seed = 0) {
+  let h = seed;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 2654435761);
+  }
+  return (h ^ (h >>> 16)) >>> 0;
 }
 
 function Color({ id }) {
-  const c1 = hashChar(id[0]) % COLORS.length;
-  let c2 = (hashChar(id[1]) + hashChar(id[2])) % COLORS.length;
+  const h1 = hash(id, 1);
+  const h2 = hash(id, 2);
+  const h3 = hash(id, 3);
+
+  const c1 = h1 % COLORS.length;
+  let c2 = h2 % COLORS.length;
   if (c2 === c1) c2 = (c2 + 1) % COLORS.length;
 
-  const angle = (hashChar(id[3]) + hashChar(id[4])) % 360;
+  const angle = h3 % 360;
 
   return (
     <Box
