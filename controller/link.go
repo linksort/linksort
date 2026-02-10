@@ -101,6 +101,7 @@ func (l *Link) CreateLink(
 
 		if res.Corpus != "" {
 			link.Corpus = res.Corpus
+			link.IsArticle = res.IsArticle
 			if _, err := l.Store.UpdateLink(context.Background(), link); err != nil {
 				log.Printf("async corpus update failed for link %s: %v", link.ID, err)
 			}
