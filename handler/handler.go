@@ -38,6 +38,7 @@ type Config struct {
 	}
 	Analyzer interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
+		GatherCorpus(context.Context, string) (*analyze.Response, error)
 		Summarize(context.Context, string) (string, error)
 	}
 	BedrockClient         agent.ConverseStreamProvider
