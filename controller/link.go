@@ -19,7 +19,7 @@ type Link struct {
 	UserStore model.UserStore
 	Analyzer  interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
-		Diffbot(context.Context, string) (*analyze.Response, error)
+		GatherCorpus(context.Context, string) (*analyze.Response, error)
 		Summarize(context.Context, string) (string, error)
 	}
 	Transactor db.Transactor
@@ -93,7 +93,7 @@ func (l *Link) CreateLink(
 	}
 
 	go func() {
-		diffbotRes, err := l.Analyzer.Diffbot(context.Background(), link.URL)
+		diffbotRes, err := l.Analyzer.GatherCorpus(context.Background(), link.URL)
 		if err != nil {
 			log.Printf("async diffbot processing failed for link %s: %v", link.ID, err)
 			return

@@ -104,7 +104,7 @@ func (c *Client) Close() error {
 	return c.classifer.Close()
 }
 
-func (c *Client) Diffbot(ctx context.Context, url string) (*Response, error) {
+func (c *Client) GatherCorpus(ctx context.Context, url string) (*Response, error) {
 	return c.diffbot(ctx, url)
 }
 
@@ -492,7 +492,7 @@ func (c *TestClient) Do(ctx context.Context, req *Request) (*Response, error) {
 	}, nil
 }
 
-func (c *TestClient) Diffbot(ctx context.Context, url string) (*Response, error) {
+func (c *TestClient) GatherCorpus(ctx context.Context, url string) (*Response, error) {
 	return &Response{
 		URL:       url,
 		Corpus:    "Diffbot test corpus.",
