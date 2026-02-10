@@ -93,16 +93,16 @@ func (l *Link) CreateLink(
 	}
 
 	go func() {
-		diffbotRes, err := l.Analyzer.GatherCorpus(context.Background(), link.URL)
+		res, err := l.Analyzer.GatherCorpus(context.Background(), link.URL)
 		if err != nil {
-			log.Printf("async diffbot processing failed for link %s: %v", link.ID, err)
+			log.Printf("async corpus gathering failed for link %s: %v", link.ID, err)
 			return
 		}
 
-		if diffbotRes.Corpus != "" {
-			link.Corpus = diffbotRes.Corpus
+		if res.Corpus != "" {
+			link.Corpus = res.Corpus
 			if _, err := l.Store.UpdateLink(context.Background(), link); err != nil {
-				log.Printf("async diffbot corpus update failed for link %s: %v", link.ID, err)
+				log.Printf("async corpus update failed for link %s: %v", link.ID, err)
 			}
 		}
 	}()
