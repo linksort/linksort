@@ -10,6 +10,7 @@ import (
 	"github.com/linksort/linksort/db"
 	"github.com/linksort/linksort/errors"
 	handler "github.com/linksort/linksort/handler/link"
+	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
 )
 
@@ -18,6 +19,7 @@ type Link struct {
 	UserStore model.UserStore
 	Analyzer  interface {
 		Do(context.Context, *analyze.Request) (*analyze.Response, error)
+		Diffbot(context.Context, string) (*analyze.Response, error)
 		Summarize(context.Context, string) (string, error)
 	}
 	Transactor db.Transactor
@@ -89,6 +91,21 @@ func (l *Link) CreateLink(
 	if err != nil {
 		return nil, nil, errors.E(op, err)
 	}
+
+	go func() {
+		diffbotRes, err := l.Analyzer.Diffbot(context.Background(), link.URL)
+		if err != nil {
+			log.Printf("async diffbot processing failed for link %s: %v", link.ID, err)
+			return
+		}
+
+		if diffbotRes.Corpus != "" {
+			link.Corpus = diffbotRes.Corpus
+			if _, err := l.Store.UpdateLink(context.Background(), link); err != nil {
+				log.Printf("async diffbot corpus update failed for link %s: %v", link.ID, err)
+			}
+		}
+	}()
 
 	return link, user, nil
 }

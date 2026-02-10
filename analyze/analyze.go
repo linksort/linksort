@@ -104,6 +104,10 @@ func (c *Client) Close() error {
 	return c.classifer.Close()
 }
 
+func (c *Client) Diffbot(ctx context.Context, url string) (*Response, error) {
+	return c.diffbot(ctx, url)
+}
+
 func (c *Client) Summarize(ctx context.Context, text string) (string, error) {
 	// Only generate summary if text is more than roughly 700 words
 	words := len(strings.Fields(text))
@@ -485,6 +489,14 @@ func (c *TestClient) Do(ctx context.Context, req *Request) (*Response, error) {
 		Description: "It's only a test.",
 		Original:    req.URL,
 		Corpus:      "It's only a test.",
+	}, nil
+}
+
+func (c *TestClient) Diffbot(ctx context.Context, url string) (*Response, error) {
+	return &Response{
+		URL:       url,
+		Corpus:    "Diffbot test corpus.",
+		IsArticle: true,
 	}, nil
 }
 
