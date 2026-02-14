@@ -82,6 +82,11 @@ func (l *Link) CreateLink(
 			return errors.E(innerOp, err)
 		}
 
+		// Increment links count if it's already populated (> 0)
+		if user.LinksCount > 0 {
+			user.IncrementLinksCount()
+		}
+
 		if _, err = l.UserStore.UpdateUser(sessCtx, user); err != nil {
 			return errors.E(innerOp, err)
 		}

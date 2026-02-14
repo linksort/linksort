@@ -27,6 +27,7 @@ type User struct {
 	TagTree            *TagNode           `json:"tagTree"`
 	UserTags           UserTags           `json:"userTags"`
 	HasSeenWelcomeTour bool               `json:"hasSeenWelcomeTour"`
+	LinksCount         int                `json:"linksCount"`
 }
 
 type UserStore interface {
@@ -62,4 +63,8 @@ func (u *User) IsSessionExpired() bool {
 func (u *User) RefreshSession() {
 	u.SessionID = random.Token()
 	u.SessionExpiry = time.Now().Add(time.Hour * time.Duration(24*90))
+}
+
+func (u *User) IncrementLinksCount() {
+	u.LinksCount++
 }
