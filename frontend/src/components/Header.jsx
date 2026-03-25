@@ -25,7 +25,7 @@ import ChatSidepanel from "./ChatSidepanel"
 import GiveFeedbackButton from "./GiveFeedbackButton";
 import { useScrollPosition } from "../hooks/utils";
 
-export default function Header() {
+export default function Header({ isChatVisible, onToggleChat }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = useRef();
   const { isOpen: isChatOpen, onOpen: onChatOpen, onClose: onChatClose } = useDisclosure();
@@ -85,7 +85,7 @@ export default function Header() {
         "calc(100vw)",
         "calc(100vw)",
         "calc(100vw - 18rem)",
-        "calc(100vw - 18rem - 25rem)",
+        isChatVisible ? "calc(100vw - 18rem - 25rem)" : "calc(100vw - 18rem)",
       ]}
     >
       <Flex
@@ -131,6 +131,14 @@ export default function Header() {
           <GiveFeedbackButton>
             <Button>Give Feedback</Button>
           </GiveFeedbackButton>
+          <IconButton
+            display={["none", "none", "none", "none", "none", "flex"]}
+            onClick={onToggleChat}
+            aria-label={isChatVisible ? "Hide chat" : "Show chat"}
+            zIndex={10}
+            icon={<ChatIcon />}
+            variant={isChatVisible ? "solid" : "outline"}
+          />
           <IconButton
             display={["flex", "flex", "flex", "flex", "flex", "none"]}
             id="mobile-nav"

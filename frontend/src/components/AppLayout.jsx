@@ -5,15 +5,19 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import ChatSidepanel from "./ChatSidepanel";
 import { HEADER_HEIGHT } from "../theme/theme";
+import { useLocalStorage } from "../hooks/localStorage";
 
 export default function AppLayout({ children }) {
+  const [isChatVisible, setIsChatVisible] = useLocalStorage("isChatVisible", true);
+  const toggleChat = () => setIsChatVisible(!isChatVisible);
+
   return (
     <Container maxWidth="100vw" px={0} position="relative" overflowX="hidden">
       <Grid
         maxWidth="100%"
         width="100%"
         minHeight="100vh"
-        templateColumns={["1fr", "1fr", "1fr", "1fr", "18rem 1fr", "18rem 1fr 25rem"]}
+        templateColumns={["1fr", "1fr", "1fr", "1fr", "18rem 1fr", isChatVisible ? "18rem 1fr 25rem" : "18rem 1fr"]}
       >
         <GridItem
           height="100%"
@@ -31,7 +35,7 @@ export default function AppLayout({ children }) {
             "calc(100vw)",
             "calc(100vw)",
             "calc(100vw - 18rem)",
-            "calc(100vw - 18rem - 25rem)",
+            isChatVisible ? "calc(100vw - 18rem - 25rem)" : "calc(100vw - 18rem)",
           ]}
         >
           <Box
@@ -41,7 +45,7 @@ export default function AppLayout({ children }) {
             left={["0", "0", "0", "0", "18rem", "18rem"]}
             zIndex={10}
           >
-            <Header />
+            <Header isChatVisible={isChatVisible} onToggleChat={toggleChat} />
           </Box>
           <Box as="main" marginTop={HEADER_HEIGHT} marginX="auto" width="100%">
             {children}
@@ -50,7 +54,7 @@ export default function AppLayout({ children }) {
         <GridItem
           width="25rem"
           height="100vh"
-          display={["none", "none", "none", "none", "none", "block"]}
+          display={["none", "none", "none", "none", "none", isChatVisible ? "block" : "none"]}
         >
           <ChatSidepanel />
         </GridItem>
