@@ -70,7 +70,13 @@ docker run -p 27017:27017 -v db-data2:/data/db2 -d mongo-rs
 
 # Run tests. No need to repeat the previous steps for subsequent runs.
 go test ./...
+
+# Frontend unit tests (jest; CI=true makes it non-interactive).
+cd frontend
+CI=true yarn test
 ```
+
+The mock Bedrock client used by the Go tests (`testutil/mock_bedrock.go`) streams a fixed reply by default, but tests can script multi-turn replies, including tool calls, with `testutil.Bedrock().SetScript(...)` (see `integ/link_review_test.go` for examples).
 
 ### Running in Prod Mode Locally
 
@@ -111,3 +117,15 @@ No thanks
 ````
 
 The frontend (`frontend/src/utils/choices.js`) strips this block and renders the options as buttons under the message. Clicking one sends the option text verbatim as the user's next message; typing a free-form reply is always possible. Only the latest assistant message gets live buttons; answered prompts render inactive with the chosen option indicated.
+
+### Testing Link Reviews Locally
+
+To force a review for a user (e.g. after you've just saved some links), reset their review stamp and reload the app with the chat pane visible:
+
+```bash
+mongosh --quiet --eval 'db.getSiblingDB("test").users.updateOne(
+  {email: "you@example.com"},
+  {$set: {lastLinkReviewAt: new Date(Date.now() - 24*3600*1000)}})'
+```
+
+Set the stamp to a time *before* the links you want reviewed were created (links older than the stamp don't count). Using `$unset` instead treats all of the user's links as new (capped at 40).

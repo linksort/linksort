@@ -68,9 +68,9 @@ docker run -p 27017:27017 -v db-data2:/data/db2 -d mongo-rs
 # Run all tests
 go test ./...
 
-# Frontend tests
+# Frontend tests (CI=true runs jest non-interactively; required for agents)
 cd frontend
-yarn test
+CI=true yarn test
 ```
 
 ### Production Build
@@ -84,12 +84,25 @@ docker run -e ANALYZER_KEY="$ANALYZER_KEY" -e DB_CONNECTION="mongodb://172.17.0.
 
 ### API Documentation
 ```bash
-# Install swag
-go install github.com/swaggo/swag/cmd/swag@latest
+# Install swag. The version must match the one pinned in go.mod, or the
+# generated docs/docs.go will not compile.
+go install github.com/swaggo/swag/cmd/swag@v1.8.10
 
-# Generate Swagger docs
-swag init --dir cmd/serve/,handler,model,payload
+# Generate Swagger docs (the agent dir is needed to resolve agent.ToolUse)
+swag init --dir cmd/serve/,handler,model,payload,agent
 ```
+
+### Development Gotchas
+
+- **Stale webpack cache after git operations**: if the frontend dev server reports `Module not found` for a file that clearly exists (e.g. after switching branches or merging while `yarn start` is running), stop the dev server, `rm -rf frontend/node_modules/.cache`, and restart it.
+- **Finding orphaned dev servers**: `ps -a` hides processes without a controlling terminal (e.g. anything started with `nohup`). Use `lsof -nP -iTCP:3000 -sTCP:LISTEN` (or `ps aux`) to find what owns a port.
+- **AWS credentials for Bedrock locally**: the Go SDK cannot read credentials from the browser-based `aws login` flow. Run `unset LOG_PUTTER && eval "$(aws configure export-credentials --format env)"` before `air`. Exported credentials are a snapshot and expire; re-run and restart `air` if Bedrock calls start failing with credential errors.
+- **Forcing a link review for manual testing**: reset the user's stamp to before their links were created, then reload with the chat pane visible:
+  ```bash
+  mongosh --quiet --eval 'db.getSiblingDB("test").users.updateOne(
+    {email: "you@example.com"},
+    {$set: {lastLinkReviewAt: new Date(Date.now() - 24*3600*1000)}})'
+  ```
 
 ## Key Environment Variables
 
@@ -119,4 +132,6 @@ swag init --dir cmd/serve/,handler,model,payload
 
 - Integration tests in `integ/` cover end-to-end API functionality
 - Tests require MongoDB replica set for transaction support
-- No unit test framework is configured - primarily uses integration testing approach
+- The Go side primarily uses integration tests rather than unit tests
+- `testutil/mock_bedrock.go` provides the mock Bedrock client used by all Go tests. It streams a fixed "Hello world" reply by default; tests can script multi-turn replies, including tool calls, via `testutil.Bedrock().SetScript(testutil.MockTurn{...}, ...)` and must call `testutil.Bedrock().Reset()` afterwards (see `integ/link_review_test.go`)
+- Frontend unit tests use jest via `react-scripts test` (run with `CI=true` to avoid watch mode). Existing suites: `frontend/src/utils/__tests__/choices.test.js` (choices parser), `frontend/src/components/__tests__/MessageList.test.jsx` (choice-button rendering), `frontend/src/hooks/__tests__/chat.test.js` (streaming/`useConverse` behavior, including the review trigger request shape). `frontend/src/setupTests.js` loads jest-dom
