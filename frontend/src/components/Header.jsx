@@ -68,6 +68,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
   const quietButton = {
     variant: "ghost",
     colorScheme: "gray",
+    size: "sm",
   }
 
   let heading = linkId && scrollPosition > 200 ? link.title : ""
@@ -119,12 +120,13 @@ export default function Header({ isChatVisible, onToggleChat }) {
           "calc(100% - 12rem)",
           "calc(100% - 12rem)",
           "calc(100% - 16rem)",
-          "calc(100% - 26rem)",
-          "calc(100% - 26rem)",
+          "calc(100% - 19rem)",
+          "calc(100% - 19rem)",
         ]}>
           <Heading
             as="h2"
-            size="md"
+            fontSize="lg"
+            letterSpacing="-0.01em"
             textOverflow="ellipsis"
             maxWidth="100%"
             overflow="hidden"
@@ -146,7 +148,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
         >
           <TopRightNewLinkPopover />
           <GiveFeedbackButton>
-            <Button as="span" {...quietButton} color="gray.600" fontWeight="medium">
+            <Button as="span" {...quietButton} color="gray.600" fontWeight="medium" fontSize="sm">
               Feedback
             </Button>
           </GiveFeedbackButton>
@@ -176,31 +178,30 @@ export default function Header({ isChatVisible, onToggleChat }) {
         <Stack
           direction="row"
           as="nav"
-          spacing={0}
+          spacing={1}
+          alignItems="center"
           display={["flex", "flex", "flex", "flex", "none"]}
         >
           <TopRightNewLinkPopover isMobile={true} />
           <IconButton
             id="mobile-nav"
             display={["flex", "flex", "flex", "flex", "none"]}
-            borderRadius="none"
             ref={buttonRef}
             onClick={onOpen}
-            aria-label="nav"
+            aria-label="Open menu"
             zIndex={10}
             icon={<HamburgerIcon />}
+            {...quietButton}
           />
           <IconButton
             id="mobile-nav"
             display={["flex", "flex", "flex", "flex", "none"]}
-            borderRadius="none"
             ref={chatButtonRef}
             onClick={onChatOpen}
-            aria-label="nav"
+            aria-label="Open chat"
             zIndex={10}
-            borderLeftColor="gray.200"
-            borderLeftWidth="thin"
             icon={<ChatIcon />}
+            {...quietButton}
           />
           <TopRightUserMenu isMobile={true} />
         </Stack>

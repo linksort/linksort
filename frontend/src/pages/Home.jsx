@@ -146,7 +146,7 @@ export default function Home() {
             onClick={handleGoToPrevPage}
             leftIcon={<ChevronLeftIcon />}
           >
-            Prevous
+            Previous
           </Button>
           <Button onClick={handleGoToNextPage} rightIcon={<ChevronRightIcon />}>
             Next

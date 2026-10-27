@@ -92,6 +92,7 @@ export default function LinkItemControls({
                 as={IconButton}
                 size="sm"
                 icon={<FolderIcon />}
+                aria-label="Add to folder"
                 backgroundColor={buttonColor}
                 _focus="none"
               />
@@ -105,6 +106,8 @@ export default function LinkItemControls({
         <IconButton
           backgroundColor={buttonColor}
           icon={link.isFavorite ? <StarIcon /> : <StarBorderIcon />}
+          aria-label={link.isFavorite ? "Remove from favorites" : "Add to favorites"}
+          aria-pressed={link.isFavorite}
           size="sm"
           onClick={handleToggleIsFavorite}
           isLoading={isFavoriting}
@@ -116,6 +119,7 @@ export default function LinkItemControls({
           backgroundColor={buttonColor}
           as={RouterLink}
           icon={<ViewIcon />}
+          aria-label="View details"
           to={`/links/${link.id}`}
           size="sm"
           _focus="none"
@@ -125,6 +129,7 @@ export default function LinkItemControls({
         <IconButton
           backgroundColor={buttonColor}
           icon={<LinkIcon />}
+          aria-label="Copy link"
           size="sm"
           _focus="none"
           onClick={handleCopyLink}
@@ -137,6 +142,7 @@ export default function LinkItemControls({
               as="div"
               backgroundColor={buttonColor}
               icon={<DotDotDotVert />}
+              aria-label="More actions"
               size="sm"
               _focus="none"
             />

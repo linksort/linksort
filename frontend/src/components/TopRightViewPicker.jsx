@@ -19,6 +19,7 @@ export default function TopRightViewPicker() {
           zIndex={1}
           colorScheme={setting === VIEW_SETTING_CONDENSED ? "brand" : "gray"}
           icon={<CondensedListIcon />}
+          aria-label="Condensed view"
           borderRightRadius="none"
           onClick={() => setSetting(VIEW_SETTING_CONDENSED)}
         />
@@ -28,6 +29,7 @@ export default function TopRightViewPicker() {
           zIndex={setting === VIEW_SETTING_TALL ? 2 : 0}
           colorScheme={setting === VIEW_SETTING_TALL ? "brand" : "gray"}
           icon={<MenuIcon />}
+          aria-label="Comfy view"
           borderRadius="none"
           borderLeft={setting === VIEW_SETTING_TALL ? "none" : "thin"}
           borderRight={setting === VIEW_SETTING_TALL ? "none" : "thin"}
@@ -42,6 +44,7 @@ export default function TopRightViewPicker() {
           zIndex={1}
           colorScheme={setting === VIEW_SETTING_TILES ? "brand" : "gray"}
           icon={<TilesIcon />}
+          aria-label="Tiled view"
           borderLeftRadius="none"
           onClick={() => setSetting(VIEW_SETTING_TILES)}
         />

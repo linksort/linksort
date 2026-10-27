@@ -70,7 +70,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
           </Flex>
           <Box as="nav">
             <List paddingRight={2}>
-              <ListItem marginBottom={8}>
+              <ListItem marginBottom={7}>
                 <Stack
                   as={List}
                   spacing={1}
@@ -92,7 +92,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                     >
                       <Text as="span">
                         Sort by{" "}
-                        <Text as="span" color="gray.600">
+                        <Text as="span" color="gray.600" fontWeight="normal">
                           {sortDirection}
                         </Text>
                       </Text>
@@ -105,7 +105,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                     >
                       <Text as="span">
                         Group by{" "}
-                        <Text as="span" color="gray.600">
+                        <Text as="span" color="gray.600" fontWeight="normal">
                           {groupName}
                         </Text>
                       </Text>
@@ -146,7 +146,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                 </Stack>
               </ListItem>
               <ListItem
-                marginBottom={8}
+                marginBottom={7}
                 id={isMobile ? "mobile-folder-controls" : "folder-controls"}
               >
                 <SidebarCollapsableSection title="Folders">
@@ -154,7 +154,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                 </SidebarCollapsableSection>
               </ListItem>
               <ListItem
-                marginBottom={8}
+                marginBottom={7}
               >
                 <SidebarCollapsableSection title="Personal Tags">
                   <SidebarTagCluster />

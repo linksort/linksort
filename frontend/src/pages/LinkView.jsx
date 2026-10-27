@@ -20,7 +20,6 @@ import {
   EditIcon,
   ExternalLinkIcon,
   ArrowDownIcon,
-  ArrowUpIcon,
 } from "@chakra-ui/icons";
 
 import { useLink, useLinkOperations } from "../hooks/links";
@@ -136,7 +135,7 @@ export default function LinkView() {
     <Box>
       <Box
         position="fixed"
-        paddingY={6}
+        paddingY={4}
         borderBottomWidth="thin"
         borderBottomColor="gray.100"
         backgroundColor="white"
@@ -154,28 +153,32 @@ export default function LinkView() {
         transform="auto"
         transition="transform ease 0.2s"
       >
-        <HStack maxWidth="5xl" marginX="auto" width="100%" paddingX={6}>
+        <HStack maxWidth="5xl" marginX="auto" width="100%" paddingX={6} spacing={2}>
           <IconButton
+            size="sm"
             onClick={() => history.goBack()}
             icon={<ArrowBackIcon />}
+            aria-label="Back"
           />
           <Button
+            size="sm"
             onClick={() => history.replace(`/links/${link.id}/update`)}
-            leftIcon={<EditIcon />}
+            leftIcon={<EditIcon boxSize="3" />}
           >
             Edit
           </Button>
           <Button
+            size="sm"
             as={Link}
             isExternal={true}
             href={link.url}
-            leftIcon={<ExternalLinkIcon />}
+            leftIcon={<ExternalLinkIcon boxSize="3" />}
           >
             Visit
           </Button>
           <LinkControlsMenu
             link={link}
-            buttonSlot={<IconButton as={Box} icon={<DotDotDotVert />} />}
+            buttonSlot={<IconButton size="sm" as={Box} icon={<DotDotDotVert />} aria-label="More actions" />}
           />
         </HStack>
       </Box>
@@ -189,19 +192,28 @@ export default function LinkView() {
             align="left"
             position="relative"
           >
-            <Box height="4rem" />
+            <Box height="3rem" />
 
-            <VStack align="left">
-              <HStack spacing={0}>
+            {/* Title block: site, title, when it was saved. */}
+            <VStack align="left" spacing={2}>
+              <HStack spacing={2} color="gray.700" fontSize="sm">
                 <LinkItemFavicon favicon={link.favicon} />
-                <Text>{link.site}</Text>
+                <Text as="span">{link.site}</Text>
+                <Text as="span" color="gray.400" aria-hidden="true">
+                  ·
+                </Text>
+                <Text as="span">
+                  Saved {isoDateToAtTimeOnDate(link.createdAt)}
+                </Text>
               </HStack>
-              <Heading as="h1">{link.title}</Heading>
+              <Heading as="h1" fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em" lineHeight="1.2">
+                {link.title}
+              </Heading>
             </VStack>
 
             {link.image && (
               <Box
-                height="22rem"
+                height={{ base: "14rem", md: "22rem" }}
                 borderRadius="lg"
                 overflow="hidden"
                 borderColor="gray.100"
@@ -210,98 +222,77 @@ export default function LinkView() {
                 <CoverImage
                   link={link}
                   width="100%"
-                  height="22rem"
+                  height="100%"
                   fallback={<Skeleton height="100%" width="100%" />}
                 />
               </Box>
             )}
 
-            <VStack align="left">
-              <Heading as="h6" fontSize="sm">
-                Saved At
-              </Heading>
-              <Text>{isoDateToAtTimeOnDate(link.createdAt)}</Text>
-            </VStack>
-
-            <VStack align="left">
-              <Heading as="h6" fontSize="sm">
-                Description
-              </Heading>
-
-              {link.description.length > 0 ? (
-                <Text>{link.description}</Text>
-              ) : (
-                <Text color="gray.600">
-                  No description was found for this link.
-                </Text>
-              )}
-            </VStack>
-
-            <VStack align="left">
-              <Heading as="h6" fontSize="sm">
-                Personal Tags
-              </Heading>
+            {/* Tags: personal first (editable), then auto tags as links. */}
+            <Wrap spacing={2} align="center">
               <InlineTagEditor linkId={link.id} />
-            </VStack>
+              {link.tagDetails.map((detail) => (
+                <Tag
+                  as={RouterLink}
+                  to={makeTagLink(detail.path.slice(1, detail.path.length))}
+                  key={detail.path}
+                  size="md"
+                  whiteSpace="nowrap"
+                  borderRadius="lg"
+                  bg="gray.100"
+                  color="gray.800"
+                  transition="background-color 0.2s ease"
+                  _hover={{ backgroundColor: "gray.200" }}
+                  title="Auto tag"
+                >
+                  {detail.path.slice(1, detail.path.length).replaceAll("/", " → ")}
+                </Tag>
+              ))}
+            </Wrap>
 
-            <VStack align="left">
-              <Heading as="h6" fontSize="sm">
-                Auto Tags
-              </Heading>
-              {link.tagDetails.length > 0 ? (
-                <Wrap>
-                  {link.tagDetails.map((detail) => (
-                    <Tag
-                      as={RouterLink}
-                      to={makeTagLink(detail.path.slice(1, detail.path.length))}
-                      key={detail.path}
-                      marginRight={2}
-                      whiteSpace="nowrap"
-                      overflow="hidden"
-                      transition="all 0.2s"
-                      padding={2}
-                      _hover={{ backgroundColor: "gray.200" }}
-                    >
-                      {detail.path
-                        .slice(1, detail.path.length)
-                        .replaceAll("/", " -> ")}
-                    </Tag>
-                  ))}
-                </Wrap>
-              ) : (
-                <Text color="gray.600">
-                  No auto tags were assigned to this link.
-                </Text>
-              )}
-            </VStack>
-
-            <VStack align="left">
-              <Heading as="h6" fontSize="sm">
-                Summary
-              </Heading>
-              {hasSummary && link && link.summary && link.summary.length > 0 ? (
-                <Box className="prose prose-sans-serif prose-1rem" dangerouslySetInnerHTML={{ __html: link.summary }} />
-              ) : (
-                <>
-                  {isGeneratingSummary ? (
-                    <Spinner />
-                  ) : (
-                    <Text color="gray.600">
-                      No summary was generated for this link.
-                    </Text>
+            {/* Summary: the assistant's take, shown only when it exists or is on its way. */}
+            {(hasSummary && link.summary && link.summary.length > 0) || isGeneratingSummary ? (
+              <Box
+                bg="gray.50"
+                border="1px solid"
+                borderColor="gray.200"
+                borderRadius="lg"
+                px={5}
+                py={4}
+              >
+                <HStack spacing={2} mb={2}>
+                  <Heading as="h2" fontSize="sm" color="gray.800">
+                    Summary
+                  </Heading>
+                  {isGeneratingSummary && (
+                    <HStack spacing={1.5} fontSize="xs" color="gray.600">
+                      <Spinner size="xs" thickness="2px" color="brand.500" emptyColor="brand.100" />
+                      <Text as="span">Writing…</Text>
+                    </HStack>
                   )}
-                </>
-              )}
-            </VStack>
+                </HStack>
+                {hasSummary && link.summary && link.summary.length > 0 ? (
+                  <Box
+                    className="prose prose-sans-serif prose-1rem"
+                    dangerouslySetInnerHTML={{ __html: link.summary }}
+                  />
+                ) : (
+                  <Text fontSize="sm" color="gray.600">
+                    The assistant is reading this link.
+                  </Text>
+                )}
+              </Box>
+            ) : null}
 
-            <VStack align="left" paddingBottom="5rem">
-              <Heading as="h6" fontSize="sm">
-                Corpus
+            {/* The article itself. */}
+            <VStack align="left" spacing={3} paddingBottom="5rem">
+              <Heading as="h2" fontSize="sm" color="gray.800">
+                Article
               </Heading>
               {link.corpus.length > 1024 ? (
                 <Box
                   className="prose"
-                  width="60ch"
+                  maxWidth="65ch"
                   dangerouslySetInnerHTML={{
                     __html: link.corpus
                       .replaceAll("<html>", "")
@@ -312,9 +303,17 @@ export default function LinkView() {
                       .replaceAll("</body>", ""),
                   }}
                 />
+              ) : link.description.length > 0 ? (
+                <Text maxWidth="65ch" color="gray.800">
+                  {link.description}
+                </Text>
               ) : (
-                <Text color="gray.600">
-                  No corpus was gathered for this link.
+                <Text color="gray.600" maxWidth="65ch">
+                  We couldn't read this page's text, so there's nothing to show here yet.{" "}
+                  <Link href={link.url} isExternal color="brand.500" fontWeight="semibold">
+                    Open the original
+                  </Link>
+                  .
                 </Text>
               )}
             </VStack>
@@ -361,7 +360,7 @@ export default function LinkView() {
               width="100%"
               maxWidth={["calc(100vw - 3rem)", "70ch", "70ch"]}
               paddingTop={4}
-              placeholder="Start typing to add a note..."
+              placeholder="Start typing to add a note…"
               value={annotation}
               onChange={(e) => setAnnotation(e.target.value)}
             />
@@ -373,46 +372,45 @@ export default function LinkView() {
             padding={1}
             justifyContent="space-between"
           >
-            <HStack>
-              <IconButton
-                size="sm"
-                icon={
-                  notePanelState === NOTE_PANEL_MAXIMIZED ? (
-                    <MinimizeIcon />
-                  ) : (
-                    <MaximizeIcon />
-                  )
-                }
-                onClick={() =>
-                  setNotePanelState(
-                    notePanelState === NOTE_PANEL_MAXIMIZED
-                      ? NOTE_PANEL_NORMAL
-                      : NOTE_PANEL_MAXIMIZED
-                  )
-                }
-              />
-              <IconButton
-                size="sm"
-                icon={
-                  notePanelState === NOTE_PANEL_HIDDEN ? (
-                    <ArrowUpIcon />
-                  ) : (
-                    <ArrowDownIcon />
-                  )
-                }
-                onClick={() =>
-                  setNotePanelState(
-                    notePanelState === NOTE_PANEL_HIDDEN
-                      ? NOTE_PANEL_NORMAL
-                      : NOTE_PANEL_HIDDEN
-                  )
-                }
-              />
+            <HStack spacing={2}>
+              {notePanelState === NOTE_PANEL_HIDDEN ? (
+                <Button
+                  size="sm"
+                  leftIcon={<EditIcon boxSize="3" />}
+                  onClick={() => setNotePanelState(NOTE_PANEL_NORMAL)}
+                >
+                  {annotation && annotation.length > 0 ? "Show note" : "Add a note"}
+                </Button>
+              ) : (
+                <>
+                  <IconButton
+                    size="sm"
+                    aria-label="Hide note"
+                    icon={<ArrowDownIcon />}
+                    onClick={() => setNotePanelState(NOTE_PANEL_HIDDEN)}
+                  />
+                  <IconButton
+                    size="sm"
+                    aria-label={notePanelState === NOTE_PANEL_MAXIMIZED ? "Shrink note" : "Expand note"}
+                    icon={notePanelState === NOTE_PANEL_MAXIMIZED ? <MinimizeIcon /> : <MaximizeIcon />}
+                    onClick={() =>
+                      setNotePanelState(
+                        notePanelState === NOTE_PANEL_MAXIMIZED ? NOTE_PANEL_NORMAL : NOTE_PANEL_MAXIMIZED
+                      )
+                    }
+                  />
+                  <Text as="span" fontSize="sm" fontWeight="semibold" color="gray.800" pl={1}>
+                    Note
+                  </Text>
+                </>
+              )}
             </HStack>
             <Flex alignItems="center">
-              <Text fontSize="sm" color="gray.500" padding={0} margin={0}>
-                {isSavingAnnotation ? "Saving..." : "Saved"}
-              </Text>
+              {notePanelState !== NOTE_PANEL_HIDDEN && (
+                <Text fontSize="sm" color="gray.600" padding={0} margin={0}>
+                  {isSavingAnnotation ? "Saving…" : "Saved"}
+                </Text>
+              )}
             </Flex>
           </Flex>
         </Box>

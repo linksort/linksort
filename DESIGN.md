@@ -12,7 +12,7 @@ colors:
   paper: "#FAFAFA"
   paper-edge: "#EEEEEE"
   pencil: "#DDDDDD"
-  graphite: "#777777"
+  graphite: "#666666"
   ink-soft: "#555555"
   ink: "#333333"
   ink-deep: "#111111"
@@ -177,7 +177,7 @@ A near-monochrome paper palette with a single saturated blue; everything else is
 - **Paper** (`{colors.paper}`): the sidebar, the assistant's chat bubbles, the chat textarea, and the card hover tint. The "ground" everything sits on.
 - **Paper Edge** (`{colors.paper-edge}`): hairline borders on cards, the sidebar's right edge, the header's bottom edge, chat-input top edge; also the fill of small control buttons on link cards.
 - **Pencil** (`{colors.pencil}`): slightly firmer borders on inputs, the chat textarea, and assistant bubbles.
-- **Graphite** (`{colors.graphite}`) / **Ink Soft** (`{colors.ink-soft}`): secondary text, sidebar section labels, site names, timestamps.
+- **Graphite** (`{colors.graphite}`, 5.5:1 on Paper) / **Ink Soft** (`{colors.ink-soft}`): secondary text, sidebar section labels, site names, timestamps. Graphite is the floor for any text that carries state.
 - **Ink** (`{colors.ink}`): body text. **Ink Deep** (`{colors.ink-deep}`): headings and link text on hover.
 
 ### Status
@@ -267,12 +267,17 @@ Crisp and tactile: solid fills, firm corners, no shadow, an instant tint on hove
 - **Text input** (`input-text`): Chakra outline variant, white, Pencil border, 0.375rem radius, 2.5rem tall. Focus border is Halo Blue (`focusBorderColor: accent`).
 - **Chat composer** (`input-chat`): auto-growing textarea, Paper fill, Pencil border, 0.375rem radius, 0.5rem/0.75rem padding; focus border shifts to Pen Blue. Send button is a small solid blue icon button; disabled while empty.
 
+### Link view
+- Article-first: a one-line meta row (favicon, site · "Saved {time}") in Body Small Ink Soft, the title as Headline at -0.02em, the cover at 22rem in an `lg` hairline frame, one wrap of tags (the "+ Add tag" outline button first, then auto tags as Paper Edge chips with → separators), an optional Summary card on Paper (shown only when a summary exists or is being written, with a brand spinner and "Writing…"), then "Article" at 65ch in Georgia. Nothing renders an empty "No X" section; a missing article offers "Open the original".
+- Toolbar: `sm` controls (Back, Edit, Visit, More) in a white band with a hairline.
+- Note: a bottom bar whose hidden state is a labeled "Add a note" / "Show note" button; open state shows Hide/Expand icon buttons with labels, the word "Note", and Saving…/Saved on the right.
+
 ### Graph view
 - vis-network with one pastel per top-level tag from the theme's 500-step ramps (`CLUSTER_COLORS` in `pages/Graph.jsx`), no node strokes, 1px edges at 45% opacity inheriting the source color, Inter labels in Ink Soft, Linksort Blue border only on the selected node.
 
 ### Navigation
-- **Sidebar**: Paper background, Logo in the 5rem band, then `SidebarButton`s (ghost, 1.75rem, left icon). Active views render solid blue. Sections ("FOLDERS", "PERSONAL TAGS", "AUTO TAGS") use the Label style with a collapse chevron. Folder tree indents 1rem per level.
-- **Header**: white, 5rem, hairline bottom edge, Title-style view name on the left (folder/tag/search on the grid, "Graph", "Account", or the link's title once scrolled), actions on the right: one solid blue "New Link", then ghost controls only (Feedback text link in Graphite, chat toggle that tints Paper Edge when on, settings).
+- **Sidebar**: Paper background, Logo in the 5rem band, then `SidebarButton`s (ghost, 1.75rem tall, `md` radius, Body Small at 500 weight, 14px left icon, Paper Edge tint on hover). Active views tint Paper Edge. Section headers are buttons: 0.6875rem semibold uppercase at 0.06em in Graphite with a 16px chevron, `aria-expanded`. Folder tree indents 1rem per level. 1.75rem between groups.
+- **Header**: white, 5rem, hairline bottom edge, Title-style view name on the left (folder/tag/search on the grid, "Graph", "Account", or the link's title once scrolled), actions on the right at `sm` size: one solid blue "New Link", then ghost controls only (Feedback text link in Graphite, chat toggle that tints Paper Edge when on, settings). The title is 1.125rem at -0.01em. Mobile uses the same buttons, never square-joined.
 - **Mobile**: hamburger opens the sidebar as a drawer; a FloatingPill holds filter controls.
 
 ### Chat (signature)

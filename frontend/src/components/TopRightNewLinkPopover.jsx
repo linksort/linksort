@@ -59,7 +59,8 @@ export default function TopRightNewLinkPopover({ isMobile }) {
           <Button
             id={isMobile ? "" : "new-link"}
             colorScheme="brand"
-            leftIcon={<AddIcon />}
+            size="sm"
+            leftIcon={<AddIcon boxSize="2.5" />}
             onClick={handleOpen}
             display={["none", "none", "none", "none", "flex"]}
           >
@@ -67,9 +68,10 @@ export default function TopRightNewLinkPopover({ isMobile }) {
           </Button>
           <IconButton
             id={isMobile ? "mobile-new-link" : ""}
-            borderRightRadius="none"
             colorScheme="brand"
-            icon={<AddIcon />}
+            size="sm"
+            aria-label="New link"
+            icon={<AddIcon boxSize="3" />}
             onClick={handleOpen}
             display={["flex", "flex", "flex", "flex", "none"]}
           />

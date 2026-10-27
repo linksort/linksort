@@ -8,11 +8,15 @@ function SidebarSectionHeader({ children, ...rest }) {
   return (
     <Heading
       as="h4"
-      fontSize="0.7rem"
-      fontWeight="bold"
-      color="gray.700"
+      fontSize="0.6875rem"
+      fontWeight="semibold"
+      letterSpacing="0.06em"
+      color="gray.600"
       textTransform="uppercase"
-      marginBottom={4}
+      marginBottom={2.5}
+      display="flex"
+      alignItems="center"
+      height="6"
       position="relative"
       cursor="pointer"
       {...rest}
@@ -28,15 +32,25 @@ export default function SidebarCollapsableSection({ title, children }) {
 
   return (
     <Box>
-      <SidebarSectionHeader onClick={() => setIsOpen(!isOpen)}>
+      <SidebarSectionHeader
+        as="button"
+        type="button"
+        width="100%"
+        textAlign="left"
+        aria-expanded={isOpen}
+        aria-label={`${title}, ${isOpen ? "collapse" : "expand"}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {title}
         <ChevronDownIcon
           position="absolute"
           right={6}
-          top={0}
-          fontSize="large"
-          transition="ease 0.1s"
-          transform={isOpen ? "" : "rotate(90deg)"}
+          top="3px"
+          boxSize="4"
+          color="gray.500"
+          transition="transform ease 0.15s"
+          transform={isOpen ? "" : "rotate(-90deg)"}
+          aria-hidden="true"
         />
       </SidebarSectionHeader>
       <Collapse style={{ overflow: "unset" }} in={isOpen}>{children}</Collapse>

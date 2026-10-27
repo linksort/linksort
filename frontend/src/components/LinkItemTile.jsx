@@ -40,7 +40,7 @@ export default function LinkItemTile({ link }) {
                 {link.title}
               </Text>
             </Link>
-            <Text fontSize="sm" title={link.site}>
+            <Text fontSize="sm" color="gray.700" title={link.site}>
               {link.site}
             </Text>
           </Box>
