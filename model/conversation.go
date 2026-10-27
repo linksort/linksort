@@ -11,14 +11,24 @@ import (
 	"github.com/linksort/linksort/agent"
 )
 
+// ConversationKindLinkReview marks conversations that were started
+// automatically to review the links a user saved since their last visit.
+const ConversationKindLinkReview = "link_review"
+
+// MessageKindLinkReviewTrigger marks synthetic user messages that kick off a
+// link review. They are sent to the model but hidden in the UI.
+const MessageKindLinkReviewTrigger = "link_review_trigger"
+
 type Conversation struct {
-	Key       primitive.ObjectID `json:"-" bson:"_id,omitempty"`
-	ID        string             `json:"id"`
-	UserID    string             `json:"userId"`
-	CreatedAt time.Time          `json:"createdAt"`
-	UpdatedAt time.Time          `json:"updatedAt"`
-	Messages  []*Message         `json:"messages" bson:"-"`
-	Length    int                `json:"length"`
+	Key         primitive.ObjectID `json:"-" bson:"_id,omitempty"`
+	ID          string             `json:"id"`
+	UserID      string             `json:"userId"`
+	CreatedAt   time.Time          `json:"createdAt"`
+	UpdatedAt   time.Time          `json:"updatedAt"`
+	Messages    []*Message         `json:"messages" bson:"-"`
+	Length      int                `json:"length"`
+	Kind        string             `json:"kind,omitempty" bson:"kind,omitempty"`
+	ReviewSince time.Time          `json:"reviewSince,omitempty" bson:"reviewSince,omitempty"`
 }
 
 type Message struct {
@@ -32,6 +42,7 @@ type Message struct {
 	IsToolUse      bool               `json:"isToolUse"`
 	ToolUse        *[]agent.ToolUse   `json:"toolUse,omitempty"`
 	PageContext    map[string]any     `json:"pageContext,omitempty" bson:"pageContext,omitempty"`
+	Kind           string             `json:"kind,omitempty" bson:"kind,omitempty"`
 }
 
 // MarshalJSON provides custom JSON marshaling for Message to maintain frontend compatibility

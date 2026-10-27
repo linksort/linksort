@@ -21,6 +21,7 @@ type Config struct {
 		GetConversations(context.Context, *model.User, *model.Pagination) ([]*model.Conversation, error)
 		GetConversation(context.Context, *model.User, string, *model.Pagination) (*model.Conversation, error)
 		Converse(context.Context, *model.User, *ConverseRequest) (<-chan *model.ConverseEvent, error)
+		StartLinkReview(context.Context, *model.User) (*model.Conversation, int, error)
 	}
 	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)
@@ -39,6 +40,7 @@ func Handler(c *Config) *mux.Router {
 
 	r.Use(middleware.WithUser(c.AuthController, c.CSRF))
 
+	r.HandleFunc("/api/conversations/review", cc.StartLinkReview).Methods("POST")
 	r.HandleFunc("/api/conversations", cc.CreateConversation).Methods("POST")
 	r.HandleFunc("/api/conversations/{conversationID}/converse", cc.Converse).Methods("PUT")
 	r.HandleFunc("/api/conversations", cc.GetConversations).Methods("GET")
@@ -82,6 +84,43 @@ func (s *config) CreateConversation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload.Write(w, r, &CreateConversationResponse{conv}, http.StatusCreated)
+}
+
+type StartLinkReviewResponse struct {
+	Conversation *model.Conversation `json:"conversation"`
+	NewLinkCount int                 `json:"newLinkCount"`
+}
+
+// StartLinkReview godoc
+//
+//	@Summary	StartLinkReview
+//	@Description	Starts an automatic review of the links saved since the user's last review. Responds 204 when the user is not eligible (fewer than 3 new links or last review less than 4 hours ago).
+//	@Success	201	{object}	StartLinkReviewResponse
+//	@Success	204
+//	@Failure	401	{object}	payload.Error
+//	@Failure	500	{object}	payload.Error
+//	@Security	ApiKeyAuth
+//	@Router	/conversations/review	[post]
+func (s *config) StartLinkReview(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.StartLinkReview")
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+
+	conv, newLinkCount, err := s.ConversationController.StartLinkReview(ctx, u)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+		return
+	}
+
+	if conv == nil {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	payload.Write(w, r, &StartLinkReviewResponse{
+		Conversation: conv,
+		NewLinkCount: newLinkCount,
+	}, http.StatusCreated)
 }
 
 type GetConversationResponse struct {
@@ -153,8 +192,12 @@ type PageContext struct {
 type ConverseRequest struct {
 	// The ID of the conversation, will be populated from the URL parameter
 	ID string `json:"-"`
-	// The message to send in the conversation
-	Message string `json:"message" validate:"required"`
+	// The message to send in the conversation. Required unless a trigger is set.
+	Message string `json:"message" validate:"required_without=Trigger"`
+	// Trigger starts a synthetic turn instead of a typed message. The only
+	// supported value is "link_review", which is only valid on a fresh
+	// conversation whose kind is "link_review".
+	Trigger string `json:"trigger,omitempty" validate:"omitempty,oneof=link_review"`
 	// The page context where the user is sending the message from
 	PageContext *PageContext `json:"pageContext,omitempty"`
 }

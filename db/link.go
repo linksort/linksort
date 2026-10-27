@@ -274,6 +274,14 @@ func GetLinksUserTag(val string) model.GetLinksOption {
 	}
 }
 
+func GetLinksCreatedAfter(t time.Time) model.GetLinksOption {
+	return func(m map[string]interface{}) {
+		if !t.IsZero() {
+			m["createdat"] = bson.M{"$gt": t}
+		}
+	}
+}
+
 func GetLinksAnnotated(val string) model.GetLinksOption {
 	return func(m map[string]interface{}) {
 		if val == "1" {

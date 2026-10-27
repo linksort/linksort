@@ -70,7 +70,9 @@ func New(c *Config) http.Handler {
 	sessionC := &controller.Session{Store: c.UserStore}
 	conversationC := &controller.Conversation{
 		UserStore:         c.UserStore,
+		LinkStore:         c.LinkStore,
 		ConversationStore: c.ConversationStore,
+		Transactor:        c.Transactor,
 		AssistantClient: &assistant.Client{
 			LinkController:   linkC,
 			FolderController: folderC,

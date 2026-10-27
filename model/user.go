@@ -27,6 +27,7 @@ type User struct {
 	TagTree            *TagNode           `json:"tagTree"`
 	UserTags           UserTags           `json:"userTags"`
 	HasSeenWelcomeTour bool               `json:"hasSeenWelcomeTour"`
+	LastLinkReviewAt   time.Time          `json:"lastLinkReviewAt" bson:"lastLinkReviewAt,omitempty"`
 }
 
 type UserStore interface {
