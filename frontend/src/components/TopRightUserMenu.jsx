@@ -24,7 +24,7 @@ export default function TopRightUserMenu({ isMobile }) {
         className={isMobile ? "js-user-menu-mobile" : "js-user-menu"}
         aria-label="Options"
         icon={<SettingsIcon />}
-        variant="ghost"
+        variant="solid"
         colorScheme="gray"
         size="sm"
         _focus={{ boxShadow: "none" }}

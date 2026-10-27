@@ -66,7 +66,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
     opacity = scrollPosition > 400 ? "1" : "0"
   }
   const quietButton = {
-    variant: "ghost",
+    variant: "solid",
     colorScheme: "gray",
     size: "sm",
   }
@@ -148,7 +148,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
         >
           <TopRightNewLinkPopover />
           <GiveFeedbackButton>
-            <Button as="span" {...quietButton} color="gray.600" fontWeight="medium" fontSize="sm">
+            <Button as="span" {...quietButton}>
               Feedback
             </Button>
           </GiveFeedbackButton>
@@ -160,7 +160,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
               zIndex={10}
               icon={<ChatIcon />}
               {...quietButton}
-              bg={isChatVisible ? "gray.100" : "transparent"}
+              bg={isChatVisible ? "gray.200" : "gray.100"}
             />
           </Tooltip>
           <IconButton

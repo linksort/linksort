@@ -268,8 +268,8 @@ Crisp and tactile: solid fills, firm corners, no shadow, an instant tint on hove
 - **Chat composer** (`input-chat`): auto-growing textarea, Paper fill, Pencil border, 0.375rem radius, 0.5rem/0.75rem padding; focus border shifts to Pen Blue. Send button is a small solid blue icon button; disabled while empty.
 
 ### Link view
-- Article-first: a one-line meta row (favicon, site · "Saved {time}") in Body Small Ink Soft, the title as Headline at -0.02em, the cover at 22rem in an `lg` hairline frame, one wrap of tags (the "+ Add tag" outline button first, then auto tags as Paper Edge chips with → separators), an optional Summary card on Paper (shown only when a summary exists or is being written, with a brand spinner and "Writing…"), then "Article" at 65ch in Georgia. Nothing renders an empty "No X" section; a missing article offers "Open the original".
-- Toolbar: `sm` controls (Back, Edit, Visit, More) in a 3rem sticky white band under the header with a hairline that spans the content column; the note bar is sticky at the bottom of the same column. Neither is `position: fixed`, so they can never assume a panel width.
+- Article-first: a one-line meta row (favicon, site · "Saved {time}") in Body Small Ink Soft, the title as Headline at -0.02em, the cover at 22rem in an `lg` hairline frame, one wrap of tags at a single 2rem height (personal tags as chips, the "+ Add tag" outline button, then auto tags as Paper Edge chips with → separators), an optional Summary card on Paper (shown only when a summary exists or is being written, with a brand spinner and "Writing…"), then "Article" at 65ch in Georgia. Nothing renders an empty "No X" section; a missing article offers "Open the original".
+- Toolbar: `sm` controls (Back, Edit, Visit, More) in a 3rem fixed white band under the header that hides on scroll-down and returns on scroll-up; the note bar is fixed at the viewport bottom. Both read `isChatVisible` from the chat context to size themselves to the content column (`calc(100vw − 18rem [− 25rem])`), never a hard-coded width.
 - Note: a bottom bar whose hidden state is a labeled "Add a note" / "Show note" button; open state shows Hide/Expand icon buttons with labels, the word "Note", and Saving…/Saved on the right.
 
 ### Graph view
@@ -277,7 +277,7 @@ Crisp and tactile: solid fills, firm corners, no shadow, an instant tint on hove
 
 ### Navigation
 - **Sidebar**: Paper background, Logo in the 4rem band, then `SidebarButton`s (ghost, 1.75rem tall, `md` radius, Body Small at 500 weight, 14px left icon, Paper Edge tint on hover). Active views tint Paper Edge. Section headers are buttons: 0.6875rem semibold uppercase at 0.06em in Graphite with a 16px chevron, `aria-expanded`. Folder tree indents 1rem per level. 1.75rem between groups.
-- **Header**: white, 4rem (3.5rem below the sidebar breakpoint), hairline bottom edge, Title-style view name on the left (folder/tag/search on the grid, "Graph", "Account", or the link's title once scrolled), actions on the right at `sm` size: one solid blue "New Link", then ghost controls only (Feedback text link in Graphite, chat toggle that tints Paper Edge when on, settings). The title is 1.125rem at -0.01em. Mobile uses the same buttons, never square-joined.
+- **Header**: white, 4rem (3.5rem below the sidebar breakpoint), hairline bottom edge, Title-style view name on the left (folder/tag/search on the grid, "Graph", "Account", or the link's title once scrolled), actions on the right at `sm` size: one solid blue "New Link", then Paper Edge chips (Feedback, chat toggle that darkens to Pencil when on, settings) — the same control chip as the link cards, never ghost. The title is 1.125rem at -0.01em. Mobile uses the same buttons, never square-joined.
 - **Mobile**: hamburger opens the sidebar as a drawer; a FloatingPill holds filter controls.
 
 ### Chat (signature)

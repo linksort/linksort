@@ -38,6 +38,7 @@ import {
 } from "../components/CustomIcons";
 import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
+import { useChatContext } from "../hooks/chat";
 import { isoDateToAtTimeOnDate } from "../utils/time";
 
 const NOTE_PANEL_NORMAL = "normal";
@@ -91,6 +92,18 @@ export default function LinkView() {
   const notePanelHeight = getNotePanelHeight(notePanelState);
   const scrollDirection = useScrollDirection();
   const { makeTagLink } = useFilters();
+  const { isChatVisible } = useChatContext();
+  // The sidebar takes 18rem from lg up; the chat panel takes 25rem at 2xl
+  // when it is open. Fixed bars must subtract exactly what is on screen.
+  const columnWidth = [
+    "100vw",
+    "100vw",
+    "100vw",
+    "100vw",
+    "calc(100vw - 18rem)",
+    isChatVisible ? "calc(100vw - 18rem - 25rem)" : "calc(100vw - 18rem)",
+  ];
+  const columnLeft = ["0", "0", "0", "0", "18rem", "18rem"];
   const hasSummary = link.isSummarized
 
   useEffect(() => {
@@ -135,14 +148,15 @@ export default function LinkView() {
   return (
     <Box>
       <Box
-        position="sticky"
+        position="fixed"
         top={[HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT]}
+        left={columnLeft}
+        width={columnWidth}
         paddingY={2}
         borderBottomWidth="thin"
         borderBottomColor="gray.100"
         backgroundColor="white"
         zIndex={1}
-        width="100%"
         translateY={scrollDirection === "DOWN" ? "-8rem" : "0"}
         transform="auto"
         transition="transform ease 0.2s"
@@ -186,6 +200,9 @@ export default function LinkView() {
             align="left"
             position="relative"
           >
+            {/* Room for the fixed toolbar. */}
+            <Box height="2rem" />
+
             {/* Title block: site, title, when it was saved. */}
             <VStack align="left" spacing={2}>
               <HStack spacing={2} color="gray.700" fontSize="sm">
@@ -228,7 +245,11 @@ export default function LinkView() {
                   as={RouterLink}
                   to={makeTagLink(detail.path.slice(1, detail.path.length))}
                   key={detail.path}
-                  size="md"
+                  size="lg"
+                  height="8"
+                  px={3}
+                  fontSize="sm"
+                  fontWeight="semibold"
                   whiteSpace="nowrap"
                   borderRadius="lg"
                   bg="gray.100"
@@ -310,15 +331,17 @@ export default function LinkView() {
               )}
             </VStack>
 
-            <Box height="6rem" />
+            {/* Room for the fixed note bar. */}
+            <Box height="10rem" />
           </VStack>
         </Box>
       </Box>
 
       <Box
-        position="sticky"
+        position="fixed"
         bottom={0}
-        width="100%"
+        left={columnLeft}
+        width={columnWidth}
         borderTopWidth="thin"
         borderTopColor="gray.100"
         backgroundColor="white"
