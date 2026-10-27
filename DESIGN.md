@@ -70,7 +70,7 @@ spacing:
   6: "1.5rem"
   8: "2rem"
   10: "2.5rem"
-  header: "5rem"
+  header: "4rem"
   sidebar: "18rem"
   chat: "25rem"
 components:
@@ -215,7 +215,7 @@ A near-monochrome paper palette with a single saturated blue; everything else is
 A three-column application shell on a paper ground.
 
 - **Sidebar** (`{spacing.sidebar}` = 18rem, fixed, Paper background, hairline right edge): logo in a 5rem header band, then stacked ghost buttons at 1.75rem height with 0.25rem gaps, grouped into collapsible sections with 2rem between groups.
-- **Header** (`{spacing.header}` = 5rem, white, hairline bottom edge): current view title on the left, "New Link" primary button, feedback, chat toggle, and settings on the right in a 1rem-spaced row.
+- **Header** (`{spacing.header}` = 4rem, white, hairline bottom edge): current view title on the left, "New Link" primary button, feedback, chat toggle, and settings on the right in a 1rem-spaced row.
 - **Content**: a responsive CSS grid of link cards with 1.5rem gaps: 1 column below 640px, 2 columns from 640px, 3 columns from 1024px. The comfy and condensed views swap the tile for a horizontal row.
 - **Chat panel** (`{spacing.chat}` = 25rem, white, hairline left edge): visible only at ≥1536px when toggled on; below that, chat lives in a full-height drawer. Messages stack with 0.75rem gaps; the composer sits at the bottom with a hairline top edge.
 - **Breakpoints**: 640 / 768 / 1024 / 1280 (Chakra `sm`–`xl`) plus the 1536px desktop-chat threshold.
@@ -269,15 +269,15 @@ Crisp and tactile: solid fills, firm corners, no shadow, an instant tint on hove
 
 ### Link view
 - Article-first: a one-line meta row (favicon, site · "Saved {time}") in Body Small Ink Soft, the title as Headline at -0.02em, the cover at 22rem in an `lg` hairline frame, one wrap of tags (the "+ Add tag" outline button first, then auto tags as Paper Edge chips with → separators), an optional Summary card on Paper (shown only when a summary exists or is being written, with a brand spinner and "Writing…"), then "Article" at 65ch in Georgia. Nothing renders an empty "No X" section; a missing article offers "Open the original".
-- Toolbar: `sm` controls (Back, Edit, Visit, More) in a white band with a hairline.
+- Toolbar: `sm` controls (Back, Edit, Visit, More) in a 3rem sticky white band under the header with a hairline that spans the content column; the note bar is sticky at the bottom of the same column. Neither is `position: fixed`, so they can never assume a panel width.
 - Note: a bottom bar whose hidden state is a labeled "Add a note" / "Show note" button; open state shows Hide/Expand icon buttons with labels, the word "Note", and Saving…/Saved on the right.
 
 ### Graph view
 - vis-network with one pastel per top-level tag from the theme's 500-step ramps (`CLUSTER_COLORS` in `pages/Graph.jsx`), no node strokes, 1px edges at 45% opacity inheriting the source color, Inter labels in Ink Soft, Linksort Blue border only on the selected node.
 
 ### Navigation
-- **Sidebar**: Paper background, Logo in the 5rem band, then `SidebarButton`s (ghost, 1.75rem tall, `md` radius, Body Small at 500 weight, 14px left icon, Paper Edge tint on hover). Active views tint Paper Edge. Section headers are buttons: 0.6875rem semibold uppercase at 0.06em in Graphite with a 16px chevron, `aria-expanded`. Folder tree indents 1rem per level. 1.75rem between groups.
-- **Header**: white, 5rem, hairline bottom edge, Title-style view name on the left (folder/tag/search on the grid, "Graph", "Account", or the link's title once scrolled), actions on the right at `sm` size: one solid blue "New Link", then ghost controls only (Feedback text link in Graphite, chat toggle that tints Paper Edge when on, settings). The title is 1.125rem at -0.01em. Mobile uses the same buttons, never square-joined.
+- **Sidebar**: Paper background, Logo in the 4rem band, then `SidebarButton`s (ghost, 1.75rem tall, `md` radius, Body Small at 500 weight, 14px left icon, Paper Edge tint on hover). Active views tint Paper Edge. Section headers are buttons: 0.6875rem semibold uppercase at 0.06em in Graphite with a 16px chevron, `aria-expanded`. Folder tree indents 1rem per level. 1.75rem between groups.
+- **Header**: white, 4rem (3.5rem below the sidebar breakpoint), hairline bottom edge, Title-style view name on the left (folder/tag/search on the grid, "Graph", "Account", or the link's title once scrolled), actions on the right at `sm` size: one solid blue "New Link", then ghost controls only (Feedback text link in Graphite, chat toggle that tints Paper Edge when on, settings). The title is 1.125rem at -0.01em. Mobile uses the same buttons, never square-joined.
 - **Mobile**: hamburger opens the sidebar as a drawer; a FloatingPill holds filter controls.
 
 ### Chat (signature)

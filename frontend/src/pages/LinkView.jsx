@@ -36,6 +36,7 @@ import {
   MaximizeIcon,
   MinimizeIcon,
 } from "../components/CustomIcons";
+import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
 import { isoDateToAtTimeOnDate } from "../utils/time";
 
@@ -46,7 +47,7 @@ const NOTE_PANEL_HIDDEN = "hidden";
 function getNotePanelMaxHeight(state) {
   switch (state) {
     case NOTE_PANEL_MAXIMIZED:
-      return "calc(100vh - 7.5rem)";
+      return "calc(100vh - 8rem)";
     case NOTE_PANEL_HIDDEN:
       return "0.0rem";
     case NOTE_PANEL_NORMAL:
@@ -134,26 +135,19 @@ export default function LinkView() {
   return (
     <Box>
       <Box
-        position="fixed"
-        paddingY={4}
+        position="sticky"
+        top={[HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT]}
+        paddingY={2}
         borderBottomWidth="thin"
         borderBottomColor="gray.100"
         backgroundColor="white"
         zIndex={1}
         width="100%"
-        maxWidth={[
-          "calc(100vw)",
-          "calc(100vw)",
-          "calc(100vw)",
-          "calc(100vw)",
-          "calc(100vw - 18rem)",
-          "calc(100vw - 18rem - 25rem)",
-        ]}
-        translateY={scrollDirection === "DOWN" ? "-6rem" : "0"}
+        translateY={scrollDirection === "DOWN" ? "-8rem" : "0"}
         transform="auto"
         transition="transform ease 0.2s"
       >
-        <HStack maxWidth="5xl" marginX="auto" width="100%" paddingX={6} spacing={2}>
+        <HStack maxWidth="5xl" marginX="auto" width="100%" paddingX={[4, 4, 4, 4, 6]} spacing={2}>
           <IconButton
             size="sm"
             onClick={() => history.goBack()}
@@ -186,14 +180,12 @@ export default function LinkView() {
       <Box maxWidth="5xl" marginX="auto">
         <Box maxWidth="50rem">
           <VStack
-            paddingX={6}
+            paddingX={[4, 4, 4, 4, 6]}
             paddingTop={6}
             spacing={6}
             align="left"
             position="relative"
           >
-            <Box height="3rem" />
-
             {/* Title block: site, title, when it was saved. */}
             <VStack align="left" spacing={2}>
               <HStack spacing={2} color="gray.700" fontSize="sm">
@@ -285,7 +277,7 @@ export default function LinkView() {
             ) : null}
 
             {/* The article itself. */}
-            <VStack align="left" spacing={3} paddingBottom="5rem">
+            <VStack align="left" spacing={3} paddingBottom="2rem">
               <Heading as="h2" fontSize="sm" color="gray.800">
                 Article
               </Heading>
@@ -318,36 +310,21 @@ export default function LinkView() {
               )}
             </VStack>
 
-            <Box height="14rem" />
+            <Box height="6rem" />
           </VStack>
         </Box>
       </Box>
 
       <Box
-        position="fixed"
+        position="sticky"
         bottom={0}
-        left="auto"
         width="100%"
-        maxWidth={[
-          "calc(100vw)",
-          "calc(100vw)",
-          "calc(100vw)",
-          "calc(100vw)",
-          "calc(100vw - 18rem)",
-        ]}
         borderTopWidth="thin"
         borderTopColor="gray.100"
         backgroundColor="white"
+        zIndex={1}
       >
-        <Box
-          width={8}
-          borderTopWidth="thin"
-          borderTopColor="gray.100"
-          marginLeft="-1.6rem"
-          marginTop="-1px"
-        />
-
-        <Box maxWidth="5xl" marginX="auto" paddingX={5}>
+        <Box maxWidth="5xl" marginX="auto" paddingX={[4, 4, 4, 4, 6]}>
           <Box
             maxHeight={notePanelMaxHeight}
             height={notePanelHeight}
@@ -367,10 +344,11 @@ export default function LinkView() {
           </Box>
 
           <Flex
-            maxWidth={["calc(100vw - 3rem)", "70ch", "70ch"]}
+            maxWidth={["calc(100vw - 2rem)", "70ch", "70ch"]}
             width="100%"
-            padding={1}
+            paddingY={2}
             justifyContent="space-between"
+            alignItems="center"
           >
             <HStack spacing={2}>
               {notePanelState === NOTE_PANEL_HIDDEN ? (

@@ -4,7 +4,7 @@ import { Grid, GridItem, Container, Box } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import ChatSidepanel from "./ChatSidepanel";
-import { HEADER_HEIGHT } from "../theme/theme";
+import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE } from "../theme/theme";
 import { ChatProvider, useChatContext } from "../hooks/chat";
 
 function AppLayoutInner({ children }) {
@@ -46,7 +46,7 @@ function AppLayoutInner({ children }) {
           >
             <Header isChatVisible={isChatVisible} onToggleChat={toggleChatVisible} />
           </Box>
-          <Box as="main" marginTop={HEADER_HEIGHT} marginX="auto" width="100%">
+          <Box as="main" marginTop={[HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT]} marginX="auto" width="100%">
             {children}
           </Box>
         </GridItem>

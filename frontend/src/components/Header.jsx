@@ -18,7 +18,7 @@ import { useParams, useRouteMatch } from "react-router-dom";
 
 import TopRightUserMenu from "./TopRightUserMenu";
 import TopRightNewLinkPopover from "./TopRightNewLinkPopover";
-import { HEADER_HEIGHT } from "../theme/theme";
+import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
 import { useLink } from "../hooks/links";
 import Sidebar from "./Sidebar";
@@ -109,8 +109,8 @@ export default function Header({ isChatVisible, onToggleChat }) {
         width="100%"
         marginX="auto"
         maxWidth="5xl"
-        paddingX={6}
-        height={HEADER_HEIGHT}
+        paddingX={[4, 4, 4, 4, 6]}
+        height={[HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT_MOBILE, HEADER_HEIGHT]}
         justifyContent="space-between"
         alignItems="center"
         backgroundColor="white"

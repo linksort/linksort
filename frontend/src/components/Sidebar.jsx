@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/icons";
 
 import Logo from "./Logo";
+import { HEADER_HEIGHT } from "../theme/theme";
 import MouseType from "./MouseType";
 import SidebarButton from "./SidebarButton";
 import SidebarCollapsableSection from "./SidebarCollapsableSection";
@@ -58,7 +59,7 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
         <Box>
           <Flex
             as="header"
-            height="5rem"
+            height={HEADER_HEIGHT}
             justifyContent="flex-start"
             alignItems="center"
             marginBottom={2}

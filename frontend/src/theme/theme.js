@@ -2,7 +2,8 @@ const sans = `"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
 const serif = `Georgia, "Source Serif Pro", serif`;
 const mono = `SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace`;
 
-export const HEADER_HEIGHT = "5rem";
+export const HEADER_HEIGHT = "4rem";
+export const HEADER_HEIGHT_MOBILE = "3.5rem";
 export const FOOTER_HEIGHT = "8rem";
 
 const theme = {

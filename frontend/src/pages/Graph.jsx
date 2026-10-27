@@ -13,7 +13,7 @@ import { useState } from "react";
 // without having React re-render the graph on every load.
 window.graph = null;
 window.graphNode = document.createElement("div");
-window.graphNode.style.height = "calc(100vh - 5rem)";
+window.graphNode.style.height = "calc(100vh - 4rem)";
 window.graphNode.style.width = "100%";
 window.setSelectedLinkId = () => { };
 
@@ -230,7 +230,7 @@ export default function Graph() {
       borderLeftColor="gray.100"
       borderLeftWidth="thin"
     >
-      <Box height="calc(100vh - 5rem)" width="100%" ref={graphRef} zIndex={1} />
+      <Box height="calc(100vh - 4rem)" width="100%" ref={graphRef} zIndex={1} />
       <Box position="absolute" right={0} top={0} zIndex={2}>
         <GraphInfoPanel linkId={selectedLinkId} />
       </Box>
