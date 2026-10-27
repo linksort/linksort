@@ -49,7 +49,7 @@ type bedrockClient struct {
 
 func (c *bedrockClient) Summarize(ctx context.Context, text string) (string, error) {
 	resp, err := c.client.Converse(ctx, &bedrockruntime.ConverseInput{
-		ModelId: aws.String("us.anthropic.claude-haiku-4-5-20251001-v1:0"),
+		ModelId: aws.String("us.anthropic.claude-haiku-5-5"),
 		System: []types.SystemContentBlock{
 			&types.SystemContentBlockMemberText{
 				Value: systemPrompt,
@@ -103,7 +103,7 @@ func (c *anthropicClient) Summarize(ctx context.Context, text string) (string, e
 	const apiURL = "https://api.anthropic.com/v1/messages"
 
 	requestBody, err := json.Marshal(map[string]interface{}{
-		"model": "claude-3-haiku-20240307",
+		"model": "claude-haiku-5-5",
 		"max_tokens": 665,
 		"messages": []map[string]string{
 			{
