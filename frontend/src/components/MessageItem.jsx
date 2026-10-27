@@ -17,7 +17,7 @@ function ChoiceButtons({ choices, live, answeredText, onSelect }) {
         const isSelectedAnswer = answered === choice;
 
         return (
-          <WrapItem key={choice}>
+          <WrapItem key={choice} maxWidth="100%">
             <Button
               size="sm"
               colorScheme="brand"
@@ -28,6 +28,15 @@ function ChoiceButtons({ choices, live, answeredText, onSelect }) {
                 cursor: "not-allowed",
               }}
               onClick={live && onSelect ? () => onSelect(choice) : undefined}
+              // Keep long option labels inside the message bubble: allow the
+              // label to wrap instead of overflowing (Buttons default to
+              // nowrap and a fixed height).
+              maxWidth="100%"
+              height="auto"
+              minHeight="8"
+              paddingY="1.5"
+              whiteSpace="normal"
+              textAlign="left"
             >
               {choice}
             </Button>
