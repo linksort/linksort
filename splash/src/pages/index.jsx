@@ -23,49 +23,7 @@ export const query = graphql`
         }
       }
     }
-    autoTags: file(relativePath: { eq: "auto-tags.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 500) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
     extension: file(relativePath: { eq: "extension.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 500) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    filterSort: file(relativePath: { eq: "sort-filter.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 500) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    tilePreview: file(relativePath: { eq: "tile-preview.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 500) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    folders: file(relativePath: { eq: "folders.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 500) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    notes: file(relativePath: { eq: "notes.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 500) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    reader: file(relativePath: { eq: "reader-view.png" }) {
       childImageSharp {
         fluid(maxWidth: 500) {
           ...GatsbyImageSharpFluid
@@ -205,17 +163,7 @@ export default function Index({ data, location }) {
           }}
         />
         <AssistantDemo />
-        <FeatureBox
-          images={{
-            graph: data.ipadGraph.childImageSharp.fluid,
-            autoTags: data.autoTags.childImageSharp.fluid,
-            filterSort: data.filterSort.childImageSharp.fluid,
-            tilePreview: data.tilePreview.childImageSharp.fluid,
-            folders: data.folders.childImageSharp.fluid,
-            reader: data.reader.childImageSharp.fluid,
-            notes: data.notes.childImageSharp.fluid,
-          }}
-        />
+        <FeatureBox />
         <MobileSection
           images={{
             iphoneDetail: data.iphoneDetail.childImageSharp.fluid,

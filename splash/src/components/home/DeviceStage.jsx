@@ -7,6 +7,7 @@ import chromeIcon from "../../../content/assets/ways/chrome.png"
 import firefoxIcon from "../../../content/assets/ways/firefox.png"
 import safariIcon from "../../../content/assets/ways/safari.png"
 import braveIcon from "../../../content/assets/ways/brave.png"
+import { Laptop, Phone, Tablet } from "./Devices"
 
 const MotionBox = motion(Box)
 
@@ -65,58 +66,6 @@ function Segmented({ value, onChange }) {
         )
       })}
     </HStack>
-  )
-}
-
-function Laptop({ image, ...rest }) {
-  return (
-    <Box {...rest}>
-      <Box
-        bg="gray.900"
-        borderRadius="xl"
-        p="1.5%"
-        pb="2.2%"
-        borderBottomRadius="md"
-      >
-        <Box borderRadius="md" overflow="hidden" bg="white">
-          <GatsbyImage fluid={image} />
-        </Box>
-      </Box>
-      <Box
-        h="10px"
-        mx="-3%"
-        bg="gray.300"
-        borderBottomRadius="lg"
-        borderTop="1px solid"
-        borderTopColor="gray.400"
-      />
-    </Box>
-  )
-}
-
-function Phone({ image, ...rest }) {
-  return (
-    <Box
-      bg="gray.900"
-      borderRadius="2.75rem"
-      p="2.5%"
-      boxShadow="inset 0 0 0 2px rgba(255,255,255,0.06)"
-      {...rest}
-    >
-      <Box borderRadius="2.25rem" overflow="hidden" bg="white">
-        <GatsbyImage fluid={image} />
-      </Box>
-    </Box>
-  )
-}
-
-function Tablet({ image, ...rest }) {
-  return (
-    <Box bg="gray.900" borderRadius="1.75rem" p="2.4%" {...rest}>
-      <Box borderRadius="1.25rem" overflow="hidden" bg="white">
-        <GatsbyImage fluid={image} />
-      </Box>
-    </Box>
   )
 }
 

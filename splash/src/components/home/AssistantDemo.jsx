@@ -220,7 +220,7 @@ export default function AssistantDemo() {
   }
 
   return (
-    <Box as="section" id="assistant" position="relative" zIndex={1}>
+    <Box as="section" id="assistant" position="relative" zIndex={1} bg="brand.25">
       <Container maxWidth="7xl" px={6} py={{ base: 16, md: 24 }}>
         <Flex
           direction={{ base: "column", lg: "row" }}

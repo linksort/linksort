@@ -91,7 +91,7 @@ export default function Closing() {
           direction="column"
           align="center"
           textAlign="center"
-          bg="brand.500"
+          background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
           color="white"
           borderRadius="xl"
           px={{ base: 6, md: 12 }}
@@ -105,7 +105,7 @@ export default function Closing() {
           >
             Get started. It's free.
           </Heading>
-          <Text maxW="34rem" fontSize={{ base: "md", md: "lg" }} color="brand.50" mb={8}>
+          <Text maxW="34rem" fontSize={{ base: "md", md: "lg" }} color="whiteAlpha.900" mb={8}>
             Linksort is actively developed, with new features coming out at a
             rapid clip. If you sign up now, it will always be free for you.
           </Text>
