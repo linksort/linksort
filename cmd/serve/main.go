@@ -56,18 +56,26 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	stsC := sts.NewFromConfig(awsCfg)
-	provider := stscreds.NewAssumeRoleProvider(stsC, os.Getenv("LOG_PUTTER"))
+	// When LOG_PUTTER is set, assume that role for CloudWatch Logs and
+	// Bedrock; otherwise (e.g. local development) use the default credential
+	// chain directly.
+	var withCreds func(o *bedrockruntime.Options)
+	var withCredsLogs func(o *cloudwatchlogs.Options)
+	if roleARN := os.Getenv("LOG_PUTTER"); roleARN != "" {
+		stsC := sts.NewFromConfig(awsCfg)
+		provider := stscreds.NewAssumeRoleProvider(stsC, roleARN)
+		withCreds = func(o *bedrockruntime.Options) { o.Credentials = provider }
+		withCredsLogs = func(o *cloudwatchlogs.Options) { o.Credentials = provider }
+	} else {
+		withCreds = func(o *bedrockruntime.Options) {}
+		withCredsLogs = func(o *cloudwatchlogs.Options) {}
+	}
 
 	// Setup CloudwatchLogs
-	cwlogsClient := cloudwatchlogs.NewFromConfig(awsCfg, func(o *cloudwatchlogs.Options) {
-		o.Credentials = provider
-	})
+	cwlogsClient := cloudwatchlogs.NewFromConfig(awsCfg, withCredsLogs)
 
 	// Setup Bedrock
-	bedrockClient := bedrockruntime.NewFromConfig(awsCfg, func(o *bedrockruntime.Options) {
-		o.Credentials = provider
-	})
+	bedrockClient := bedrockruntime.NewFromConfig(awsCfg, withCreds)
 
 	// Configure the logger
 	log.ConfigureGlobalLogger(ctx, isProd, cwlogsClient)
