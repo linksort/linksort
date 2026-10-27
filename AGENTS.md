@@ -110,6 +110,11 @@ swag init --dir cmd/serve/,handler,model,payload
 3. **Authentication**: Session-based auth with CSRF protection via magic tokens
 4. **Database**: All operations use transaction support via the `Transactor` interface
 
+## AI Chat Features
+
+- **Automatic link review**: `POST /api/conversations/review` starts a `link_review` conversation when the user has ≥3 links newer than `User.LastLinkReviewAt` and the last review was ≥4h ago (constants `ReviewMinNewLinks`, `ReviewMinInterval`, `ReviewMaxLinks` in `controller/conversation.go`); otherwise it returns 204. The frontend (`ChatProvider` in `frontend/src/hooks/chat.js`) calls it once per page load and then sends `PUT /converse` with `{"trigger": "link_review"}`, which persists a hidden synthetic user message (`kind: "link_review_trigger"`, filtered out in `MessageList`) listing the new links (capped at 40) for the model. `lastLinkReviewAt` is server-managed and must not become settable via `PATCH /api/users`.
+- **Choice prompts**: the assistant ends questions with a small determinate answer set with a trailing ```` ```choices ```` fenced block (2–5 lines). `frontend/src/utils/choices.js` strips it (including partial blocks mid-stream) and `MessageItem` renders the options as buttons; clicking sends the option text as a normal user message. The convention is defined in the system prompt in `assistant/assistant.go`.
+
 ## Testing Strategy
 
 - Integration tests in `integ/` cover end-to-end API functionality

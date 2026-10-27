@@ -74,9 +74,30 @@ docker run -e ANALYZER_KEY="$ANALYZER_KEY" -e DB_CONNECTION="mongodb://172.17.0.
 ### Generating API Docs
 
 ```bash
-# Make sure swag is installed.
-go install github.com/swaggo/swag/cmd/swag@latest
+# Make sure swag is installed (the version must match go.mod).
+go install github.com/swaggo/swag/cmd/swag@v1.8.10
 
 # Generate docs.
-swag init --dir cmd/serve/,handler,model,payload
+swag init --dir cmd/serve/,handler,model,payload,agent
 ```
+
+## AI Chat Features
+
+### Automatic Link Reviews
+
+When a user returns to the app, the frontend calls `POST /api/conversations/review`. If the user has at least **3** links created since their last review and at least **4 hours** have passed since it (constants in `controller/conversation.go`), the server creates a `link_review` conversation, stamps `User.LastLinkReviewAt` (server-managed; not settable via `PATCH /api/users`), and responds `201`; otherwise it responds `204` and nothing happens. The frontend then issues `PUT /api/conversations/{id}/converse` with `{"trigger": "link_review"}` (no message), which builds a hidden synthetic user message (`kind: "link_review_trigger"`) containing the new links as compact JSON (capped at the **40** most recent) and streams the assistant's review: a summary of what was saved, detected clusters, and folder-organization proposals that the user confirms before anything changes.
+
+### Clickable Choice Prompts
+
+When the assistant asks a question with a small, determinate set of answers, it ends its message with a fenced code block whose info string is `choices` (one option per line, 2–5 options, each ≤60 chars):
+
+````
+Want me to create a "Couch Options" folder?
+
+```choices
+Yes, do it
+No thanks
+```
+````
+
+The frontend (`frontend/src/utils/choices.js`) strips this block and renders the options as buttons under the message. Clicking one sends the option text verbatim as the user's next message; typing a free-form reply is always possible. Only the latest assistant message gets live buttons; answered prompts render inactive with the chosen option indicated.
