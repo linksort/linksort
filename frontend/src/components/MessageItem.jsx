@@ -1,7 +1,42 @@
 import React from "react";
-import { Box, Text, Flex, HStack, Spinner } from "@chakra-ui/react";
+import { Box, Text, Flex, HStack, Spinner, Wrap, WrapItem, Button } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { marked } from "marked";
+
+import { splitChoices } from "../utils/choices";
+
+// Renders the options of a trailing ```choices block as buttons. Only the
+// last assistant message of a conversation (while not streaming) gets live
+// buttons; older prompts render inactive, with the clicked answer indicated.
+function ChoiceButtons({ choices, live, answeredText, onSelect }) {
+  const answered = answeredText ? answeredText.trim() : null;
+
+  return (
+    <Wrap mt={3} spacing={2}>
+      {choices.map((choice) => {
+        const isSelectedAnswer = answered === choice;
+
+        return (
+          <WrapItem key={choice}>
+            <Button
+              size="sm"
+              colorScheme="brand"
+              variant={isSelectedAnswer ? "solid" : "outline"}
+              isDisabled={!live}
+              _disabled={{
+                opacity: isSelectedAnswer ? 0.9 : 0.5,
+                cursor: "not-allowed",
+              }}
+              onClick={live && onSelect ? () => onSelect(choice) : undefined}
+            >
+              {choice}
+            </Button>
+          </WrapItem>
+        );
+      })}
+    </Wrap>
+  );
+}
 
 // Helper component to render tool usage status
 function ToolUseIndicator({ toolUse }) {
@@ -69,7 +104,7 @@ function processToolUsePairs(toolUses) {
   return toolMap;
 }
 
-export default function MessageItem({ message }) {
+export default function MessageItem({ message, choicesLive = false, answeredText = null, onChoiceSelect }) {
   const isUser = message.role === "user";
 
   // For messages with content array (grouped or streaming), render inline
@@ -84,6 +119,23 @@ export default function MessageItem({ message }) {
       const allToolUses = message.content.filter(c => c.type === 'toolUse').map(c => c.toolUse);
       toolStatusMap = processToolUsePairs(allToolUses);
     }
+
+    // Strip any trailing choices block (complete or partial) from text
+    // content. Only the last content item of an assistant message can carry
+    // the choices that get rendered as buttons.
+    const processedContent = message.content.map((contentItem) => {
+      if (contentItem.type !== 'text' || isUser) {
+        return contentItem;
+      }
+      const { body, choices } = splitChoices(contentItem.content);
+      return { ...contentItem, content: body, choices };
+    });
+
+    const lastItem = processedContent[processedContent.length - 1];
+    const choices =
+      !isUser && !isStreamingMessage && lastItem.type === 'text'
+        ? lastItem.choices
+        : null;
 
     return (
       <Flex
@@ -107,9 +159,13 @@ export default function MessageItem({ message }) {
           {message.content.length === 0 && (
             <Spinner size="xs" color="blue.500" />
           )}
-          {message.content.map((contentItem, index) => {
+          {processedContent.map((contentItem, index) => {
             if (contentItem.type === 'text') {
               const textContent = contentItem.content.trim();
+
+              if (!textContent) {
+                return null;
+              }
 
               // Render markdown for assistant messages, plain text for user messages
               if (!isUser) {
@@ -152,12 +208,24 @@ export default function MessageItem({ message }) {
             }
             return null;
           })}
+          {choices && (
+            <ChoiceButtons
+              choices={choices}
+              live={choicesLive}
+              answeredText={answeredText}
+              onSelect={onChoiceSelect}
+            />
+          )}
         </Box>
       </Flex>
     );
   }
 
   // Fallback for legacy message structure (streaming and old messages)
+  const { body: legacyBody, choices: legacyChoices } = splitChoices(
+    typeof message.text === "string" ? message.text : ""
+  );
+
   let displayToolUses = [];
 
   // Handle streaming messages
@@ -194,11 +262,11 @@ export default function MessageItem({ message }) {
           <Spinner size="xs" color="blue.500" />
         )}
 
-        {message.text && !isUser && (
+        {legacyBody && !isUser && (
           <Box
             className="prose prose-sans-serif"
             fontSize="sm"
-            dangerouslySetInnerHTML={{ __html: marked(message.text) }}
+            dangerouslySetInnerHTML={{ __html: marked(legacyBody) }}
           />
         )}
 
@@ -206,6 +274,15 @@ export default function MessageItem({ message }) {
           <Text fontSize="sm" lineHeight="1.5" whiteSpace="pre-wrap">
             {message.text}
           </Text>
+        )}
+
+        {!isUser && !message.isStreaming && legacyChoices && (
+          <ChoiceButtons
+            choices={legacyChoices}
+            live={choicesLive}
+            answeredText={answeredText}
+            onSelect={onChoiceSelect}
+          />
         )}
 
         {/* Render tool usage indicators inline */}

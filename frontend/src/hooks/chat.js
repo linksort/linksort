@@ -1,10 +1,24 @@
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+  createContext,
+  useContext,
+} from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
-import { useToast } from "@chakra-ui/react";
+import { useToast, useDisclosure, Box, Button, Text } from "@chakra-ui/react";
 import { useLocation, useParams } from "react-router-dom";
 
 import apiFetch, { csrfStore } from "../utils/apiFetch";
+import { useLocalStorage } from "./localStorage";
+import { useUser } from "./auth";
 import useQueryString from "./queryString";
+
+// The chat side panel column is only shown at the 2xl breakpoint and up (see
+// AppLayout's grid). Below that, chat lives in a drawer.
+const DESKTOP_CHAT_MEDIA_QUERY = "(min-width: 1536px)";
 
 function usePageContext() {
   const location = useLocation();
@@ -124,7 +138,7 @@ export function useConverse() {
   const queryClient = useQueryClient()
   const pageContext = usePageContext()
 
-  const sendMessage = useCallback(async (conversationId, message) => {
+  const sendMessage = useCallback(async (conversationId, message, options = {}) => {
     if (status === 'streaming' || status === 'connecting') {
       throw new Error('Already streaming a response')
     }
@@ -144,7 +158,8 @@ export function useConverse() {
           'X-Csrf-Token': csrfStore.get(),
         },
         body: JSON.stringify({
-          message,
+          // A trigger starts a synthetic turn server-side; no message is sent.
+          ...(options.trigger ? { trigger: options.trigger } : { message }),
           pageContext: Object.keys(pageContext.query).length > 0 ? pageContext : { route: pageContext.route, query: {} }
         }),
         signal: abortControllerRef.current.signal
@@ -370,6 +385,13 @@ export function useChat() {
       setActiveConversationId(conversationId)
     }
 
+    // Starts the automatic link review turn. No optimistic user bubble is
+    // added: the synthetic trigger message is hidden in the UI.
+    function handleStartLinkReview(conversationId) {
+      setActiveConversationId(conversationId)
+      return converse.sendMessage(conversationId, "", { trigger: "link_review" })
+    }
+
     async function handleSendMessage(message) {
       try {
         let conversationId = activeConversationId
@@ -438,6 +460,7 @@ export function useChat() {
       handleCreateConversation,
       handleSelectConversation,
       handleSendMessage,
+      handleStartLinkReview,
 
       // Streaming state
       streamingStatus: converse.status,
@@ -464,4 +487,142 @@ export function useChat() {
     toast,
     queryClient
   ])
+}
+
+const ChatContext = createContext(null);
+
+// Ensures the review trigger fires at most once per browser page load, even
+// though providers/layouts can remount while navigating. The server-side
+// LastLinkReviewAt stamp is the real safety net.
+let hasAttemptedReviewThisLoad = false;
+
+// Exported for tests only.
+export function __resetLinkReviewAttempt() {
+  hasAttemptedReviewThisLoad = false;
+}
+
+export function ChatProvider({ children }) {
+  const chat = useChat();
+  const user = useUser();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+  const [isChatVisible, setIsChatVisible] = useLocalStorage("isChatVisible", true);
+  const chatDrawer = useDisclosure();
+
+  // Keep the latest chat actions/state available to the one-shot effect
+  // without retriggering it.
+  const chatRef = useRef(chat);
+  chatRef.current = chat;
+  const setIsChatVisibleRef = useRef(setIsChatVisible);
+  setIsChatVisibleRef.current = setIsChatVisible;
+  const chatDrawerRef = useRef(chatDrawer);
+  chatDrawerRef.current = chatDrawer;
+
+  const userId = user?.id;
+
+  // On authenticated app load, ask the server whether a link review is due.
+  useEffect(() => {
+    if (!userId || hasAttemptedReviewThisLoad) {
+      return;
+    }
+
+    hasAttemptedReviewThisLoad = true;
+
+    (async () => {
+      try {
+        const data = await apiFetch("/api/conversations/review", {
+          method: "POST",
+          body: {},
+        });
+
+        // 204 No Content: nothing to review.
+        if (!data.conversation) {
+          return;
+        }
+
+        const conversation = data.conversation;
+
+        queryClient.setQueryData(["conversations", "list"], (old = []) => [
+          conversation,
+          ...old,
+        ]);
+        queryClient.setQueryData(
+          ["conversations", "detail", conversation.id],
+          conversation
+        );
+        // The server stamped lastLinkReviewAt; refresh the cached user.
+        queryClient.invalidateQueries("user");
+
+        if (window.matchMedia(DESKTOP_CHAT_MEDIA_QUERY).matches) {
+          // Desktop: make sure the chat column is visible.
+          setIsChatVisibleRef.current(true);
+        } else {
+          // Mobile/narrow: surface the review with a toast that opens the
+          // chat drawer.
+          toast({
+            duration: 9000,
+            isClosable: true,
+            position: "bottom",
+            render: ({ onClose }) => (
+              <Box
+                bg="brand.500"
+                color="white"
+                borderRadius="lg"
+                px={4}
+                py={3}
+                boxShadow="lg"
+              >
+                <Text fontSize="sm" mb={2}>
+                  Your assistant has some suggestions about your new links.
+                </Text>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  color="white"
+                  _hover={{ bg: "brand.400" }}
+                  onClick={() => {
+                    chatDrawerRef.current.onOpen();
+                    onClose();
+                  }}
+                >
+                  Open chat
+                </Button>
+              </Box>
+            ),
+          });
+        }
+
+        // Kick off the assistant's review turn (streams like a normal reply).
+        await chatRef.current.handleStartLinkReview(conversation.id);
+      } catch (error) {
+        // Reviews are best-effort; never block the app on them.
+        console.warn("Link review failed:", error);
+      }
+    })();
+  }, [userId, queryClient, toast]);
+
+  const value = useMemo(
+    () => ({
+      ...chat,
+      isChatVisible,
+      setIsChatVisible,
+      toggleChatVisible: () => setIsChatVisible(!isChatVisible),
+      isChatDrawerOpen: chatDrawer.isOpen,
+      openChatDrawer: chatDrawer.onOpen,
+      closeChatDrawer: chatDrawer.onClose,
+    }),
+    [chat, isChatVisible, setIsChatVisible, chatDrawer.isOpen, chatDrawer.onOpen, chatDrawer.onClose]
+  );
+
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+}
+
+export function useChatContext() {
+  const context = useContext(ChatContext);
+
+  if (!context) {
+    throw new Error("useChatContext must be used within a ChatProvider");
+  }
+
+  return context;
 }

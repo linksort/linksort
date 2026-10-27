@@ -212,3 +212,74 @@ describe('useConverse query invalidation', () => {
     expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
   });
 });
+describe('useConverse trigger requests', () => {
+  let queryClient;
+  let wrapper;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
+    wrapper = ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    );
+
+    global.fetch.mockResolvedValue({
+      ok: true,
+      body: {
+        getReader: () => ({
+          read: jest.fn()
+            .mockResolvedValueOnce({
+              done: false,
+              value: new TextEncoder().encode(JSON.stringify({
+                textDelta: 'Welcome back!'
+              }) + '\n')
+            })
+            .mockResolvedValueOnce({
+              done: true,
+              value: undefined
+            })
+        })
+      }
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('sends a trigger body without a message field', async () => {
+    const { result } = renderHook(() => useConverse(), { wrapper });
+
+    await act(async () => {
+      await result.current.sendMessage('conv-review', '', { trigger: 'link_review' });
+    });
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [url, options] = global.fetch.mock.calls[0];
+    expect(url).toBe('/api/conversations/conv-review/converse');
+
+    const body = JSON.parse(options.body);
+    expect(body.trigger).toBe('link_review');
+    expect(body).not.toHaveProperty('message');
+    expect(body).toHaveProperty('pageContext');
+  });
+
+  it('sends a message field and no trigger for normal messages', async () => {
+    const { result } = renderHook(() => useConverse(), { wrapper });
+
+    await act(async () => {
+      await result.current.sendMessage('conv-1', 'Hello there');
+    });
+
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(body.message).toBe('Hello there');
+    expect(body).not.toHaveProperty('trigger');
+  });
+});

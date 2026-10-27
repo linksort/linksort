@@ -24,11 +24,16 @@ import Sidebar from "./Sidebar";
 import ChatSidepanel from "./ChatSidepanel"
 import GiveFeedbackButton from "./GiveFeedbackButton";
 import { useScrollPosition } from "../hooks/utils";
+import { useChatContext } from "../hooks/chat";
 
 export default function Header({ isChatVisible, onToggleChat }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = useRef();
-  const { isOpen: isChatOpen, onOpen: onChatOpen, onClose: onChatClose } = useDisclosure();
+  const {
+    isChatDrawerOpen: isChatOpen,
+    openChatDrawer: onChatOpen,
+    closeChatDrawer: onChatClose,
+  } = useChatContext();
   const chatButtonRef = useRef();
   const { folderName, areFavoritesShowing, searchQuery, tagPath, userTagPath } =
     useFilters();

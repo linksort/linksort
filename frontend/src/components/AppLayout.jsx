@@ -5,11 +5,10 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import ChatSidepanel from "./ChatSidepanel";
 import { HEADER_HEIGHT } from "../theme/theme";
-import { useLocalStorage } from "../hooks/localStorage";
+import { ChatProvider, useChatContext } from "../hooks/chat";
 
-export default function AppLayout({ children }) {
-  const [isChatVisible, setIsChatVisible] = useLocalStorage("isChatVisible", true);
-  const toggleChat = () => setIsChatVisible(!isChatVisible);
+function AppLayoutInner({ children }) {
+  const { isChatVisible, toggleChatVisible } = useChatContext();
 
   return (
     <Container maxWidth="100vw" px={0} position="relative" overflowX="hidden">
@@ -45,7 +44,7 @@ export default function AppLayout({ children }) {
             left={["0", "0", "0", "0", "18rem", "18rem"]}
             zIndex={10}
           >
-            <Header isChatVisible={isChatVisible} onToggleChat={toggleChat} />
+            <Header isChatVisible={isChatVisible} onToggleChat={toggleChatVisible} />
           </Box>
           <Box as="main" marginTop={HEADER_HEIGHT} marginX="auto" width="100%">
             {children}
@@ -60,5 +59,13 @@ export default function AppLayout({ children }) {
         </GridItem>
       </Grid>
     </Container>
+  );
+}
+
+export default function AppLayout({ children }) {
+  return (
+    <ChatProvider>
+      <AppLayoutInner>{children}</AppLayoutInner>
+    </ChatProvider>
   );
 }

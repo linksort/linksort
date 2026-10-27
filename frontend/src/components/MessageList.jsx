@@ -82,11 +82,17 @@ function groupMessages(messages) {
   return grouped;
 }
 
-export default function MessageList({ messages = [], streamingResponse, isStreaming, handleCreateConversation }) {
+// Synthetic messages (e.g. the link review trigger) are sent to the model but
+// hidden in the UI.
+function isHiddenMessage(message) {
+  return message.kind === "link_review_trigger";
+}
+
+export default function MessageList({ messages = [], streamingResponse, isStreaming, handleCreateConversation, onSendMessage }) {
   const scrollRef = useRef(null);
 
   // Group messages to combine tool use sequences
-  const groupedMessages = groupMessages(messages);
+  const groupedMessages = groupMessages(messages.filter((m) => !isHiddenMessage(m)));
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -127,9 +133,22 @@ export default function MessageList({ messages = [], streamingResponse, isStream
       width="100%"
     >
       <VStack spacing={4} align="stretch">
-        {groupedMessages.map((message) => (
-          <MessageItem key={message.id} message={message} />
-        ))}
+        {groupedMessages.map((message, index) => {
+          const isLastMessage = index === groupedMessages.length - 1;
+          const next = groupedMessages[index + 1];
+          const nextUserText =
+            next && next.role === "user" && !next.isToolUse ? next.text : null;
+
+          return (
+            <MessageItem
+              key={message.id}
+              message={message}
+              choicesLive={isLastMessage && !isStreaming && message.role === "assistant"}
+              answeredText={nextUserText}
+              onChoiceSelect={onSendMessage}
+            />
+          );
+        })}
 
         {/* Show streaming response as a temporary message */}
         {isStreaming && streamingResponse && (
