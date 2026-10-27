@@ -104,6 +104,14 @@ swag init --dir cmd/serve/,handler,model,payload,agent
     {$set: {lastLinkReviewAt: new Date(Date.now() - 24*3600*1000)}})'
   ```
 
+### Splash Site (Gatsby, `splash/`)
+```bash
+cd splash
+nvm use 20        # Gatsby 5 breaks on Node 22+ (lmdb/msgpackr RangeError)
+yarn && yarn start   # http://localhost:8000
+```
+The home page below the hero is composed from `splash/src/components/home/` (see `splash/README.md`). Design decisions live in the root `PRODUCT.md` and `DESIGN.md`; the sign-up button is the page's only call to action.
+
 ## Key Environment Variables
 
 - `PRODUCTION` - Set to "0" for development mode

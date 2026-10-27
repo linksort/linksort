@@ -1,19 +1,16 @@
 import React from "react"
 import { graphql } from "gatsby"
 import GatsbyImage from "gatsby-image"
-import {
-  Box,
-  Text,
-  Heading,
-  Container,
-  Image,
-  Button,
-  Flex,
-  Stack,
-} from "@chakra-ui/react"
+import { Box, Text, Heading, Container, Image, Button } from "@chakra-ui/react"
+import { Global } from "@emotion/react"
 
 import Layout from "../components/Layout"
 import Metadata from "../components/Metadata"
+import DeviceStage from "../components/home/DeviceStage"
+import AssistantDemo from "../components/home/AssistantDemo"
+import FeatureBox from "../components/home/FeatureBox"
+import MobileSection from "../components/home/MobileSection"
+import Closing from "../components/home/Closing"
 
 export const query = graphql`
   query {
@@ -61,13 +58,6 @@ export const query = graphql`
         }
       }
     }
-    privacy: file(relativePath: { eq: "privacy.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 500) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
     notes: file(relativePath: { eq: "notes.png" }) {
       childImageSharp {
         fluid(maxWidth: 500) {
@@ -82,9 +72,37 @@ export const query = graphql`
         }
       }
     }
-    graph: file(relativePath: { eq: "graph-view.png" }) {
+    iphoneLinks: file(relativePath: { eq: "devices/iphone-links.png" }) {
       childImageSharp {
-        fluid(maxWidth: 500) {
+        fluid(maxWidth: 600) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    iphoneDetail: file(relativePath: { eq: "devices/iphone-detail.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 600) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    iphoneCondensed: file(relativePath: { eq: "devices/iphone-condensed.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 600) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    ipadLinks: file(relativePath: { eq: "devices/ipad-links.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 900) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    ipadGraph: file(relativePath: { eq: "devices/ipad-graph.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 900) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -92,102 +110,15 @@ export const query = graphql`
   }
 `
 
-function CenteredMarketingModule({
-  heading,
-  subheading,
-  image,
-  imageWidth = "80%",
-}) {
-  return (
-    <Flex
-      padding={8}
-      borderRadius={8}
-      backgroundColor="brand.50"
-      width="100%"
-      flexDirection="column"
-    >
-      <Flex
-        width="100%"
-        flexGrow={0}
-        flexDirection="column"
-        justifyContent="center"
-      >
-        <Heading as="h4" fontSize="2xl" marginBottom={2} align="center">
-          {heading}
-        </Heading>
-        <Text align="center">{subheading}</Text>
-      </Flex>
-
-      <Box
-        width={["100%", imageWidth, imageWidth]}
-        flexShrink={0}
-        paddingTop={8}
-        margin="auto"
-      >
-        <Image
-          as={GatsbyImage}
-          boxShadow="lg"
-          borderRadius={10}
-          fluid={image}
-          width="100%"
-        />
-      </Box>
-    </Flex>
-  )
-}
-
-function MarketingModule({
-  heading,
-  subheading,
-  image,
-  orientation,
-  noShadow,
-  circleImg = false,
-}) {
-  const orient = orientation === "left" ? "row" : "row-reverse"
-  const padding = orientation === "left" ? "paddingLeft" : "paddingRight"
-
-  return (
-    <Flex
-      padding={8}
-      borderRadius={8}
-      backgroundColor="brand.50"
-      width="100%"
-      flexDirection={["column", "column", orient]}
-    >
-      <Flex
-        width={["100%", "100%", "50%"]}
-        flexGrow={0}
-        flexDirection="column"
-        justifyContent="center"
-      >
-        <Heading as="h4" fontSize="2xl" marginBottom={2}>
-          {heading}
-        </Heading>
-        <Text>{subheading}</Text>
-      </Flex>
-      <Box
-        width={["100%", "100%", "50%"]}
-        flexShrink={0}
-        paddingTop={[8, 8, 0]}
-        {...{ [padding]: [0, 0, 8] }}
-      >
-        <Image
-          as={GatsbyImage}
-          boxShadow={noShadow ? "" : "lg"}
-          borderRadius={circleImg ? "100%" : 10}
-          fluid={image}
-          width="100%"
-        />
-      </Box>
-    </Flex>
-  )
-}
-
 export default function Index({ data, location }) {
   return (
     <Layout location={location}>
       <Metadata />
+      <Global
+        styles={{
+          "::selection": { background: "#d5e2ff", color: "#111111" },
+        }}
+      />
       <Box
         position="relative"
         width="100%"
@@ -253,91 +184,46 @@ export default function Index({ data, location }) {
           />
         </Container>
       </Box>
-      <Container maxWidth="2xl" px={6} marginTop={8}>
-        <Stack spacing={4}>
-          <MarketingModule
-            heading="One-click to save links."
-            subheading="Use the browser extension to effortlessly save links as you browse."
-            image={data.extension.childImageSharp.fluid}
-            orientation="left"
-            circleImg={true}
-          />
-
-          <MarketingModule
-            heading="Search, filter, sort, group, and favorite."
-            subheading="All of the tools you'd expect to help you find things easily and keep things tidy."
-            image={data.filterSort.childImageSharp.fluid}
-            orientation="right"
-          />
-
-          <MarketingModule
-            heading="Your links will look beautiful."
-            subheading="Linksort has three ways of displaying your links: tiled view, comfy, or condensed. Whatever you choose, your links will look great."
-            image={data.tilePreview.childImageSharp.fluid}
-            orientation="left"
-          />
-
-          <MarketingModule
-            heading="Auto tags."
-            subheading="We magically* organize your links into categories for you—okay, we don't have magic, just the next best thing, machine learning."
-            image={data.autoTags.childImageSharp.fluid}
-            orientation="right"
-          />
-
-          <CenteredMarketingModule
-            heading="Graph view."
-            subheading="Explore relationships among your links and their topics with network graph view."
-            image={data.graph.childImageSharp.fluid}
-            imageWidth="100%"
-          />
-
-          <MarketingModule
-            heading="Use folders to organize your links."
-            subheading="Sometimes you just need a good old folder."
-            image={data.folders.childImageSharp.fluid}
-            orientation="left"
-          />
-
-          <MarketingModule
-            heading="Add notes."
-            subheading="Jot down your thoughts as you read."
-            image={data.notes.childImageSharp.fluid}
-            orientation="right"
-          />
-
-          <MarketingModule
-            heading="Private, safe, and secure."
-            subheading="We encrypt your data in storage and we don't share it with anyone."
-            image={data.privacy.childImageSharp.fluid}
-            orientation="left"
-            circleImg={true}
-            noShadow
-          />
-
-          <Stack
-            padding={8}
-            borderRadius={8}
-            backgroundColor="brand.500"
-            width="100%"
-            alignItems="center"
-            spacing={4}
-          >
-            <Heading as="h4" fontSize="2xl" color="white" textAlign="center">
-              Get started. It's free.
-            </Heading>
-            <Text color="white" textAlign="center">
-              Linksort is being actively developed, with new features coming out
-              at a rapid clip. If you sign up now, it will always be free for
-              you.
-            </Text>
-            <Box>
-              <Button as="a" href="/sign-up" paddingX={10} background="white">
-                Sign up
-              </Button>
-            </Box>
-          </Stack>
-        </Stack>
-      </Container>
+      {/* Below the fold: one hairline threads every chapter together. */}
+      <Box position="relative" mt={{ base: 10, md: 14 }}>
+        <Box
+          aria-hidden="true"
+          position="absolute"
+          left="50%"
+          top={0}
+          bottom={0}
+          w="1px"
+          bg="gray.200"
+          display={{ base: "none", md: "block" }}
+        />
+        <DeviceStage
+          images={{
+            web: data.hero.childImageSharp.fluid,
+            iphone: data.iphoneLinks.childImageSharp.fluid,
+            ipad: data.ipadLinks.childImageSharp.fluid,
+            extension: data.extension.childImageSharp.fluid,
+          }}
+        />
+        <AssistantDemo />
+        <FeatureBox
+          images={{
+            graph: data.ipadGraph.childImageSharp.fluid,
+            autoTags: data.autoTags.childImageSharp.fluid,
+            filterSort: data.filterSort.childImageSharp.fluid,
+            tilePreview: data.tilePreview.childImageSharp.fluid,
+            folders: data.folders.childImageSharp.fluid,
+            reader: data.reader.childImageSharp.fluid,
+            notes: data.notes.childImageSharp.fluid,
+          }}
+        />
+        <MobileSection
+          images={{
+            iphoneDetail: data.iphoneDetail.childImageSharp.fluid,
+            iphoneCondensed: data.iphoneCondensed.childImageSharp.fluid,
+          }}
+        />
+        <Closing />
+      </Box>
     </Layout>
   )
 }
