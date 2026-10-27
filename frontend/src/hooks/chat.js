@@ -8,7 +8,7 @@ import React, {
   useContext,
 } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useToast, useDisclosure, Box, Button, Text } from "@chakra-ui/react";
+import { useToast, useDisclosure } from "@chakra-ui/react";
 import { useLocation, useParams } from "react-router-dom";
 
 import apiFetch, { csrfStore } from "../utils/apiFetch";
@@ -504,7 +504,6 @@ export function __resetLinkReviewAttempt() {
 export function ChatProvider({ children }) {
   const chat = useChat();
   const user = useUser();
-  const toast = useToast();
   const queryClient = useQueryClient();
   const [isChatVisible, setIsChatVisible] = useLocalStorage("isChatVisible", true);
   const chatDrawer = useDisclosure();
@@ -513,16 +512,26 @@ export function ChatProvider({ children }) {
   // without retriggering it.
   const chatRef = useRef(chat);
   chatRef.current = chat;
-  const setIsChatVisibleRef = useRef(setIsChatVisible);
-  setIsChatVisibleRef.current = setIsChatVisible;
-  const chatDrawerRef = useRef(chatDrawer);
-  chatDrawerRef.current = chatDrawer;
+  const isChatVisibleRef = useRef(isChatVisible);
+  isChatVisibleRef.current = isChatVisible;
 
   const userId = user?.id;
 
   // On authenticated app load, ask the server whether a link review is due.
+  // The review is only started when the chat pane is actually on screen (the
+  // desktop chat column, i.e. a 2xl viewport with the panel toggled on);
+  // otherwise the user would never see the output. Skipping does not consume
+  // the server-side stamp, so the review simply happens on a later visit when
+  // the pane is visible.
   useEffect(() => {
     if (!userId || hasAttemptedReviewThisLoad) {
+      return;
+    }
+
+    const isPaneVisible =
+      window.matchMedia(DESKTOP_CHAT_MEDIA_QUERY).matches &&
+      isChatVisibleRef.current;
+    if (!isPaneVisible) {
       return;
     }
 
@@ -553,45 +562,6 @@ export function ChatProvider({ children }) {
         // The server stamped lastLinkReviewAt; refresh the cached user.
         queryClient.invalidateQueries("user");
 
-        if (window.matchMedia(DESKTOP_CHAT_MEDIA_QUERY).matches) {
-          // Desktop: make sure the chat column is visible.
-          setIsChatVisibleRef.current(true);
-        } else {
-          // Mobile/narrow: surface the review with a toast that opens the
-          // chat drawer.
-          toast({
-            duration: 9000,
-            isClosable: true,
-            position: "bottom",
-            render: ({ onClose }) => (
-              <Box
-                bg="brand.500"
-                color="white"
-                borderRadius="lg"
-                px={4}
-                py={3}
-                boxShadow="lg"
-              >
-                <Text fontSize="sm" mb={2}>
-                  Your assistant has some suggestions about your new links.
-                </Text>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="white"
-                  _hover={{ bg: "brand.400" }}
-                  onClick={() => {
-                    chatDrawerRef.current.onOpen();
-                    onClose();
-                  }}
-                >
-                  Open chat
-                </Button>
-              </Box>
-            ),
-          });
-        }
-
         // Kick off the assistant's review turn (streams like a normal reply).
         await chatRef.current.handleStartLinkReview(conversation.id);
       } catch (error) {
@@ -599,7 +569,7 @@ export function ChatProvider({ children }) {
         console.warn("Link review failed:", error);
       }
     })();
-  }, [userId, queryClient, toast]);
+  }, [userId, queryClient]);
 
   const value = useMemo(
     () => ({

@@ -42,6 +42,14 @@ export FRONTEND_PORT=3000
 air
 ```
 
+For the AI chat features, the backend needs AWS credentials with Bedrock access. In production it assumes the role in `LOG_PUTTER`; locally, leave `LOG_PUTTER` unset and the server uses the default AWS credential chain instead. Note that the Go SDK cannot read credentials from the browser-based `aws login` flow — if that's what you use, export them as plain environment variables before starting `air`:
+
+```bash
+unset LOG_PUTTER
+eval "$(aws configure export-credentials --format env)"
+air
+```
+
 Open another terminal window and start the frontend. This server also starts a watcher that supports hot module replacement.
 
 ```bash
@@ -85,7 +93,9 @@ swag init --dir cmd/serve/,handler,model,payload,agent
 
 ### Automatic Link Reviews
 
-When a user returns to the app, the frontend calls `POST /api/conversations/review`. If the user has at least **3** links created since their last review and at least **4 hours** have passed since it (constants in `controller/conversation.go`), the server creates a `link_review` conversation, stamps `User.LastLinkReviewAt` (server-managed; not settable via `PATCH /api/users`), and responds `201`; otherwise it responds `204` and nothing happens. The frontend then issues `PUT /api/conversations/{id}/converse` with `{"trigger": "link_review"}` (no message), which builds a hidden synthetic user message (`kind: "link_review_trigger"`) containing the new links as compact JSON (capped at the **40** most recent) and streams the assistant's review: a summary of what was saved, detected clusters, and folder-organization proposals that the user confirms before anything changes.
+When a user returns to the app **with the AI chat pane visible** (the desktop chat column: a viewport of at least 1536px with the panel toggled on), the frontend calls `POST /api/conversations/review`. If the chat pane is hidden or the viewport is too narrow, no request is made and nothing is consumed — the review simply happens on a later visit when the pane is visible.
+
+If the user has at least **3** links created since their last review and at least **4 hours** have passed since it (constants in `controller/conversation.go`), the server creates a `link_review` conversation, stamps `User.LastLinkReviewAt` (server-managed; not settable via `PATCH /api/users`), and responds `201`; otherwise it responds `204` and nothing happens. The frontend then issues `PUT /api/conversations/{id}/converse` with `{"trigger": "link_review"}` (no message), which builds a hidden synthetic user message (`kind: "link_review_trigger"`) containing the new links as compact JSON (capped at the **40** most recent) and streams the assistant's review: a summary of what was saved, detected clusters, and folder-organization proposals that the user confirms before anything changes.
 
 ### Clickable Choice Prompts
 
