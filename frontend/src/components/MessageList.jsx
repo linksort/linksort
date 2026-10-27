@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Box, VStack, Button, Flex } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 
 import MessageItem from "./MessageItem";
 
@@ -132,7 +132,7 @@ export default function MessageList({ messages = [], streamingResponse, isStream
       py={4}
       width="100%"
     >
-      <VStack spacing={4} align="stretch">
+      <VStack spacing={5} align="stretch">
         {groupedMessages.map((message, index) => {
           const isLastMessage = index === groupedMessages.length - 1;
           const next = groupedMessages[index + 1];
@@ -162,14 +162,6 @@ export default function MessageList({ messages = [], streamingResponse, isStream
               isStreaming: true
             }}
           />
-        )}
-
-        {messages.length > 0 && !isStreaming && (
-          <Flex>
-            <Button onClick={handleCreateConversation} variant="ghost" margin="auto" size="sm">
-              Clear Chat
-            </Button>
-          </Flex>
         )}
 
       </VStack>

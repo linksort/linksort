@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, VStack, HStack, Heading } from "@chakra-ui/react";
+import { Box, VStack, HStack, Heading, IconButton, Tooltip } from "@chakra-ui/react";
+import { EditIcon } from "@chakra-ui/icons";
 
 import { useChatContext } from "../hooks/chat";
 import MessageList from "./MessageList";
@@ -27,13 +28,25 @@ export default function ChatSidepanel() {
         >
           <HStack
             width="100%"
-            p={4}
-            justify="center"
+            px={4}
+            justify="space-between"
             height={HEADER_HEIGHT}
           >
+            <Box w="8" />
             <Heading as="h3" fontWeight="bold" fontSize="lg">
               Chat
             </Heading>
+            <Tooltip label="New chat" openDelay={400}>
+              <IconButton
+                aria-label="New chat"
+                icon={<EditIcon />}
+                size="sm"
+                variant="ghost"
+                colorScheme="gray"
+                onClick={chat.handleCreateConversation}
+                isDisabled={messages.length === 0 || chat.isStreaming}
+              />
+            </Tooltip>
           </HStack>
         </Box>
 

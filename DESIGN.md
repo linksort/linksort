@@ -276,20 +276,13 @@ Crisp and tactile: solid fills, firm corners, no shadow, an instant tint on hove
 - **Mobile**: hamburger opens the sidebar as a drawer; a FloatingPill holds filter controls.
 
 ### Chat (signature)
-- **User bubble** (`bubble-user`): Linksort Blue fill, white text, 0.5rem radius, 0.75rem/1rem padding, right-aligned, max 90% width.
-- **Assistant bubble** (`bubble-assistant`): Paper fill, Pencil border, Ink text, left-aligned, Body Small markdown with the `.prose prose-sans-serif prose-1rem` treatment.
-- **Choice buttons**: a wrapping row of outline-blue `sm` buttons under the latest assistant message; labels wrap to multiple lines rather than overflowing the bubble; the chosen option becomes solid and the rest go inactive.
-- **Tool-call indicators**: 0.75rem Label-weight rows with a status dot (Graphite pending, Success done, Error failed).
-- **"Clear Chat"**: a ghost button centered above the composer.
-
-### Marketing surfaces (splash)
-The splash site shares the app's theme and renders features in the product's own vocabulary rather than a marketing template:
-- **Device stage**: real screenshots of one collection inside CSS bezels (MacBook 12px radius dark bezel with a 10px base, iPhone 2.75rem bezel, iPad 1.75rem bezel), on a Paper band with hairline top and bottom edges. A segmented control (Linksort Blue on the selected segment, Pencil border) picks which device steps forward (scale 1.04, 0.6s ease-out); non-selected devices never dim except when the floating Extensions panel is up.
-- **Feature tiles**: features are link tiles. Where the cover goes, a live DOM miniature of the feature (15–20rem tall) built from the app's own primitives (`splash/src/components/home/features/`): sidebar rows at 0.9rem, condensed link rows, the segmented control, auto-tag pastels on the graph. Then a hairline, title at 600, one Body Small line, and control chips in place of the link controls. No screenshots inside tiles.
-- **Device bezels** (`Devices.jsx`): fixed-pixel padding with inner radius = outer radius − padding (iPhone 44/10/34px, iPad 28/12/16px, laptop 14/12/6px) and a screen box carrying the screenshot's exact aspect ratio, so screens sit flush.
-- **Color rhythm**: white → Paper (stage) → Blue Tint (assistant) → white (features) → the hero's blue→lavender fade rotated −3° (iOS band, white text) → the same fade on the closing card. The fade is the one place the marketing site exceeds the One Pen rule, and it bookends the page.
-- **Scripted chat**: the chat panel's exact bubble, choice-button, and tool-row styling, labeled "Scripted demo" in the header; it is demonstration data and says so.
-- Sections use Title/Headline sizes at -0.02em tracking, Ink Soft body at 1.125rem, ~34rem measure; one blue block (the close) per page.
+- **Assistant messages** sit directly on the panel, no bubble: Body Small markdown (`.prose prose-sans-serif`) in Ink with the first/last margins trimmed. The intro text renders the same way.
+- **User bubble**: Linksort Blue fill, white text, `2xl` radius with a `md` bottom-right corner, 0.625rem/1rem padding, right-aligned, max 85% width.
+- **Tool activity** (`ToolActivity.jsx`): a run of consecutive tool calls becomes one card: white, Pencil border, `lg` radius; a Paper header strip with a status dot (brand pulsing while working, Success when done, Error on failure) and a plain-language title ("Working on it", "Done", "3 steps done"); then one 1.5rem row per call with a filled check/cross glyph or a brand spinner and a humanized label ("Looked through your links", "Created a folder", "Filed a link"). Raw tool names never show.
+- **Typing indicator**: three Graphite dots that lift in turn while the assistant is thinking.
+- **Choice buttons**: pill (`full` radius) outline-blue `sm` buttons under the latest assistant message on a white fill; labels wrap; the chosen option becomes solid and the rest go inactive.
+- **Composer**: a `2xl` pill on Paper with a Pencil border that turns white with a Pen Blue border on focus; borderless textarea inside, placeholder "Ask about your links…"; a round brand send button at 35% opacity when empty, swapped for a round gray stop button while streaming.
+- **Header**: "Chat" centered with a ghost "New chat" (pencil) icon on the right, disabled when the thread is empty. There is no trailing "Clear Chat" button in the list.
 
 ## Do's and Don'ts
 
