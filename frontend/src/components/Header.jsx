@@ -11,6 +11,7 @@ import {
   DrawerContent,
   Button,
   HStack,
+  Tooltip,
 } from "@chakra-ui/react";
 import { HamburgerIcon, ChatIcon } from "@chakra-ui/icons";
 import { useParams, useRouteMatch } from "react-router-dom";
@@ -45,6 +46,8 @@ export default function Header({ isChatVisible, onToggleChat }) {
     strict: true,
     sensitive: true
   })
+  const graphMatch = useRouteMatch("/graph")
+  const accountMatch = useRouteMatch("/account")
 
   const { linkId } = useParams();
   const {
@@ -62,9 +65,17 @@ export default function Header({ isChatVisible, onToggleChat }) {
   if (linkId) {
     opacity = scrollPosition > 400 ? "1" : "0"
   }
+  const quietButton = {
+    variant: "ghost",
+    colorScheme: "gray",
+  }
 
   let heading = linkId && scrollPosition > 200 ? link.title : ""
-  if (rootMatch.isExact) {
+  if (graphMatch) {
+    heading = "Graph"
+  } else if (accountMatch) {
+    heading = "Account"
+  } else if (rootMatch.isExact) {
     if (isSearching && areFavoritesShowing) {
       heading = `Searching for "${searchQuery}" among favorites in ${folderName}`;
     } else if (isSearching) {
@@ -129,29 +140,36 @@ export default function Header({ isChatVisible, onToggleChat }) {
         <Stack
           direction="row"
           as="nav"
-          spacing={4}
+          spacing={2}
+          alignItems="center"
           display={["none", "none", "none", "none", "flex"]}
         >
           <TopRightNewLinkPopover />
           <GiveFeedbackButton>
-            <Button>Give Feedback</Button>
+            <Button as="span" {...quietButton} color="gray.600" fontWeight="medium">
+              Feedback
+            </Button>
           </GiveFeedbackButton>
-          <IconButton
-            display={["none", "none", "none", "none", "none", "flex"]}
-            onClick={onToggleChat}
-            aria-label={isChatVisible ? "Hide chat" : "Show chat"}
-            zIndex={10}
-            icon={<ChatIcon />}
-            variant={isChatVisible ? "solid" : "outline"}
-          />
+          <Tooltip label={isChatVisible ? "Hide chat" : "Show chat"} openDelay={400}>
+            <IconButton
+              display={["none", "none", "none", "none", "none", "flex"]}
+              onClick={onToggleChat}
+              aria-label={isChatVisible ? "Hide chat" : "Show chat"}
+              zIndex={10}
+              icon={<ChatIcon />}
+              {...quietButton}
+              bg={isChatVisible ? "gray.100" : "transparent"}
+            />
+          </Tooltip>
           <IconButton
             display={["flex", "flex", "flex", "flex", "flex", "none"]}
             id="mobile-nav"
             ref={chatButtonRef}
             onClick={onChatOpen}
-            aria-label="nav"
+            aria-label="Open chat"
             zIndex={10}
             icon={<ChatIcon />}
+            {...quietButton}
           />
           <TopRightUserMenu />
         </Stack>

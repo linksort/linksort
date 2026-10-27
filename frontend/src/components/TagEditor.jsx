@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { AddIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { Box, Button, IconButton, Input, Text, Wrap, WrapItem } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 
@@ -93,7 +93,7 @@ export default function TagEditor({ tags, onChange }) {
                 onClick={handleAddTag} />
             </Button>
           ) : (
-            <Button size="sm" fontWeight="medium" colorScheme="brand" onClick={() => setIsEditing(true)}>Add Tag</Button>
+            <Button size="sm" variant="outline" colorScheme="gray" leftIcon={<AddIcon boxSize="2.5" />} onClick={() => setIsEditing(true)}>Add tag</Button>
           )}
         </WrapItem>
       </Wrap>

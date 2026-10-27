@@ -64,8 +64,12 @@ export default function LinkItemControls({
               as={Button}
               backgroundColor={buttonColor}
               size="sm"
-              maxWidth={[24, 24, 48, 48]}
+              flex="0 1 auto"
+              minWidth="2.5rem"
               width="auto"
+              paddingX={2}
+              iconSpacing={1.5}
+              title={currentFolderName}
               overflow="hidden"
               whiteSpace="nowrap"
               textOverflow="ellipsis"

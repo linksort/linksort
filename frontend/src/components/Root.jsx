@@ -32,24 +32,35 @@ const chakraTheme = extendTheme({
   breakpoints: createBreakpoints(theme.breakpoints),
   styles: {
     global: () => {
+      const base = {
+        body: { color: "gray.800" },
+        "::selection": { background: "#d5e2ff", color: "#111111" },
+      };
+
       // Make scrollbars look less bad when shown.
       if (getScrollbarWidth() > 0) {
         return {
+          ...base,
           "::-webkit-scrollbar": {
             background: "transparent",
             width: "10px",
             height: "10px",
           },
           "::-webkit-scrollbar-thumb": {
+            background: "#ddd",
+            borderRadius: "5px",
+            border: "2px solid white",
+          },
+          "::-webkit-scrollbar-thumb:hover": {
             background: "#ccc",
           },
           "::-webkit-scrollbar-track": {
-            background: "#eee;",
+            background: "transparent",
           },
         };
       }
 
-      return {};
+      return base;
     },
   },
 });

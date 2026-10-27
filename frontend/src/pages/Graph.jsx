@@ -17,6 +17,39 @@ window.graphNode.style.height = "calc(100vh - 5rem)";
 window.graphNode.style.width = "100%";
 window.setSelectedLinkId = () => { };
 
+// One pastel per top-level tag, matching the app's theme ramps at the 500
+// step, assigned in a stable order so a given tag keeps its color.
+const CLUSTER_COLORS = [
+  "#78bbdd", // blue
+  "#da9ee7", // purple
+  "#e7a0ac", // red
+  "#ccb233", // yellow
+  "#4dcc34", // green
+  "#e1a688", // orange
+  "#26c9ad", // cyan
+  "#e69ccd", // pink
+  "#35cc67", // teal
+  "#80a9ff", // brand
+];
+
+function clusterGroups(nodes) {
+  const groups = {};
+  let i = 0;
+  nodes.forEach((n) => {
+    if (groups[n.group]) return;
+    const color = n.group === "None" ? "#aaaaaa" : CLUSTER_COLORS[i++ % CLUSTER_COLORS.length];
+    groups[n.group] = {
+      color: {
+        background: color,
+        border: color,
+        highlight: { background: color, border: "#0a52ff" },
+        hover: { background: color, border: color },
+      },
+    };
+  });
+  return groups;
+}
+
 function maxConfidence(tagDetails) {
   let max = { name: "None", confidence: 0, path: "/None" };
 
@@ -133,22 +166,32 @@ export default function Graph() {
           edges: new vis.DataSet(edges),
         },
         {
+          groups: clusterGroups(nodes),
           nodes: {
+            borderWidth: 0,
+            borderWidthSelected: 2,
             scaling: {
-              min: 10,
-              max: 30,
+              min: 8,
+              max: 24,
             },
             font: {
-              size: 12,
-              face: "Tahoma",
+              size: 13,
+              face: '"Inter", system-ui, -apple-system, sans-serif',
+              color: "#555555",
             },
+            shadow: false,
           },
           edges: {
-            width: 0.15,
-            color: { inherit: "from" },
+            width: 1,
+            color: { inherit: "from", opacity: 0.45 },
+            selectionWidth: 1,
             smooth: {
               type: "continuous",
             },
+          },
+          interaction: {
+            hover: true,
+            tooltipDelay: 200,
           },
           physics: {
             stabilization: false,

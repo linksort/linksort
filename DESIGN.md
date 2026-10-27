@@ -231,6 +231,8 @@ A three-column application shell on a paper ground.
 - **Floating glow** (`box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 24px -2px`): the FloatingPill (mobile controls), popovers, and menus. Soft, centered, no offset: it says "hovering above the desk," not "stacked."
 - **Focus ring** (`box-shadow: 0 0 0 3px #80a9ff`): keyboard focus on every interactive element; explicitly suppressed (`_focus={{ boxShadow: "none" }}`) on card title links and control chips where it would clip.
 
+- **Menus, popovers, modals** (`theme.js`): one float shadow (`rgba(0,0,0,0.1) 0 8px 24px -4px`, slightly deeper for modals), Pencil border, `lg`/`xl` radius.
+
 ### Named Rules
 **The Only Floaters Cast Shadows Rule.** If an element is part of the page layout, it has a border, not a shadow. The 24px glow is for popovers, menus, drawers, and the mobile pill.
 
@@ -265,9 +267,12 @@ Crisp and tactile: solid fills, firm corners, no shadow, an instant tint on hove
 - **Text input** (`input-text`): Chakra outline variant, white, Pencil border, 0.375rem radius, 2.5rem tall. Focus border is Halo Blue (`focusBorderColor: accent`).
 - **Chat composer** (`input-chat`): auto-growing textarea, Paper fill, Pencil border, 0.375rem radius, 0.5rem/0.75rem padding; focus border shifts to Pen Blue. Send button is a small solid blue icon button; disabled while empty.
 
+### Graph view
+- vis-network with one pastel per top-level tag from the theme's 500-step ramps (`CLUSTER_COLORS` in `pages/Graph.jsx`), no node strokes, 1px edges at 45% opacity inheriting the source color, Inter labels in Ink Soft, Linksort Blue border only on the selected node.
+
 ### Navigation
 - **Sidebar**: Paper background, Logo in the 5rem band, then `SidebarButton`s (ghost, 1.75rem, left icon). Active views render solid blue. Sections ("FOLDERS", "PERSONAL TAGS", "AUTO TAGS") use the Label style with a collapse chevron. Folder tree indents 1rem per level.
-- **Header**: white, 5rem, hairline bottom edge, Title-style view name on the left that fades (`opacity 0.2s`) during loads, actions on the right.
+- **Header**: white, 5rem, hairline bottom edge, Title-style view name on the left (folder/tag/search on the grid, "Graph", "Account", or the link's title once scrolled), actions on the right: one solid blue "New Link", then ghost controls only (Feedback text link in Graphite, chat toggle that tints Paper Edge when on, settings).
 - **Mobile**: hamburger opens the sidebar as a drawer; a FloatingPill holds filter controls.
 
 ### Chat (signature)

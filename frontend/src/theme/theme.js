@@ -23,6 +23,8 @@ const theme = {
 
   shadows: {
     outline: "0 0 0 3px #80a9ff",
+    // Panel glow: the one shadow for things that float (menus, popovers).
+    float: "rgba(0, 0, 0, 0.1) 0px 8px 24px -4px",
   },
 
   components: {
@@ -30,10 +32,102 @@ const theme = {
       defaultProps: {
         focusBorderColor: "accent",
       },
+      variants: {
+        outline: {
+          field: {
+            borderColor: "gray.200",
+            _hover: { borderColor: "gray.300" },
+          },
+        },
+      },
+    },
+    Textarea: {
+      defaultProps: {
+        focusBorderColor: "accent",
+      },
     },
     Button: {
       baseStyle: {
         borderRadius: "lg",
+        fontWeight: "semibold",
+        // Show the ring for keyboard users only; a click should not leave a halo.
+        _focus: { boxShadow: "none" },
+        _focusVisible: { boxShadow: "outline" },
+      },
+      variants: {
+        // Chakra's default gray solid is a flat mid-gray; our controls are
+        // Paper Edge chips with Ink text and a one-step darker hover.
+        solid: (props) =>
+          props.colorScheme === "gray"
+            ? {
+                bg: "gray.100",
+                color: "gray.800",
+                _hover: { bg: "gray.200", _disabled: { bg: "gray.100" } },
+                _active: { bg: "gray.300" },
+              }
+            : {},
+        outline: (props) =>
+          props.colorScheme === "gray"
+            ? {
+                borderColor: "gray.200",
+                color: "gray.800",
+                _hover: { bg: "gray.50" },
+                _active: { bg: "gray.100" },
+              }
+            : {},
+        ghost: (props) =>
+          props.colorScheme === "gray"
+            ? {
+                color: "gray.800",
+                _hover: { bg: "gray.100" },
+                _active: { bg: "gray.200" },
+              }
+            : {},
+      },
+    },
+    Menu: {
+      baseStyle: {
+        list: {
+          borderColor: "gray.200",
+          borderRadius: "lg",
+          boxShadow: "rgba(0, 0, 0, 0.1) 0px 8px 24px -4px",
+          py: 1,
+        },
+        item: {
+          fontSize: "sm",
+          _focus: { bg: "gray.100" },
+          _active: { bg: "gray.200" },
+        },
+      },
+    },
+    Popover: {
+      baseStyle: {
+        content: {
+          borderColor: "gray.200",
+          borderRadius: "xl",
+          boxShadow: "rgba(0, 0, 0, 0.12) 0px 12px 32px -8px",
+          _focus: { boxShadow: "rgba(0, 0, 0, 0.12) 0px 12px 32px -8px" },
+        },
+        header: { borderBottomColor: "gray.100", fontWeight: "semibold" },
+        body: { py: 4 },
+      },
+    },
+    Modal: {
+      baseStyle: {
+        dialog: {
+          borderRadius: "xl",
+          boxShadow: "rgba(0, 0, 0, 0.16) 0px 16px 48px -8px",
+        },
+      },
+    },
+    Tooltip: {
+      baseStyle: {
+        bg: "gray.800",
+        color: "white",
+        borderRadius: "md",
+        fontSize: "xs",
+        px: 2,
+        py: 1,
       },
     },
     Alert: {

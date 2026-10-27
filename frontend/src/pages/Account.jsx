@@ -109,7 +109,7 @@ function Profile() {
       </FormControl>
 
       <Flex justifyContent="left">
-        <Button type="submit" isLoading={formik.isSubmitting}>
+        <Button type="submit" colorScheme="brand" isLoading={formik.isSubmitting}>
           Update
         </Button>
       </Flex>
