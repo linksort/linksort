@@ -284,7 +284,6 @@ The splash site shares the app's theme and renders features in the product's own
 - **Device bezels** (`Devices.jsx`): fixed-pixel padding with inner radius = outer radius − padding (iPhone 44/10/34px, iPad 28/12/16px, laptop 14/12/6px) and a screen box carrying the screenshot's exact aspect ratio, so screens sit flush.
 - **Color rhythm**: white → Paper (stage) → Blue Tint (assistant) → white (features) → the hero's blue→lavender fade rotated −3° (iOS band, white text) → the same fade on the closing card. The fade is the one place the marketing site exceeds the One Pen rule, and it bookends the page.
 - **Scripted chat**: the chat panel's exact bubble, choice-button, and tool-row styling, labeled "Scripted demo" in the header; it is demonstration data and says so.
-- **Thread**: a single 1px Pencil line at the page's center runs behind every section below the hero (desktop only); sections are white or Paper so the line shows only in the gaps.
 - Sections use Title/Headline sizes at -0.02em tracking, Ink Soft body at 1.125rem, ~34rem measure; one blue block (the close) per page.
 
 ## Do's and Don'ts

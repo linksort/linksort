@@ -226,7 +226,7 @@ export default function DeviceStage({ images }) {
         <Box
           display={{ base: "none", md: "block" }}
           position="relative"
-          h={{ md: "30rem", lg: "36rem" }}
+          h={{ md: "34rem", lg: "42rem" }}
           mt={2}
         >
           <MotionBox
@@ -308,7 +308,7 @@ export default function DeviceStage({ images }) {
 
         {/* Always visible: the capture paths. */}
         <Flex
-          mt={{ base: 8, md: 6 }}
+          mt={{ base: 10, md: 10 }}
           justify="center"
           align="center"
           wrap="wrap"
@@ -366,15 +366,6 @@ export default function DeviceStage({ images }) {
             <Box as="img" src={safariIcon} alt="" w="5" h="5" />
             Safari on iPhone
           </Flex>
-          <Text
-            fontSize="sm"
-            color="gray.600"
-            w={{ base: "100%", md: "auto" }}
-            textAlign="center"
-            pl={{ md: 2 }}
-          >
-            Six ways in. One box.
-          </Text>
         </Flex>
       </Container>
     </Box>

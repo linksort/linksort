@@ -69,7 +69,7 @@ function FeatureTile({ demo, demoHeight = "15rem", title, text, chips = [], colS
 export default function FeatureBox() {
   return (
     <Box as="section" id="features" position="relative" zIndex={1}>
-      <Container maxWidth="7xl" px={6} pb={{ base: 16, md: 24 }}>
+      <Container maxWidth="7xl" px={6} py={{ base: 16, md: 24 }}>
         <Box maxW="40rem" mb={{ base: 8, md: 10 }}>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} letterSpacing="-0.02em" color="gray.900" mb={3}>
             Everything in the box.

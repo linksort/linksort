@@ -142,18 +142,7 @@ export default function Index({ data, location }) {
           />
         </Container>
       </Box>
-      {/* Below the fold: one hairline threads every chapter together. */}
       <Box position="relative" mt={{ base: 10, md: 14 }}>
-        <Box
-          aria-hidden="true"
-          position="absolute"
-          left="50%"
-          top={0}
-          bottom={0}
-          w="1px"
-          bg="gray.200"
-          display={{ base: "none", md: "block" }}
-        />
         <DeviceStage
           images={{
             web: data.hero.childImageSharp.fluid,
