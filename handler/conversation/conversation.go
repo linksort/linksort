@@ -207,7 +207,7 @@ type ConverseRequest struct {
 //	@Summary	Converse in an existing conversation
 //	@Param	id			path		string			true	"ConversationID"
 //	@Param	ConverseRequest	body		ConverseRequest	true	"Message to send in the conversation"
-//	@Success	200			{object}	ConverseResponse
+//	@Success	200			{object}	model.ConverseEvent
 //	@Failure	400			{object}	payload.Error
 //	@Failure	401			{object}	payload.Error
 //	@Failure	404			{object}	payload.Error

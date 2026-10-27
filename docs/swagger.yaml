@@ -2,6 +2,105 @@ basePath: /api
 consumes:
 - application/json
 definitions:
+  agent.ToolUse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      request:
+        $ref: '#/definitions/agent.ToolUseRequest'
+      response:
+        $ref: '#/definitions/agent.ToolUseResponse'
+      type:
+        allOf:
+        - $ref: '#/definitions/agent.ToolUseType'
+        description: |-
+          If ToolUseType is "request", then the Request field must be populated.
+          If ToolUseType is "response", then the Response field must be populated.
+    type: object
+  agent.ToolUseRequest:
+    properties:
+      text:
+        type: string
+    type: object
+  agent.ToolUseResponse:
+    properties:
+      status:
+        $ref: '#/definitions/agent.ToolUseStatus'
+      text:
+        type: string
+    type: object
+  agent.ToolUseStatus:
+    enum:
+    - success
+    - error
+    type: string
+    x-enum-varnames:
+    - ToolUseStatusSuccess
+    - ToolUseStatusError
+  agent.ToolUseType:
+    enum:
+    - request
+    - response
+    type: string
+    x-enum-varnames:
+    - ToolUseTypeRequest
+    - ToolUseTypeResponse
+  conversation.ConverseRequest:
+    properties:
+      message:
+        description: The message to send in the conversation. Required unless a trigger
+          is set.
+        type: string
+      pageContext:
+        allOf:
+        - $ref: '#/definitions/conversation.PageContext'
+        description: The page context where the user is sending the message from
+      trigger:
+        description: |-
+          Trigger starts a synthetic turn instead of a typed message. The only
+          supported value is "link_review", which is only valid on a fresh
+          conversation whose kind is "link_review".
+        enum:
+        - link_review
+        type: string
+    type: object
+  conversation.CreateConversationRequest:
+    type: object
+  conversation.CreateConversationResponse:
+    properties:
+      conversation:
+        $ref: '#/definitions/model.Conversation'
+    type: object
+  conversation.GetConversationResponse:
+    properties:
+      conversation:
+        $ref: '#/definitions/model.Conversation'
+    type: object
+  conversation.GetConversationsResponse:
+    properties:
+      conversations:
+        items:
+          $ref: '#/definitions/model.Conversation'
+        type: array
+    type: object
+  conversation.PageContext:
+    properties:
+      query:
+        additionalProperties:
+          type: string
+        type: object
+      route:
+        type: string
+    type: object
+  conversation.StartLinkReviewResponse:
+    properties:
+      conversation:
+        $ref: '#/definitions/model.Conversation'
+      newLinkCount:
+        type: integer
+    type: object
   folder.CreateFolderRequest:
     properties:
       name:
@@ -87,6 +186,11 @@ definitions:
           $ref: '#/definitions/model.Link'
         type: array
     type: object
+  link.SummarizeLinkResponse:
+    properties:
+      link:
+        $ref: '#/definitions/model.Link'
+    type: object
   link.UpdateLinkRequest:
     properties:
       annotation:
@@ -113,11 +217,45 @@ definitions:
       url:
         maxLength: 2048
         type: string
+      userTags:
+        items:
+          type: string
+        type: array
     type: object
   link.UpdateLinkResponse:
     properties:
       link:
         $ref: '#/definitions/model.Link'
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  model.Conversation:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      kind:
+        type: string
+      length:
+        type: integer
+      messages:
+        items:
+          $ref: '#/definitions/model.Message'
+        type: array
+      reviewSince:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  model.ConverseEvent:
+    properties:
+      textDelta:
+        type: string
+      toolUseDelta:
+        $ref: '#/definitions/model.ToolUseDelta'
     type: object
   model.Folder:
     properties:
@@ -150,9 +288,15 @@ definitions:
         type: string
       isAnnotated:
         type: boolean
+      isArticle:
+        type: boolean
       isFavorite:
         type: boolean
+      isSummarized:
+        type: boolean
       site:
+        type: string
+      summary:
         type: string
       tagDetails:
         items:
@@ -170,6 +314,37 @@ definitions:
         type: string
       userId:
         type: string
+      userTags:
+        items:
+          type: string
+        type: array
+    type: object
+  model.Message:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      isToolUse:
+        type: boolean
+      kind:
+        type: string
+      pageContext:
+        additionalProperties: {}
+        type: object
+      role:
+        enum:
+        - user
+        - assistant
+        type: string
+      sequenceNumber:
+        type: integer
+      toolUse:
+        items:
+          $ref: '#/definitions/agent.ToolUse'
+        type: array
+    required:
+    - role
     type: object
   model.TagDetail:
     properties:
@@ -193,6 +368,17 @@ definitions:
       path:
         type: string
     type: object
+  model.ToolUseDelta:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+    type: object
   model.User:
     properties:
       createdAt:
@@ -207,6 +393,8 @@ definitions:
         type: boolean
       id:
         type: string
+      lastLinkReviewAt:
+        type: string
       lastName:
         type: string
       tagTree:
@@ -215,6 +403,12 @@ definitions:
         type: string
       updatedAt:
         type: string
+      userTags:
+        $ref: '#/definitions/model.UserTags'
+    type: object
+  model.UserTags:
+    additionalProperties:
+      type: integer
     type: object
   payload.Error:
     properties:
@@ -225,6 +419,11 @@ definitions:
     properties:
       user:
         $ref: '#/definitions/model.User'
+    type: object
+  user.ImportPocketResponse:
+    properties:
+      imported:
+        type: integer
     type: object
 host: linksort.com
 info:
@@ -240,6 +439,149 @@ info:
   title: Linksort API
   version: "1.0"
 paths:
+  /conversations:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/conversation.GetConversationsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetConversations
+    post:
+      parameters:
+      - description: Create a new conversation
+        in: body
+        name: CreateConversationRequest
+        required: true
+        schema:
+          $ref: '#/definitions/conversation.CreateConversationRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/conversation.CreateConversationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateConversation
+  /conversations/{id}:
+    get:
+      parameters:
+      - description: ConversationID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/conversation.GetConversationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetConversation
+  /conversations/{id}/converse:
+    put:
+      parameters:
+      - description: ConversationID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Message to send in the conversation
+        in: body
+        name: ConverseRequest
+        required: true
+        schema:
+          $ref: '#/definitions/conversation.ConverseRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ConverseEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Converse in an existing conversation
+  /conversations/review:
+    post:
+      description: Starts an automatic review of the links saved since the user's
+        last review. Responds 204 when the user is not eligible (fewer than 3 new
+        links or last review less than 4 hours ago).
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/conversation.StartLinkReviewResponse'
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: StartLinkReview
   /folders:
     post:
       parameters:
@@ -377,6 +719,10 @@ paths:
       - description: Only return links with the given tag path
         in: query
         name: tag
+        type: string
+      - description: Only return links with the given user tag
+        in: query
+        name: usertag
         type: string
       - description: Page
         in: query
@@ -534,6 +880,36 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: UpdateLink
+  /links/{id}/summarize:
+    post:
+      description: Generates a summary of the given link's corpus and returns the
+        updated link.
+      parameters:
+      - description: LinkID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/link.SummarizeLinkResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: SummarizeLink
   /users:
     get:
       responses:
@@ -552,6 +928,34 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: GetUser
+  /users/import-pocket:
+    post:
+      parameters:
+      - description: CSV file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.ImportPocketResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Import links from Pocket CSV
 produces:
 - application/json
 schemes:

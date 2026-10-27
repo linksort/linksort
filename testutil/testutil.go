@@ -40,6 +40,7 @@ var (
 	_magic             = magic.New("test-secret")
 	_email             = email.NewLogger()
 	_txnClient         db.Transactor
+	_mockBedrock       = &MockBedrockClient{}
 )
 
 func Handler() http.Handler {
@@ -79,11 +80,29 @@ func Handler() http.Handler {
 			Magic:             _magic,
 			Email:             _email,
 			Analyzer:          analyze.NewTestClient(),
-			BedrockClient:     &MockBedrockClient{},
+			BedrockClient:     _mockBedrock,
 		})
 	})
 
 	return _h
+}
+
+// Bedrock returns the shared mock Bedrock client so tests can script replies.
+// Call its Reset method when done to restore default behavior.
+func Bedrock() *MockBedrockClient {
+	return _mockBedrock
+}
+
+// GetUser re-fetches a user from the store.
+func GetUser(t *testing.T, ctx context.Context, email string) *model.User {
+	t.Helper()
+
+	u, err := _userStore.GetUserByEmail(ctx, email)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return u
 }
 
 func CleanUp() {

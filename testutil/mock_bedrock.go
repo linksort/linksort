@@ -4,16 +4,70 @@ import (
 	"context"
 	"io"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
 	"github.com/linksort/linksort/agent"
 )
 
+// DefaultMockResponse is the reply streamed by MockBedrockClient when no
+// script has been set.
+const DefaultMockResponse = "Hello world! I'm a mock assistant response."
+
+// MockToolCall describes a tool invocation that the mock model requests.
+type MockToolCall struct {
+	ID    string
+	Name  string
+	Input string // JSON input for the tool
+}
+
+// MockTurn is one scripted model turn. If ToolCalls is non-empty, the turn
+// ends with stop reason "tool_use" so the agent loop executes the tools and
+// calls ConverseStream again (consuming the next scripted turn).
+type MockTurn struct {
+	Text      string
+	ToolCalls []MockToolCall
+}
+
 // MockBedrockClient implements a mock version of the BedrockClient interface
-// for testing purposes. It returns a simple "hello world" response.
-type MockBedrockClient struct{}
+// for testing purposes. By default it streams DefaultMockResponse. Tests can
+// script one or more turns with SetScript; each call to ConverseStream
+// consumes one turn, and when the script is exhausted the default reply is
+// used again.
+type MockBedrockClient struct {
+	mu     sync.Mutex
+	script []MockTurn
+}
+
+// SetScript replaces any pending scripted turns.
+func (m *MockBedrockClient) SetScript(turns ...MockTurn) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.script = append([]MockTurn{}, turns...)
+}
+
+// Reset clears any pending scripted turns, restoring default behavior.
+func (m *MockBedrockClient) Reset() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.script = nil
+}
+
+func (m *MockBedrockClient) nextTurn() MockTurn {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if len(m.script) > 0 {
+		turn := m.script[0]
+		m.script = m.script[1:]
+		return turn
+	}
+
+	return MockTurn{Text: DefaultMockResponse}
+}
 
 // MockEventReader implements a simple event reader for the mock response
 type MockEventReader struct {
@@ -76,12 +130,9 @@ func (m *MockBedrockClient) ConverseStream(
 	params *bedrockruntime.ConverseStreamInput,
 	optFns ...func(*bedrockruntime.Options),
 ) (agent.ConverseStreamOutputStreamGetter, error) {
-	// Create a simple response with "hello world"
-	responseText := "Hello world! I'm a mock assistant response."
+	turn := m.nextTurn()
 
-	// Create a series of events that simulate the streaming response
 	events := []types.ConverseStreamOutput{
-		// Message start event
 		&types.ConverseStreamOutputMemberMessageStart{
 			Value: types.MessageStartEvent{
 				Role: types.ConversationRoleAssistant,
@@ -90,23 +141,61 @@ func (m *MockBedrockClient) ConverseStream(
 	}
 
 	// Split the response text into chunks to simulate streaming
-	chunks := strings.Split(responseText, " ")
-	for _, chunk := range chunks {
-		events = append(events, &types.ConverseStreamOutputMemberContentBlockDelta{
-			Value: types.ContentBlockDeltaEvent{
-				Delta: &types.ContentBlockDeltaMemberText{
-					Value: chunk + " ",
+	if turn.Text != "" {
+		chunks := strings.Split(turn.Text, " ")
+		for _, chunk := range chunks {
+			events = append(events, &types.ConverseStreamOutputMemberContentBlockDelta{
+				Value: types.ContentBlockDeltaEvent{
+					Delta: &types.ContentBlockDeltaMemberText{
+						Value: chunk + " ",
+					},
 				},
-			},
-		})
+			})
+		}
+
+		events = append(events, &types.ConverseStreamOutputMemberContentBlockStop{})
 	}
 
-	// Add content block stop and message stop events
+	// Emit tool use blocks, if any
+	for _, tc := range turn.ToolCalls {
+		input := tc.Input
+		if input == "" {
+			input = "{}"
+		}
+
+		events = append(events,
+			&types.ConverseStreamOutputMemberContentBlockStart{
+				Value: types.ContentBlockStartEvent{
+					Start: &types.ContentBlockStartMemberToolUse{
+						Value: types.ToolUseBlockStart{
+							ToolUseId: aws.String(tc.ID),
+							Name:      aws.String(tc.Name),
+						},
+					},
+				},
+			},
+			&types.ConverseStreamOutputMemberContentBlockDelta{
+				Value: types.ContentBlockDeltaEvent{
+					Delta: &types.ContentBlockDeltaMemberToolUse{
+						Value: types.ToolUseBlockDelta{
+							Input: aws.String(input),
+						},
+					},
+				},
+			},
+			&types.ConverseStreamOutputMemberContentBlockStop{},
+		)
+	}
+
+	stopReason := types.StopReasonEndTurn
+	if len(turn.ToolCalls) > 0 {
+		stopReason = types.StopReasonToolUse
+	}
+
 	events = append(events,
-		&types.ConverseStreamOutputMemberContentBlockStop{},
 		&types.ConverseStreamOutputMemberMessageStop{
 			Value: types.MessageStopEvent{
-				StopReason: types.StopReasonEndTurn,
+				StopReason: stopReason,
 			},
 		},
 	)

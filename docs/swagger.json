@@ -27,6 +27,232 @@
     "host": "linksort.com",
     "basePath": "/api",
     "paths": {
+        "/conversations": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "GetConversations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/conversation.GetConversationsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "CreateConversation",
+                "parameters": [
+                    {
+                        "description": "Create a new conversation",
+                        "name": "CreateConversationRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/conversation.CreateConversationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/conversation.CreateConversationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/review": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Starts an automatic review of the links saved since the user's last review. Responds 204 when the user is not eligible (fewer than 3 new links or last review less than 4 hours ago).",
+                "summary": "StartLinkReview",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/conversation.StartLinkReviewResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "GetConversation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConversationID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/conversation.GetConversationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/{id}/converse": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Converse in an existing conversation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConversationID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Message to send in the conversation",
+                        "name": "ConverseRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/conversation.ConverseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ConverseEvent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/folders": {
             "post": {
                 "security": [
@@ -239,6 +465,12 @@
                         "type": "string",
                         "description": "Only return links with the given tag path",
                         "name": "tag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Only return links with the given user tag",
+                        "name": "usertag",
                         "in": "query"
                     },
                     {
@@ -482,6 +714,52 @@
                 }
             }
         },
+        "/links/{id}/summarize": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Generates a summary of the given link's corpus and returns the updated link.",
+                "summary": "SummarizeLink",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "LinkID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/link.SummarizeLinkResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -511,9 +789,199 @@
                     }
                 }
             }
+        },
+        "/users/import-pocket": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Import links from Pocket CSV",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "CSV file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.ImportPocketResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "agent.ToolUse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "request": {
+                    "$ref": "#/definitions/agent.ToolUseRequest"
+                },
+                "response": {
+                    "$ref": "#/definitions/agent.ToolUseResponse"
+                },
+                "type": {
+                    "description": "If ToolUseType is \"request\", then the Request field must be populated.\nIf ToolUseType is \"response\", then the Response field must be populated.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/agent.ToolUseType"
+                        }
+                    ]
+                }
+            }
+        },
+        "agent.ToolUseRequest": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "agent.ToolUseResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "$ref": "#/definitions/agent.ToolUseStatus"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "agent.ToolUseStatus": {
+            "type": "string",
+            "enum": [
+                "success",
+                "error"
+            ],
+            "x-enum-varnames": [
+                "ToolUseStatusSuccess",
+                "ToolUseStatusError"
+            ]
+        },
+        "agent.ToolUseType": {
+            "type": "string",
+            "enum": [
+                "request",
+                "response"
+            ],
+            "x-enum-varnames": [
+                "ToolUseTypeRequest",
+                "ToolUseTypeResponse"
+            ]
+        },
+        "conversation.ConverseRequest": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "The message to send in the conversation. Required unless a trigger is set.",
+                    "type": "string"
+                },
+                "pageContext": {
+                    "description": "The page context where the user is sending the message from",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/conversation.PageContext"
+                        }
+                    ]
+                },
+                "trigger": {
+                    "description": "Trigger starts a synthetic turn instead of a typed message. The only\nsupported value is \"link_review\", which is only valid on a fresh\nconversation whose kind is \"link_review\".",
+                    "type": "string",
+                    "enum": [
+                        "link_review"
+                    ]
+                }
+            }
+        },
+        "conversation.CreateConversationRequest": {
+            "type": "object"
+        },
+        "conversation.CreateConversationResponse": {
+            "type": "object",
+            "properties": {
+                "conversation": {
+                    "$ref": "#/definitions/model.Conversation"
+                }
+            }
+        },
+        "conversation.GetConversationResponse": {
+            "type": "object",
+            "properties": {
+                "conversation": {
+                    "$ref": "#/definitions/model.Conversation"
+                }
+            }
+        },
+        "conversation.GetConversationsResponse": {
+            "type": "object",
+            "properties": {
+                "conversations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Conversation"
+                    }
+                }
+            }
+        },
+        "conversation.PageContext": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "route": {
+                    "type": "string"
+                }
+            }
+        },
+        "conversation.StartLinkReviewResponse": {
+            "type": "object",
+            "properties": {
+                "conversation": {
+                    "$ref": "#/definitions/model.Conversation"
+                },
+                "newLinkCount": {
+                    "type": "integer"
+                }
+            }
+        },
         "folder.CreateFolderRequest": {
             "type": "object",
             "required": [
@@ -642,6 +1110,14 @@
                 }
             }
         },
+        "link.SummarizeLinkResponse": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "$ref": "#/definitions/model.Link"
+                }
+            }
+        },
         "link.UpdateLinkRequest": {
             "type": "object",
             "properties": {
@@ -677,6 +1153,12 @@
                 "url": {
                     "type": "string",
                     "maxLength": 2048
+                },
+                "userTags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -685,6 +1167,52 @@
             "properties": {
                 "link": {
                     "$ref": "#/definitions/model.Link"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "model.Conversation": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "length": {
+                    "type": "integer"
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Message"
+                    }
+                },
+                "reviewSince": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ConverseEvent": {
+            "type": "object",
+            "properties": {
+                "textDelta": {
+                    "type": "string"
+                },
+                "toolUseDelta": {
+                    "$ref": "#/definitions/model.ToolUseDelta"
                 }
             }
         },
@@ -735,10 +1263,19 @@
                 "isAnnotated": {
                     "type": "boolean"
                 },
+                "isArticle": {
+                    "type": "boolean"
+                },
                 "isFavorite": {
                     "type": "boolean"
                 },
+                "isSummarized": {
+                    "type": "boolean"
+                },
                 "site": {
+                    "type": "string"
+                },
+                "summary": {
                     "type": "string"
                 },
                 "tagDetails": {
@@ -764,6 +1301,52 @@
                 },
                 "userId": {
                     "type": "string"
+                },
+                "userTags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.Message": {
+            "type": "object",
+            "required": [
+                "role"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isToolUse": {
+                    "type": "boolean"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "pageContext": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "user",
+                        "assistant"
+                    ]
+                },
+                "sequenceNumber": {
+                    "type": "integer"
+                },
+                "toolUse": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/agent.ToolUse"
+                    }
                 }
             }
         },
@@ -801,6 +1384,23 @@
                 }
             }
         },
+        "model.ToolUseDelta": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "model.User": {
             "type": "object",
             "properties": {
@@ -822,6 +1422,9 @@
                 "id": {
                     "type": "string"
                 },
+                "lastLinkReviewAt": {
+                    "type": "string"
+                },
                 "lastName": {
                     "type": "string"
                 },
@@ -833,7 +1436,16 @@
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "userTags": {
+                    "$ref": "#/definitions/model.UserTags"
                 }
+            }
+        },
+        "model.UserTags": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "integer"
             }
         },
         "payload.Error": {
@@ -849,6 +1461,14 @@
             "properties": {
                 "user": {
                     "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "user.ImportPocketResponse": {
+            "type": "object",
+            "properties": {
+                "imported": {
+                    "type": "integer"
                 }
             }
         }
