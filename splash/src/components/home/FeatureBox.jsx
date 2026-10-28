@@ -72,11 +72,10 @@ export default function FeatureBox() {
       <Container maxWidth="7xl" px={6} py={{ base: 16, md: 24 }}>
         <Box maxW="40rem" mb={{ base: 8, md: 10 }}>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} letterSpacing="-0.02em" color="gray.900" mb={3}>
-            Everything in the box.
+            All the features you expect.
           </Heading>
           <Text fontSize={{ base: "md", md: "lg" }} color="gray.700">
-            Each link gets a cover, a title, and a category the moment you save it. The rest of the tools exist
-            so you can find it again without having filed it. These are live: click around.
+            Each link's metadata is captured and tags are automatically assigned the moment you save it.
           </Text>
         </Box>
 

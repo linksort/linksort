@@ -235,11 +235,11 @@ export default function AssistantDemo() {
               color="gray.900"
               mb={4}
             >
-              Come back to a tidy box.
+              AI organizes your links.
             </Heading>
             <Text fontSize={{ base: "md", md: "lg" }} color="gray.700" mb={4}>
-              When you return, the assistant looks at what you saved since last
-              time, notices what belongs together, and offers to file it. It
+              When you return, the AI assistant looks at what you saved since last
+              time, notices what belongs together, and offers to file your links. It
               never moves a link until you say yes.
             </Text>
             <Text fontSize={{ base: "md", md: "lg" }} color="gray.700" mb={6}>
