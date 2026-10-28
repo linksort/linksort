@@ -11,6 +11,8 @@ import {
 } from "@chakra-ui/react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 
+import { useTypewriter, useInView } from "./useDemoMotion"
+
 const MotionBox = motion(Box)
 const EASE = [0.16, 1, 0.3, 1]
 
@@ -59,33 +61,6 @@ function planFor(choice) {
     reply:
       "Done. Both recipes are in Restaurants To Try; I left the two articles where they were.",
   }
-}
-
-function useTypewriter(text, active, speed = 14) {
-  const reduce = useReducedMotion()
-  const [shown, setShown] = useState(reduce ? text : "")
-  const [done, setDone] = useState(Boolean(reduce))
-  useEffect(() => {
-    if (!active) return
-    if (reduce) {
-      setShown(text)
-      setDone(true)
-      return
-    }
-    let i = 0
-    setShown("")
-    setDone(false)
-    const id = setInterval(() => {
-      i += 3
-      setShown(text.slice(0, i))
-      if (i >= text.length) {
-        clearInterval(id)
-        setDone(true)
-      }
-    }, speed)
-    return () => clearInterval(id)
-  }, [text, active, reduce, speed])
-  return [shown, done]
 }
 
 function Bubble({ from, children, ...rest }) {
@@ -146,7 +121,8 @@ function ToolRow({ tool, state }) {
 export default function AssistantDemo() {
   const ref = useRef(null)
   const reduce = useReducedMotion()
-  const [started, setStarted] = useState(false)
+  // Start when the panel scrolls into view.
+  const [started, setStarted] = useInView(ref)
   const [choice, setChoice] = useState(null)
   const [toolStates, setToolStates] = useState([])
   const [replyOn, setReplyOn] = useState(false)
@@ -155,24 +131,6 @@ export default function AssistantDemo() {
   const [intro, introDone] = useTypewriter(INTRO, started)
   const plan = choice ? planFor(choice) : null
   const [reply, replyDone] = useTypewriter(plan ? plan.reply : "", replyOn)
-
-  // Start when the panel scrolls into view.
-  useEffect(() => {
-    if (started || typeof IntersectionObserver === "undefined") return
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setStarted(true)
-          io.disconnect()
-        }
-      },
-      { threshold: 0.4 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [started])
 
   // Walk the tool calls one by one after a choice.
   useEffect(() => {
@@ -211,7 +169,7 @@ export default function AssistantDemo() {
     setRun((n) => n + 1)
     // Restart on the next frame so the typewriter effect re-arms.
     requestAnimationFrame(() => setStarted(true))
-  }, [])
+  }, [setStarted])
 
   const fade = {
     initial: reduce ? false : { opacity: 0, y: 6 },
