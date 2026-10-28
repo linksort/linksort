@@ -46,8 +46,30 @@ export default function Sidebar({
   } = useFilters();
   const isGraphPage = useRouteMatch("/graph");
 
+  // In the mobile drawer, following any in-app link (folder, tag, Favorites,
+  // logo…) should close the drawer so the results are visible. Sort/Group are
+  // buttons and stay open; the folder kebab menu is a button inside a link.
+  function handleLinkClick(e) {
+    if (!onNavigate) return;
+    const anchor = e.target.closest && e.target.closest("a[href]");
+    if (
+      !anchor ||
+      e.target.closest("button") ||
+      e.metaKey ||
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.altKey ||
+      anchor.target === "_blank" ||
+      anchor.origin !== window.location.origin
+    ) {
+      return;
+    }
+    onNavigate();
+  }
+
   return (
     <Box
+      onClick={handleLinkClick}
       position="fixed"
       minHeight="100vh"
       height="100%"

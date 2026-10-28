@@ -90,6 +90,9 @@ export default function SidebarSearchInput({
 
   function handleKeyDown(e) {
     if (e.key === "Escape") {
+      // Chrome clears type=search fields on Escape by default, which would
+      // undo the revert below; keep the URL value instead.
+      e.preventDefault();
       setValue(searchQuery);
       e.currentTarget.blur();
     }
