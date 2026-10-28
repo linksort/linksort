@@ -39,7 +39,7 @@ import {
 import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE } from "../theme/theme";
 import { useFilters } from "../hooks/filters";
 import { useChatContext } from "../hooks/chat";
-import { isoDateToAtTimeOnDate } from "../utils/time";
+import { isoDateToAtTimeOnDate, isoDateToShortDate } from "../utils/time";
 
 const NOTE_PANEL_NORMAL = "normal";
 const NOTE_PANEL_MAXIMIZED = "maximized";
@@ -205,16 +205,38 @@ export default function LinkView() {
 
             {/* Title block: site, title, when it was saved. */}
             <VStack align="left" spacing={2}>
-              <HStack spacing={2} color="gray.700" fontSize="sm">
-                <LinkItemFavicon favicon={link.favicon} />
-                <Text as="span">{link.site}</Text>
-                <Text as="span" color="gray.400" aria-hidden="true">
+              <Flex
+                wrap="wrap"
+                align="center"
+                columnGap={2}
+                rowGap={1}
+                color="gray.700"
+                fontSize="sm"
+                lineHeight="1.4"
+              >
+                <Flex as="span" align="center" gap={2} whiteSpace="nowrap" minW={0}>
+                  <LinkItemFavicon favicon={link.favicon} />
+                  <Text as="span" noOfLines={1}>
+                    {link.site}
+                  </Text>
+                </Flex>
+                <Text as="span" color="gray.400" aria-hidden="true" display={{ base: "none", sm: "inline" }}>
                   ·
                 </Text>
-                <Text as="span">
-                  Saved {isoDateToAtTimeOnDate(link.createdAt)}
+                <Text
+                  as="time"
+                  dateTime={link.createdAt}
+                  whiteSpace="nowrap"
+                  title={`Saved ${isoDateToAtTimeOnDate(link.createdAt)}`}
+                >
+                  <Text as="span" display={{ base: "inline", md: "none" }}>
+                    Saved {isoDateToShortDate(link.createdAt)}
+                  </Text>
+                  <Text as="span" display={{ base: "none", md: "inline" }}>
+                    Saved {isoDateToAtTimeOnDate(link.createdAt)}
+                  </Text>
                 </Text>
-              </HStack>
+              </Flex>
               <Heading as="h1" fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em" lineHeight="1.2">
                 {link.title}
               </Heading>
