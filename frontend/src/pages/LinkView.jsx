@@ -205,28 +205,40 @@ export default function LinkView() {
 
             {/* Title block: site, title, when it was saved. */}
             <VStack align="left" spacing={2}>
+              {/*
+                One line at every width: the favicon, divider and date are
+                fixed-width pieces; only the site name shrinks and truncates.
+                A single columnGap keeps every adjacent pair 0.5rem apart.
+              */}
               <Flex
-                wrap="wrap"
+                wrap="nowrap"
                 align="center"
                 columnGap={2}
-                rowGap={1}
+                minW={0}
                 color="gray.700"
                 fontSize="sm"
                 lineHeight="1.4"
               >
-                <Flex as="span" align="center" gap={2} whiteSpace="nowrap" minW={0}>
-                  <LinkItemFavicon favicon={link.favicon} />
-                  <Text as="span" noOfLines={1}>
-                    {link.site}
-                  </Text>
-                </Flex>
-                <Text as="span" color="gray.400" aria-hidden="true" display={{ base: "none", sm: "inline" }}>
+                {/* The shared favicon carries its own right margin and a
+                    1.3rem box for card rows; here it sits inside 14px text,
+                    so it is sized to the line and the margin is dropped. */}
+                <LinkItemFavicon
+                  favicon={link.favicon}
+                  height="1rem"
+                  width="1rem"
+                  marginRight={0}
+                />
+                <Text as="span" minW={0} isTruncated>
+                  {link.site}
+                </Text>
+                <Text as="span" color="gray.400" aria-hidden="true" flexShrink={0}>
                   ·
                 </Text>
                 <Text
                   as="time"
                   dateTime={link.createdAt}
                   whiteSpace="nowrap"
+                  flexShrink={0}
                   title={`Saved ${isoDateToAtTimeOnDate(link.createdAt)}`}
                 >
                   <Text as="span" display={{ base: "inline", md: "none" }}>
