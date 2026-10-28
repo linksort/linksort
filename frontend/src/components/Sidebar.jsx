@@ -22,14 +22,18 @@ import { HEADER_HEIGHT } from "../theme/theme";
 import MouseType from "./MouseType";
 import SidebarButton from "./SidebarButton";
 import SidebarCollapsableSection from "./SidebarCollapsableSection";
-import SidebarSearchButton from "./SidebarSearchButton";
+import SidebarSearchInput from "./SidebarSearchInput";
 import SidebarFolderTree from "./SidebarFolderTree";
 import SidebarTagTree from "./SidebarTagTree";
 import { useFilters } from "../hooks/filters";
 import { GraphIcon, StarBorderIcon } from "./CustomIcons";
 import SidebarTagCluster from "./SidebarTagCluster";
 
-export default function Sidebar({ width = "18rem", isMobile = false }) {
+export default function Sidebar({
+  width = "18rem",
+  isMobile = false,
+  onNavigate,
+}) {
   const {
     handleToggleSort,
     handleToggleGroup,
@@ -78,7 +82,10 @@ export default function Sidebar({ width = "18rem", isMobile = false }) {
                   id={isMobile ? "mobile-filter-controls" : "filter-controls"}
                 >
                   <ListItem>
-                    <SidebarSearchButton />
+                    <SidebarSearchInput
+                      onNavigate={onNavigate}
+                      enableShortcut={!isMobile}
+                    />
                   </ListItem>
                   <ListItem>
                     <SidebarButton

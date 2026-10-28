@@ -215,7 +215,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
       >
         <DrawerOverlay />
         <DrawerContent>
-          <Sidebar width="100%" isMobile={true} />
+          <Sidebar width="100%" isMobile={true} onNavigate={onClose} />
         </DrawerContent>
       </Drawer>
 
