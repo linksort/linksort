@@ -3,6 +3,7 @@ import { Box, Flex, Text, Heading, Container, Grid, GridItem, HStack } from "@ch
 
 import GraphDemo from "./features/GraphDemo"
 import { AutoTagsDemo, SearchDemo, ViewsDemo, FoldersDemo, ReaderDemo, NotesDemo } from "./features/SmallDemos"
+import { SummaryDemo } from "./features/SummaryDemo"
 
 function Chip({ children }) {
   return (
@@ -26,12 +27,13 @@ function Chip({ children }) {
 /**
  * A feature rendered the way Linksort renders a link: a live miniature of
  * the feature where the cover goes, a hairline, title and one line, then a
- * row of chips where the controls go.
+ * row of chips where the controls go. `colSpan` is a number (applied from
+ * `md` up) or a responsive object such as `{ md: 2, lg: 1 }`.
  */
 function FeatureTile({ demo, demoHeight = "15rem", title, text, chips = [], colSpan = 1 }) {
   return (
     <GridItem
-      colSpan={{ base: 1, md: colSpan }}
+      colSpan={typeof colSpan === "object" ? { base: 1, ...colSpan } : { base: 1, md: colSpan }}
       as="article"
       bg="white"
       border="1px solid"
@@ -75,7 +77,8 @@ export default function FeatureBox() {
             All the features you expect.
           </Heading>
           <Text fontSize={{ base: "md", md: "lg" }} color="gray.700">
-            Each link's metadata is captured and tags are automatically assigned the moment you save it.
+            Metadata is captured and tags assigned the moment you save a link; open an article and a short summary is
+            written for you.
           </Text>
         </Box>
 
@@ -113,17 +116,25 @@ export default function FeatureBox() {
             text="Sometimes you just need a good old folder. Make them yourself, or let the assistant propose them."
             chips={["Manual", "Assistant"]}
           />
+          {/* Row three at lg: open an article, read it, get the summary, jot a note. */}
           <FeatureTile
             demo={<ReaderDemo />}
-            colSpan={2}
-            demoHeight={{ base: "15rem", md: "17rem" }}
+            colSpan={{ md: 2, lg: 1 }}
+            demoHeight={{ base: "15rem", md: "17rem", lg: "20rem" }}
             title="Reader view"
             text="Articles saved as clean, readable text, so a link still works when the page behind it changes."
             chips={["Web", "iOS"]}
           />
           <FeatureTile
+            demo={<SummaryDemo />}
+            demoHeight="20rem"
+            title="AI summaries"
+            text="Open a saved article and a short summary appears, the point first, so you can decide whether it's worth the full read."
+            chips={["Web", "iOS", "Automatic"]}
+          />
+          <FeatureTile
             demo={<NotesDemo />}
-            demoHeight={{ base: "15rem", md: "17rem" }}
+            demoHeight={{ base: "15rem", md: "20rem" }}
             title="Notes"
             text="Jot down why you saved something while it's fresh. Notes are searchable and have their own view."
             chips={["Web", "iOS"]}

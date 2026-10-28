@@ -244,7 +244,7 @@ export function FoldersDemo() {
 /* ---------- Reader view: real prose, selectable ---------- */
 export function ReaderDemo() {
   return (
-    <Box h="100%" bg="white" px={{ base: 5, md: 8 }} pt={5} overflow="hidden" position="relative">
+    <Box h="100%" bg="white" px={{ base: 5, md: 8, lg: 5 }} pt={5} overflow="hidden" position="relative">
       <HStack spacing={1.5} mb={3}>
         {["Favorite", "Edit", "Visit"].map((b) => (
           <Chip key={b} h="7" px="2.5" fontSize="xs">
