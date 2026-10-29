@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react-hooks";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider, setLogger } from "react-query";
 
 import apiFetch from "../../utils/apiFetch";
 import { useHighlights } from "../highlights";
@@ -20,6 +20,9 @@ const LINK_ID = "6ae2dfa0b9fff11d4e132977";
 function makeLink(highlights = []) {
   return { id: LINK_ID, title: "An article", annotation: "", isAnnotated: highlights.length > 0, highlights };
 }
+
+// react-query logs rejected mutations; the failure test rejects on purpose.
+setLogger({ log: () => {}, warn: () => {}, error: () => {} });
 
 describe("useHighlights", () => {
   let queryClient;

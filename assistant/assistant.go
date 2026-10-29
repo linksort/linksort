@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/linksort/linksort/agent"
 	"github.com/linksort/linksort/handler/folder"
@@ -450,8 +451,43 @@ func (t *GetLinkTool) Use(ctx context.Context, id, input string) agent.ToolUseRe
 
 	return agent.ToolUseResponse{
 		Status: agent.ToolUseStatusSuccess,
-		Text:   string(b),
+		Text:   describeUserWriting(link) + string(b),
 	}
+}
+
+// describeUserWriting renders the user's own note and highlights as a short
+// plain-text preamble. The link JSON that follows also carries them, but
+// after a corpus that can run to 75k characters, where smaller models tend
+// to overlook them.
+func describeUserWriting(link *model.Link) string {
+	var sb strings.Builder
+
+	sb.WriteString("USER'S OWN NOTE AND HIGHLIGHTS ON THIS LINK\n")
+
+	if strings.TrimSpace(link.Annotation) != "" {
+		sb.WriteString("Note: ")
+		sb.WriteString(link.Annotation)
+		sb.WriteString("\n")
+	} else {
+		sb.WriteString("Note: (none)\n")
+	}
+
+	if len(link.Highlights) == 0 {
+		sb.WriteString("Highlights: (none)\n")
+	} else {
+		fmt.Fprintf(&sb, "Highlights (%d), in creation order:\n", len(link.Highlights))
+		for i, h := range link.Highlights {
+			fmt.Fprintf(&sb, "%d. %q", i+1, h.Exact)
+			if strings.TrimSpace(h.Note) != "" {
+				fmt.Fprintf(&sb, " — note: %s", h.Note)
+			}
+			sb.WriteString("\n")
+		}
+	}
+
+	sb.WriteString("\nFULL LINK RECORD:\n")
+
+	return sb.String()
 }
 
 // CreateFolderTool handles creating a new folder

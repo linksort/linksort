@@ -100,9 +100,14 @@ export default function LinkView() {
   const { makeTagLink } = useFilters();
   const { isChatVisible } = useChatContext();
   // The Notebook is a column when the content column (viewport minus the
-  // 18rem sidebar and, when open, the 25rem chat panel) can spare 20rem and
-  // still leave the article at least 44rem; otherwise it is a bottom drawer.
-  const isWide = useMatchMedia(isChatVisible ? "(min-width: 87rem)" : "(min-width: 64rem)");
+  // 18rem sidebar and, when on screen, the 25rem chat panel) can spare 20rem
+  // and still leave the article 44rem; otherwise it is a bottom drawer. The
+  // chat column only renders from 80rem, whatever its toggle says.
+  const atLg = useMatchMedia("(min-width: 64rem)");
+  const atXl = useMatchMedia("(min-width: 80rem)");
+  const roomForChatAndNotebook = useMatchMedia("(min-width: 87rem)");
+  const chatOnScreen = isChatVisible && atXl;
+  const isWide = atLg && (!chatOnScreen || roomForChatAndNotebook);
 
   // Notebook visibility: the user's last choice wins; otherwise it opens on
   // wide screens when there is already something written about the link.

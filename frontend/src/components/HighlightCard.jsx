@@ -139,7 +139,8 @@ export default function HighlightCard({
             marginTop="-1px"
           />
           <Portal>
-            <MenuList minWidth="12rem">
+            {/* Above the Drawer (1400) so the menu works inside the mobile notebook too. */}
+            <MenuList minWidth="12rem" zIndex={1500}>
               <MenuItem icon={<EditIcon />} onClick={() => onStartEdit && onStartEdit(highlight.id)}>
                 {highlight.note ? "Edit note" : "Add note"}
               </MenuItem>
