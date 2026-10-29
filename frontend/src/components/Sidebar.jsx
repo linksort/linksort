@@ -160,7 +160,7 @@ export default function Sidebar({
                       to={makeToggleAnnotationsLink()}
                       variant={areAnnotationsShowing ? "solid" : "ghost"}
                     >
-                      Notes
+                      Notes &amp; highlights
                     </SidebarButton>
                   </ListItem>
                   <ListItem>

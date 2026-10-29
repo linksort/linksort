@@ -443,8 +443,8 @@ export default function NullScreen() {
     return (
       <NullScreenHelper
         imageSlot={<Beach />}
-        headingText="You haven't added any notes yet."
-        detailText="When you add a note to a link, it will appear here."
+        headingText="Nothing written yet."
+        detailText="Open a link and jot a note in its Notebook, or select some text in an article to highlight it. Everything you write shows up here."
       />
     );
   }

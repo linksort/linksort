@@ -4,6 +4,7 @@ import { Flex, Link } from "@chakra-ui/react";
 import LinkItemFavicon from "./LinkItemFavicon";
 import { DotDotDotVert } from "./CustomIcons";
 import LinkControlsMenu from "../components/LinkControlsMenu";
+import LinkAnnotationIndicator from "./LinkAnnotationIndicator";
 
 export default function LinkItemCondensed({ link }) {
   return (
@@ -43,7 +44,10 @@ export default function LinkItemCondensed({ link }) {
           {link.title}
         </Link>
       </Flex>
-      <LinkControlsMenu link={link} buttonSlot={<DotDotDotVert />} />
+      <Flex align="center" columnGap={3} flexShrink={0}>
+        <LinkAnnotationIndicator link={link} />
+        <LinkControlsMenu link={link} buttonSlot={<DotDotDotVert />} />
+      </Flex>
     </Flex>
   );
 }

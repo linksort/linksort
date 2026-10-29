@@ -3,6 +3,7 @@ import { Box, Flex, Text, Link } from "@chakra-ui/react";
 
 import LinkItemFavicon from "./LinkItemFavicon";
 import LinkItemControls from "./LinkItemControls";
+import LinkAnnotationIndicator from "./LinkAnnotationIndicator";
 
 export default function LinkItemTall({ link }) {
   return (
@@ -33,7 +34,12 @@ export default function LinkItemTall({ link }) {
               {link.title}
             </Text>
           </Link>
-          <Text fontSize="sm">{link.site}</Text>
+          <Flex align="center" columnGap={2} minWidth={0}>
+            <Text fontSize="sm" isTruncated>
+              {link.site}
+            </Text>
+            <LinkAnnotationIndicator link={link} />
+          </Flex>
         </Box>
         <Flex
           justifyContent="space-between"

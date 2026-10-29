@@ -13,9 +13,12 @@ import {
 import LinkItemCondensed from "./LinkItemCondensed";
 import LinkItemTall from "./LinkItemTall";
 import LinkItemTile from "./LinkItemTile";
+import LinkItemNoteCard from "./LinkItemNoteCard";
+import { useFilters } from "../hooks/filters";
 
 export default function LinkItem({ link, idx = 0 }) {
   const { setting: viewSetting } = useViewSetting();
+  const { areAnnotationsShowing } = useFilters();
   const { handleMoveToFolder } = useLinkOperations(link);
 
   const [, dragRef] = useDrag(() => ({
@@ -45,13 +48,17 @@ export default function LinkItem({ link, idx = 0 }) {
         initial="hidden"
         animate="show"
       >
-        {
+        {areAnnotationsShowing ? (
+          // The Notes & highlights view shows what was written, whatever the
+          // tiled/comfy/condensed setting is.
+          <LinkItemNoteCard link={link} />
+        ) : (
           {
             [VIEW_SETTING_CONDENSED]: <LinkItemCondensed link={link} />,
             [VIEW_SETTING_TALL]: <LinkItemTall link={link} />,
             [VIEW_SETTING_TILES]: <LinkItemTile link={link} />,
           }[viewSetting]
-        }
+        )}
       </motion.div>
     </ListItem>
   );

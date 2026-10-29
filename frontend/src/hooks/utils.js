@@ -53,3 +53,28 @@ export function useScrollDirection() {
 
   return lastPosition.current >= position || position <= 100 ? "UP" : "DOWN";
 }
+
+// Subscribes to a media query. Unlike Chakra's useMediaQuery this re-subscribes
+// when the query string changes, so callers can compute it from state.
+export function useMatchMedia(query) {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia
+      ? window.matchMedia(query).matches
+      : false
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return undefined;
+    const mql = window.matchMedia(query);
+    const onChange = (e) => setMatches(e.matches);
+    setMatches(mql.matches);
+    if (mql.addEventListener) {
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    }
+    mql.addListener(onChange);
+    return () => mql.removeListener(onChange);
+  }, [query]);
+
+  return matches;
+}

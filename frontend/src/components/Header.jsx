@@ -36,8 +36,14 @@ export default function Header({ isChatVisible, onToggleChat }) {
     closeChatDrawer: onChatClose,
   } = useChatContext();
   const chatButtonRef = useRef();
-  const { folderName, areFavoritesShowing, searchQuery, tagPath, userTagPath } =
-    useFilters();
+  const {
+    folderName,
+    areFavoritesShowing,
+    areAnnotationsShowing,
+    searchQuery,
+    tagPath,
+    userTagPath,
+  } = useFilters();
   const isSearching = searchQuery && searchQuery.length > 0;
   const isViewingTag = tagPath.length > 0;
   const isViewingUserTag = userTagPath.length > 0;
@@ -83,6 +89,11 @@ export default function Header({ isChatVisible, onToggleChat }) {
       heading = `Searching for "${searchQuery}" in ${folderName}`;
     } else if (areFavoritesShowing) {
       heading = `Favorites in ${isViewingTag ? tagPath : folderName}`;
+    } else if (areAnnotationsShowing) {
+      heading =
+        folderName && folderName !== "All"
+          ? `Notes & highlights in ${folderName}`
+          : "Notes & highlights";
     } else if (isViewingUserTag) {
       heading = userTagPath;
     } else {

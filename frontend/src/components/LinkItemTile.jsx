@@ -3,6 +3,7 @@ import { Box, Flex, Text, Link, GridItem } from "@chakra-ui/react";
 
 import CoverImage from "./CoverImage";
 import LinkItemControls from "./LinkItemControls";
+import LinkAnnotationIndicator from "./LinkAnnotationIndicator";
 
 export default function LinkItemTile({ link }) {
   return (
@@ -40,9 +41,12 @@ export default function LinkItemTile({ link }) {
                 {link.title}
               </Text>
             </Link>
-            <Text fontSize="sm" color="gray.700" title={link.site}>
-              {link.site}
-            </Text>
+            <Flex align="center" columnGap={2} minWidth={0}>
+              <Text fontSize="sm" color="gray.700" title={link.site} isTruncated>
+                {link.site}
+              </Text>
+              <LinkAnnotationIndicator link={link} />
+            </Flex>
           </Box>
           <LinkItemControls link={link} />
         </Flex>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Heading, HStack, Button, List, Grid } from "@chakra-ui/react";
+import { Box, Heading, HStack, Button, List, Grid, VStack } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 import ErrorScreen from "../components/ErrorScreen";
@@ -35,7 +35,15 @@ function linksBy(grouping, links) {
   }
 }
 
-function LinkList({ viewSetting, children }) {
+function LinkList({ viewSetting, isNotesView, children }) {
+  if (isNotesView) {
+    return (
+      <List as={VStack} align="stretch" spacing={4} marginBottom={14}>
+        {children}
+      </List>
+    );
+  }
+
   switch (viewSetting) {
     case VIEW_SETTING_TILES:
       return (
@@ -82,6 +90,7 @@ export default function Home() {
     groupName,
     pageNumber,
     searchQuery,
+    areAnnotationsShowing,
   } = useFilters();
   const linksCount = links.length;
   const isSearching = searchQuery && searchQuery.length > 0;
@@ -126,7 +135,7 @@ export default function Home() {
                   {heading}
                 </Heading>
               )}
-              <LinkList viewSetting={viewSetting}>
+              <LinkList viewSetting={viewSetting} isNotesView={areAnnotationsShowing}>
                 {list.map((link, idx) => (
                   <LinkItem key={link.id} idx={idx} link={link} />
                 ))}

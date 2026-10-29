@@ -309,6 +309,40 @@
   margin-top: 0;
 }
 
+/* Highlights: light yellow marks the user made. The colors mirror
+   theme.js colors.highlight; the fallbacks keep marks visible if the
+   CSS variables are ever unavailable. */
+mark.ls-highlight {
+  background-color: var(--chakra-colors-highlight-100, #FFF3B0);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+mark.ls-highlight:hover,
+mark.ls-highlight.ls-highlight--active,
+mark.ls-highlight.ls-highlight--flash {
+  background-color: var(--chakra-colors-highlight-200, #FFE98A);
+}
+
+mark.ls-highlight:focus {
+  outline: none;
+}
+
+mark.ls-highlight:focus-visible {
+  box-shadow: 0 0 0 3px #80a9ff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  mark.ls-highlight {
+    transition: none;
+  }
+}
+
 .prose img {
   margin-top: 2em;
   margin-bottom: 2em;

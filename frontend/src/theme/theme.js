@@ -151,6 +151,16 @@ const theme = {
     primary: "#558cff", // brand.300
     accent: "#80a9ff", // brand.200
 
+    // Highlighter yellow: the one non-blue, non-gray color in the chrome,
+    // reserved for text the user highlighted (article marks, quote edges,
+    // the Notebook's cards). 100 is the resting fill (11.3:1 with gray.800,
+    // 5.1:1 with gray.600); 200 is one step deeper for hover, focus, and the
+    // jump-to flash. Nothing else may be yellow.
+    highlight: {
+      100: "#FFF3B0",
+      200: "#FFE98A",
+    },
+
     brand: {
       25: "#f6f9ff",
       50: "#d5e2ff",
