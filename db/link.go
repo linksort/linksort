@@ -93,13 +93,13 @@ func (s *LinkStore) GetLinksByUser(
 	var sort bson.M
 	if _, ok := m["$text"]; ok {
 		// if we're searching...
+		// Sorting by text score requires the same $meta expression in the
+		// projection. It must be a real document; MongoDB 4.x rejects anything
+		// else with "must have $meta projection for all $meta sort keys".
 		sort = bson.M{"score": bson.M{"$meta": "textScore"}}
 		projection = append(projection, primitive.E{
-			Key: "score",
-			Value: primitive.E{
-				Key:   "$meta",
-				Value: " textScore",
-			},
+			Key:   "score",
+			Value: bson.M{"$meta": "textScore"},
 		})
 		delete(m, "sort")
 	} else if val, ok := m["sort"]; ok {
