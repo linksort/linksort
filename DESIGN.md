@@ -18,6 +18,8 @@ colors:
   ink-deep: "#111111"
   error: "#ca2e48"
   success: "#1fb900"
+  highlight: "#FFF3B0"
+  highlight-deep: "#FFE98A"
 typography:
   headline:
     fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, sans-serif"
@@ -184,8 +186,14 @@ A near-monochrome paper palette with a single saturated blue; everything else is
 - **Error** (`{colors.error}`): destructive menu items and delete confirmations (Chakra `red` scheme).
 - **Success** (`{colors.success}`): completed tool-call indicators in chat.
 
+### Highlighter
+- **Highlight** (`{colors.highlight}`, theme `highlight.100`): the fill of text the user highlighted in a saved article, and nothing else. 11.3:1 against Ink, 5.1:1 against Graphite. Like a highlighter on an index card, it marks content the user made; it is the one deliberate exception to the One Pen Rule.
+- **Highlight Deep** (`{colors.highlight-deep}`, theme `highlight.200`): one step deeper for a hovered, focused, or just-jumped-to mark, and the 3px left edge of highlight quotes in the Notebook and the Notes & highlights view.
+
 ### Named Rules
 **The One Pen Rule.** Linksort Blue appears only on things the user can press or has said. Headings, borders, icons at rest, and backgrounds never use it. If a screen has more than a handful of blue elements, something is wrong.
+
+**The Highlighter Rule.** Highlight yellow appears only on text the user highlighted and on the quote edges that stand in for it. No other surface, icon, badge, or state is yellow.
 
 **The Cards Carry the Color Rule.** Cover images and favicons are the only places saturated non-blue color appears. The chrome does not compete with them.
 
@@ -269,8 +277,19 @@ Crisp and tactile: solid fills, firm corners, no shadow, an instant tint on hove
 
 ### Link view
 - Article-first: a one-line meta row (favicon, site · "Saved {time}") in Body Small Ink Soft, the title as Headline at -0.02em, the cover at 22rem in an `lg` hairline frame, one wrap of tags at a single 2rem height (personal tags as chips, the "+ Add tag" outline button, then auto tags as Paper Edge chips with → separators), an optional Summary card on Paper (shown only when a summary exists or is being written, with a brand spinner and "Writing…"), then "Article" at 65ch in Georgia. Nothing renders an empty "No X" section; a missing article offers "Open the original".
-- Toolbar: `sm` controls (Back, Edit, Visit, More) in a 3rem fixed white band under the header that hides on scroll-down and returns on scroll-up; the note bar is fixed at the viewport bottom. Both read `isChatVisible` from the chat context to size themselves to the content column (`calc(100vw − 18rem [− 25rem])`), never a hard-coded width.
-- Note: a bottom bar whose hidden state is a labeled "Add a note" / "Show note" button; open state shows Hide/Expand icon buttons with labels, the word "Note", and Saving…/Saved on the right.
+- Toolbar: `sm` controls (Back, Edit, Visit, More) on the left and a labeled **Notebook** toggle on the right ("Notebook · 3" when there is something in it; `aria-expanded`) in a 3rem fixed white band under the header that hides on scroll-down and returns on scroll-up. It and the Notebook column read `isChatVisible` from the chat context to size themselves to the content column (`calc(100vw − 18rem [− 25rem])`), never a hard-coded width.
+- Highlights in the article: `<mark>` in Highlight with a 2px radius and no padding (so a mark split across a link reads as one stroke); Highlight Deep on hover, focus, and for 600ms after a jump. Marks are tab stops with `role="button"`; Enter/Space opens their popover.
+- Selection pill: a white `3xl` pill with a Pencil border and the 24px floating glow, two `sm` ghost buttons ("Highlight", "Highlight + note"), above the selection with a mouse and below it on touch (the native selection menu takes the top).
+- Highlight popover: a white `xl` card with the glow, anchored under the first mark; the note (or "No note on this highlight."), then `xs` ghost buttons Edit note / Remove / Close. Escape closes it and returns focus to the mark.
+
+### Notebook
+- Everything the user wrote about one link. A 20rem white column with a hairline left edge at the right of the content column when `(min-width: 64rem)` (and `(min-width: 87rem)` while the chat column is on screen); a 75vh bottom drawer with an `xl` top radius otherwise. Its 3rem header ("Notebook", `sm` 700) sits in the toolbar row.
+- "Your note": a Label-style heading with a quiet "Saving…/Saved" on the right, then an auto-growing textarea (white, Pencil border, `md` radius, Body Small, placeholder "Why did you save this?") that saves one second after the last keystroke.
+- "Highlights · n": one card per highlight in document order (orphans last with "Text no longer found in the article."): white, `lg` radius, Paper-Edge border, a 3px Highlight Deep left edge, the quote in Body Small Ink clamped to three lines with a "Show more" link button when long, the note beneath in Ink Soft as a borderless textarea (auto-saved like the link note), and a `xs` ghost `⋯` menu (Add/Edit note, Copy text, Remove highlight in Error red). Clicking the quote scrolls the article to the mark and flashes it; hovering tints the card to Paper. Empty state: "Select some text in the article to highlight it."
+
+### Notes & highlights view
+- The sidebar's "Notes & highlights" entry (`?annotated=1`) swaps every card for a note card regardless of the tiled/comfy/condensed setting: white, `xl` radius, hairline edge, the favicon/title/site row with the usual controls, then the link note (three lines, Ink) and each highlight as a quote behind a 3px Highlight Deep edge with its note beneath in Ink Soft. Quotes link to `/links/{id}#h={highlightId}`, which opens the article scrolled to that mark.
+- Cards everywhere else show a 14px highlighter glyph and a count in Graphite next to the site name (`title="2 highlights, 1 note"`) when a link has anything written on it; the glyph never changes a card's height.
 
 ### Graph view
 - vis-network with one pastel per top-level tag from the theme's 500-step ramps (`CLUSTER_COLORS` in `pages/Graph.jsx`), no node strokes, 1px edges at 45% opacity inheriting the source color, Inter labels in Ink Soft, Linksort Blue border only on the selected node.

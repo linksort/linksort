@@ -95,6 +95,15 @@ go install github.com/swaggo/swag/cmd/swag@v1.8.10
 swag init --dir cmd/serve/,handler,model,payload,agent
 ```
 
+## Notes and Highlights
+
+Every link can carry a free-form **note** (`annotation`) and any number of **highlights**: passages of the saved article that the user marked, each with an optional note of its own. In the web app both live in the link page's **Notebook** (a column beside the article on wide screens, a bottom drawer on narrow ones), show up as a small indicator on link cards, and are listed in the **Notes & highlights** view (`?annotated=1`).
+
+- **Model**: `model.Highlight` on `model.Link.Highlights`. A highlight is anchored by a text quote in the style of the W3C Web Annotation `TextQuoteSelector`: the `exact` text plus up to 64 characters of `prefix`/`suffix` context, with `start`/`end` character offsets as a hint. The frontend (`frontend/src/utils/highlights.js`) walks the article's text nodes, normalizes whitespace, re-locates each quote (prefix/suffix break ties when the text repeats), and wraps it in one `<mark>` per text segment. A quote that can no longer be found is listed as orphaned and never crashes the page. `isAnnotated` is true when a link has a note **or** highlights. Limits: 200 highlights per link, `exact` ≤ 2000 chars, notes ≤ 10,000 chars.
+- **API**: `POST /api/links/{id}/highlights` (`{exact, prefix, suffix, start, end, note}` → 201), `PATCH /api/links/{id}/highlights/{highlightId}` (`{note}`), `DELETE /api/links/{id}/highlights/{highlightId}`. Each returns `{"link": …}` with the whole updated link. The link-level note is still set with `PATCH /api/links/{id}` `{"annotation": …}`; list responses include `annotation` and `highlights` (`id`, `exact`, `note`).
+- **Search**: notes, highlighted text, and highlight notes are part of the links text index (`db.LinkTextIndexWeights`). MongoDB allows one text index per collection, so `db.SetupIndexes` compares the existing text index's weights with the desired spec and drops/recreates it when they differ (idempotent; it logs what it did).
+- **Assistant**: `get_link` returns the note and highlights (as a plain-text preamble and in the link JSON); `get_links` with `annotations: "1"` returns links that have either.
+
 ## AI Chat Features
 
 ### Automatic Link Reviews
