@@ -108,6 +108,12 @@ export default function LinkView() {
   const roomForChatAndNotebook = useMatchMedia("(min-width: 87rem)");
   const chatOnScreen = isChatVisible && atXl;
   const isWide = atLg && (!chatOnScreen || roomForChatAndNotebook);
+  // The page content is centred in a 64rem (5xl) container. Once the content
+  // column is wider than that, a gutter opens to the right of the Notebook
+  // and it needs its own right edge; otherwise the chat panel's hairline or
+  // the viewport edge closes it. 18rem sidebar + 64rem = 82rem; with the
+  // 25rem chat column on screen, 107rem.
+  const notebookHasGutter = useMatchMedia(chatOnScreen ? "(min-width: 107rem)" : "(min-width: 82rem)");
 
   // Notebook visibility: the user's last choice wins; otherwise it opens on
   // wide screens when there is already something written about the link.
@@ -806,6 +812,8 @@ export default function LinkView() {
               backgroundColor="white"
               borderLeftWidth="thin"
               borderLeftColor="gray.100"
+              borderRightWidth={notebookHasGutter ? "thin" : 0}
+              borderRightColor="gray.100"
             >
               {notebook}
             </Box>
