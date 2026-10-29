@@ -24,6 +24,9 @@ type Config struct {
 		UpdateLink(context.Context, *model.User, *UpdateLinkRequest) (*model.Link, *model.User, error)
 		DeleteLink(context.Context, *model.User, string) (*model.User, error)
 		SummarizeLink(context.Context, *model.User, string) (*model.Link, error)
+		CreateHighlight(context.Context, *model.User, *CreateHighlightRequest) (*model.Link, error)
+		UpdateHighlight(context.Context, *model.User, *UpdateHighlightRequest) (*model.Link, error)
+		DeleteHighlight(context.Context, *model.User, string, string) (*model.Link, error)
 	}
 	AuthController interface {
 		WithCookie(context.Context, string) (*model.User, error)
@@ -48,6 +51,9 @@ func Handler(c *Config) *mux.Router {
 	r.HandleFunc("/api/links/{linkID}/summarize", cc.SummarizeLink).Methods("POST")
 	r.HandleFunc("/api/links/{linkID}", cc.UpdateLink).Methods("PATCH")
 	r.HandleFunc("/api/links/{linkID}", cc.DeleteLink).Methods("DELETE")
+	r.HandleFunc("/api/links/{linkID}/highlights", cc.CreateHighlight).Methods("POST")
+	r.HandleFunc("/api/links/{linkID}/highlights/{highlightID}", cc.UpdateHighlight).Methods("PATCH")
+	r.HandleFunc("/api/links/{linkID}/highlights/{highlightID}", cc.DeleteHighlight).Methods("DELETE")
 
 	return r
 }
@@ -344,6 +350,132 @@ func (s *config) SummarizeLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload.Write(w, r, &SummarizeLinkResponse{Link: link}, http.StatusOK)
+}
+
+type CreateHighlightRequest struct {
+	LinkID string `json:"-"`
+	Exact  string `json:"exact" validate:"required,max=2000"`
+	Prefix string `json:"prefix" validate:"omitempty,max=64"`
+	Suffix string `json:"suffix" validate:"omitempty,max=64"`
+	Start  int    `json:"start" validate:"min=0"`
+	End    int    `json:"end" validate:"min=0"`
+	Note   string `json:"note" validate:"omitempty,max=10000"`
+}
+
+type HighlightResponse struct {
+	Link *model.Link `json:"link"`
+}
+
+// CreateHighlight godoc
+//
+//	@Summary		CreateHighlight
+//	@Description	Adds a highlight to a link. A highlight is anchored by a text quote ('exact' plus up to 64 characters of 'prefix' and 'suffix' context; 'start'/'end' are offset hints) and may carry an optional note. The whole updated link is returned.
+//	@Param		id					path		string					true	"LinkID"
+//	@Param		CreateHighlightRequest	body		CreateHighlightRequest	true	"Only 'exact' is required."
+//	@Success		201					{object}	HighlightResponse
+//	@Failure		400					{object}	payload.Error
+//	@Failure		401					{object}	payload.Error
+//	@Failure		404					{object}	payload.Error
+//	@Failure		500					{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router		/links/{id}/highlights	[post]
+func (s *config) CreateHighlight(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.CreateHighlight")
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+	vars := mux.Vars(r)
+
+	req := new(CreateHighlightRequest)
+	if err := payload.ReadValid(req, r); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	req.LinkID = vars["linkID"]
+
+	l, err := s.LinkController.CreateHighlight(ctx, u, req)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	payload.Write(w, r, &HighlightResponse{l}, http.StatusCreated)
+}
+
+type UpdateHighlightRequest struct {
+	LinkID      string  `json:"-"`
+	HighlightID string  `json:"-"`
+	Note        *string `json:"note" validate:"omitempty,max=10000"`
+}
+
+// UpdateHighlight godoc
+//
+//	@Summary		UpdateHighlight
+//	@Description	Updates the note on a highlight and returns the whole updated link.
+//	@Param		id					path		string					true	"LinkID"
+//	@Param		highlightId			path		string					true	"HighlightID"
+//	@Param		UpdateHighlightRequest	body		UpdateHighlightRequest	true	"The new note."
+//	@Success		200					{object}	HighlightResponse
+//	@Failure		400					{object}	payload.Error
+//	@Failure		401					{object}	payload.Error
+//	@Failure		404					{object}	payload.Error
+//	@Failure		500					{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router		/links/{id}/highlights/{highlightId}	[patch]
+func (s *config) UpdateHighlight(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.UpdateHighlight")
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+	vars := mux.Vars(r)
+
+	req := new(UpdateHighlightRequest)
+	if err := payload.ReadValid(req, r); err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	req.LinkID = vars["linkID"]
+	req.HighlightID = vars["highlightID"]
+
+	l, err := s.LinkController.UpdateHighlight(ctx, u, req)
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	payload.Write(w, r, &HighlightResponse{l}, http.StatusOK)
+}
+
+// DeleteHighlight godoc
+//
+//	@Summary		DeleteHighlight
+//	@Description	Removes a highlight and returns the whole updated link.
+//	@Param		id			path		string	true	"LinkID"
+//	@Param		highlightId	path		string	true	"HighlightID"
+//	@Success		200			{object}	HighlightResponse
+//	@Failure		401			{object}	payload.Error
+//	@Failure		404			{object}	payload.Error
+//	@Failure		500			{object}	payload.Error
+//	@Security		ApiKeyAuth
+//	@Router		/links/{id}/highlights/{highlightId}	[delete]
+func (s *config) DeleteHighlight(w http.ResponseWriter, r *http.Request) {
+	op := errors.Op("handler.DeleteHighlight")
+	ctx := r.Context()
+	u := middleware.UserFromContext(ctx)
+	vars := mux.Vars(r)
+
+	l, err := s.LinkController.DeleteHighlight(ctx, u, vars["linkID"], vars["highlightID"])
+	if err != nil {
+		payload.WriteError(w, r, errors.E(op, err))
+
+		return
+	}
+
+	payload.Write(w, r, &HighlightResponse{l}, http.StatusOK)
 }
 
 // Define a regex to check if the tag is valid.

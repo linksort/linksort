@@ -38,7 +38,7 @@ Primary bookmarks management interface
 Features:
 
 - Link Collection Display: condensed, tall, or tile view of saved links
-- Advanced Filtering: Filter by favorites, annotations, folders, tags, or search terms using the controls on the left sidebar
+- Advanced Filtering: Filter by favorites, notes & highlights, folders, tags, or search terms using the controls on the left sidebar
 - Folder Management: Hierarchical folder organization with drag-and-drop
 - Tag System: Auto-generated AI tags and user-created tags
 - Quick Actions: Add links, create folders, add links to folders, favorite links
@@ -51,7 +51,7 @@ Individual link viewing and management
 Features:
 - Full Link Details: Title, description, content, AI generated summary, metadata
 - Reader View: Clean, distraction-free reading experience
-- Annotations: Add personal notes and annotations
+- Notes and highlights: a free-form note about the link ("annotation") plus highlighted passages of the article, each with an optional note, kept in the Notebook panel. Both are searchable and returned by get_link (fields "annotation" and "highlights", where each highlight has "exact" text and an optional "note")
 - Link Management: Edit title, add tags
 - Content Analysis: View AI-generated tags and classification
 - Summary Generation: AI-powered article summaries
@@ -221,7 +221,7 @@ type GetLinksTool struct {
 func (t *GetLinksTool) Spec() agent.Spec {
 	return agent.Spec{
 		Name:        "get_links",
-		Description: "Use this tool to query and filter the user's links. Supports search, sorting, filtering by favorites/annotations/folders/tags, and pagination. Returns basic link information - use get_link for full details.",
+		Description: "Use this tool to query and filter the user's links. Supports search, sorting, filtering by favorites/annotations/folders/tags, and pagination. Returns basic link information (including the user's note as 'annotation' and highlights with their 'exact' text and 'note') - use get_link for full details.",
 		InputSchema: map[string]any{
 			"type": "object",
 			"properties": map[string]any{
@@ -241,7 +241,7 @@ func (t *GetLinksTool) Spec() agent.Spec {
 				},
 				"annotations": map[string]any{
 					"type":        "string",
-					"description": "Filter annotated links: '1' to show only annotated",
+					"description": "Filter to links the user has written on: '1' returns links with a note or at least one highlight",
 					"enum":        []string{"1"},
 				},
 				"folderId": map[string]any{
@@ -396,7 +396,7 @@ type GetLinkTool struct {
 func (t *GetLinkTool) Spec() agent.Spec {
 	return agent.Spec{
 		Name:        "get_link",
-		Description: "Use this tool to retrieve all information about a given link. This includes the full text content of the link and, in many cases, an AI generated summary.",
+		Description: "Use this tool to retrieve all information about a given link. This includes the full text content of the link, the user's own note ('annotation'), their highlights ('highlights': each with the highlighted 'exact' text and an optional 'note'), and, in many cases, an AI generated summary.",
 		InputSchema: map[string]any{
 			"type": "object",
 			"properties": map[string]any{

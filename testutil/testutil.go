@@ -27,6 +27,7 @@ import (
 	"github.com/linksort/linksort/magic"
 	"github.com/linksort/linksort/model"
 	"github.com/linksort/linksort/random"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // nolint
@@ -34,6 +35,7 @@ var (
 	_once              sync.Once
 	_closer            func() error
 	_h                 http.Handler
+	_mongo             *mongo.Client
 	_userStore         model.UserStore
 	_linkStore         model.LinkStore
 	_conversationStore model.ConversationStore
@@ -68,6 +70,7 @@ func Handler() http.Handler {
 
 			return mongo.Disconnect(ctx)
 		}
+		_mongo = mongo
 		_txnClient = db.NewTxnClient(mongo)
 		_userStore = db.NewUserStore(mongo)
 		_linkStore = db.NewLinkStore(mongo)
@@ -85,6 +88,14 @@ func Handler() http.Handler {
 	})
 
 	return _h
+}
+
+// Mongo returns the shared Mongo client so tests can inspect collections and
+// indexes directly.
+func Mongo() *mongo.Client {
+	_ = Handler()
+
+	return _mongo
 }
 
 // Bedrock returns the shared mock Bedrock client so tests can script replies.

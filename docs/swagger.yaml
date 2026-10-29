@@ -136,6 +136,29 @@ definitions:
       user:
         $ref: '#/definitions/model.User'
     type: object
+  link.CreateHighlightRequest:
+    properties:
+      end:
+        minimum: 0
+        type: integer
+      exact:
+        maxLength: 2000
+        type: string
+      note:
+        maxLength: 10000
+        type: string
+      prefix:
+        maxLength: 64
+        type: string
+      start:
+        minimum: 0
+        type: integer
+      suffix:
+        maxLength: 64
+        type: string
+    required:
+    - exact
+    type: object
   link.CreateLinkRequest:
     properties:
       corpus:
@@ -186,10 +209,21 @@ definitions:
           $ref: '#/definitions/model.Link'
         type: array
     type: object
+  link.HighlightResponse:
+    properties:
+      link:
+        $ref: '#/definitions/model.Link'
+    type: object
   link.SummarizeLinkResponse:
     properties:
       link:
         $ref: '#/definitions/model.Link'
+    type: object
+  link.UpdateHighlightRequest:
+    properties:
+      note:
+        maxLength: 10000
+        type: string
     type: object
   link.UpdateLinkRequest:
     properties:
@@ -268,6 +302,27 @@ definitions:
       name:
         type: string
     type: object
+  model.Highlight:
+    properties:
+      createdAt:
+        type: string
+      end:
+        type: integer
+      exact:
+        type: string
+      id:
+        type: string
+      note:
+        type: string
+      prefix:
+        type: string
+      start:
+        type: integer
+      suffix:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   model.Link:
     properties:
       annotation:
@@ -282,6 +337,10 @@ definitions:
         type: string
       folderId:
         type: string
+      highlights:
+        items:
+          $ref: '#/definitions/model.Highlight'
+        type: array
       id:
         type: string
       image:
@@ -880,6 +939,125 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: UpdateLink
+  /links/{id}/highlights:
+    post:
+      description: Adds a highlight to a link. A highlight is anchored by a text quote
+        ('exact' plus up to 64 characters of 'prefix' and 'suffix' context; 'start'/'end'
+        are offset hints) and may carry an optional note. The whole updated link is
+        returned.
+      parameters:
+      - description: LinkID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Only 'exact' is required.
+        in: body
+        name: CreateHighlightRequest
+        required: true
+        schema:
+          $ref: '#/definitions/link.CreateHighlightRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/link.HighlightResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateHighlight
+  /links/{id}/highlights/{highlightId}:
+    delete:
+      description: Removes a highlight and returns the whole updated link.
+      parameters:
+      - description: LinkID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: HighlightID
+        in: path
+        name: highlightId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/link.HighlightResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteHighlight
+    patch:
+      description: Updates the note on a highlight and returns the whole updated link.
+      parameters:
+      - description: LinkID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: HighlightID
+        in: path
+        name: highlightId
+        required: true
+        type: string
+      - description: The new note.
+        in: body
+        name: UpdateHighlightRequest
+        required: true
+        schema:
+          $ref: '#/definitions/link.UpdateHighlightRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/link.HighlightResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/payload.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/payload.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateHighlight
   /links/{id}/summarize:
     post:
       description: Generates a summary of the given link's corpus and returns the

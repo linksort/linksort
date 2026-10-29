@@ -717,6 +717,186 @@ const docTemplate = `{
                 }
             }
         },
+        "/links/{id}/highlights": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Adds a highlight to a link. A highlight is anchored by a text quote ('exact' plus up to 64 characters of 'prefix' and 'suffix' context; 'start'/'end' are offset hints) and may carry an optional note. The whole updated link is returned.",
+                "summary": "CreateHighlight",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "LinkID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Only 'exact' is required.",
+                        "name": "CreateHighlightRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/link.CreateHighlightRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/link.HighlightResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/links/{id}/highlights/{highlightId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Removes a highlight and returns the whole updated link.",
+                "summary": "DeleteHighlight",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "LinkID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "HighlightID",
+                        "name": "highlightId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/link.HighlightResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates the note on a highlight and returns the whole updated link.",
+                "summary": "UpdateHighlight",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "LinkID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "HighlightID",
+                        "name": "highlightId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The new note.",
+                        "name": "UpdateHighlightRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/link.UpdateHighlightRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/link.HighlightResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/payload.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/links/{id}/summarize": {
             "post": {
                 "security": [
@@ -1039,6 +1219,38 @@ const docTemplate = `{
                 }
             }
         },
+        "link.CreateHighlightRequest": {
+            "type": "object",
+            "required": [
+                "exact"
+            ],
+            "properties": {
+                "end": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "exact": {
+                    "type": "string",
+                    "maxLength": 2000
+                },
+                "note": {
+                    "type": "string",
+                    "maxLength": 10000
+                },
+                "prefix": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "start": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "suffix": {
+                    "type": "string",
+                    "maxLength": 64
+                }
+            }
+        },
         "link.CreateLinkRequest": {
             "type": "object",
             "required": [
@@ -1113,11 +1325,28 @@ const docTemplate = `{
                 }
             }
         },
+        "link.HighlightResponse": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "$ref": "#/definitions/model.Link"
+                }
+            }
+        },
         "link.SummarizeLinkResponse": {
             "type": "object",
             "properties": {
                 "link": {
                     "$ref": "#/definitions/model.Link"
+                }
+            }
+        },
+        "link.UpdateHighlightRequest": {
+            "type": "object",
+            "properties": {
+                "note": {
+                    "type": "string",
+                    "maxLength": 10000
                 }
             }
         },
@@ -1236,6 +1465,38 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Highlight": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "integer"
+                },
+                "exact": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "prefix": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "integer"
+                },
+                "suffix": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Link": {
             "type": "object",
             "properties": {
@@ -1256,6 +1517,12 @@ const docTemplate = `{
                 },
                 "folderId": {
                     "type": "string"
+                },
+                "highlights": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Highlight"
+                    }
                 },
                 "id": {
                     "type": "string"

@@ -80,6 +80,14 @@ func (s *LinkStore) GetLinksByUser(
 		primitive.E{Key: "favicon", Value: 1},
 		primitive.E{Key: "image", Value: 1},
 		primitive.E{Key: "site", Value: 1},
+		// Notes and highlights are shown on cards and in the Notes & highlights
+		// view, so list responses carry them. Only the fields the list views
+		// need are projected; corpus is still left out.
+		primitive.E{Key: "annotation", Value: 1},
+		primitive.E{Key: "isannotated", Value: 1},
+		primitive.E{Key: "highlights.id", Value: 1},
+		primitive.E{Key: "highlights.exact", Value: 1},
+		primitive.E{Key: "highlights.note", Value: 1},
 	}
 
 	var sort bson.M
@@ -185,7 +193,7 @@ func (s *LinkStore) UpdateLink(ctx context.Context, l *model.Link) (*model.Link,
 	op := errors.Opf("LinkStore.UpdateLink(%q)", l.ID)
 
 	l.UpdatedAt = time.Now()
-	l.IsAnnotated = len(l.Annotation) > 0
+	l.IsAnnotated = l.HasAnnotations()
 
 	res, err := s.col.ReplaceOne(ctx, bson.M{"_id": l.Key}, l)
 	if err != nil {

@@ -2,8 +2,10 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/linksort/linksort/analyze"
@@ -12,6 +14,7 @@ import (
 	handler "github.com/linksort/linksort/handler/link"
 	"github.com/linksort/linksort/log"
 	"github.com/linksort/linksort/model"
+	"github.com/linksort/linksort/random"
 )
 
 type Link struct {
@@ -309,6 +312,164 @@ func (l *Link) SummarizeLink(ctx context.Context, u *model.User, id string) (*mo
 	}
 
 	return updatedLink, nil
+}
+
+// CreateHighlight appends a highlight to the link. The whole link document is
+// read, mutated, and replaced inside a transaction so two highlights created
+// in quick succession cannot overwrite each other.
+func (l *Link) CreateHighlight(
+	ctx context.Context,
+	u *model.User,
+	req *handler.CreateHighlightRequest,
+) (*model.Link, error) {
+	op := errors.Opf("controller.CreateHighlight(%q)", req.LinkID)
+
+	exact := strings.TrimSpace(req.Exact)
+	if exact == "" {
+		return nil, errors.E(op,
+			errors.Str("empty highlight"),
+			errors.M{"exact": "Select some text to highlight."},
+			http.StatusBadRequest)
+	}
+
+	now := time.Now()
+	highlight := model.Highlight{
+		ID:        random.UUID(),
+		Exact:     exact,
+		Prefix:    req.Prefix,
+		Suffix:    req.Suffix,
+		Start:     req.Start,
+		End:       req.End,
+		Note:      req.Note,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+
+	link, err := l.mutateHighlights(ctx, u, req.LinkID, func(link *model.Link) error {
+		if len(link.Highlights) >= model.HighlightMaxPerLink {
+			return errors.E(op,
+				errors.Str("too many highlights"),
+				errors.M{"message": fmt.Sprintf("A link can have at most %d highlights.", model.HighlightMaxPerLink)},
+				http.StatusBadRequest)
+		}
+
+		link.Highlights = append(link.Highlights, highlight)
+
+		return nil
+	})
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return link, nil
+}
+
+// UpdateHighlight replaces the note on an existing highlight.
+func (l *Link) UpdateHighlight(
+	ctx context.Context,
+	u *model.User,
+	req *handler.UpdateHighlightRequest,
+) (*model.Link, error) {
+	op := errors.Opf("controller.UpdateHighlight(%q, %q)", req.LinkID, req.HighlightID)
+
+	link, err := l.mutateHighlights(ctx, u, req.LinkID, func(link *model.Link) error {
+		idx := findHighlight(link, req.HighlightID)
+		if idx < 0 {
+			return errors.E(op, errors.Str("highlight not found"), http.StatusNotFound)
+		}
+
+		if req.Note != nil {
+			link.Highlights[idx].Note = *req.Note
+		}
+
+		link.Highlights[idx].UpdatedAt = time.Now()
+
+		return nil
+	})
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return link, nil
+}
+
+// DeleteHighlight removes a highlight from the link.
+func (l *Link) DeleteHighlight(
+	ctx context.Context,
+	u *model.User,
+	linkID, highlightID string,
+) (*model.Link, error) {
+	op := errors.Opf("controller.DeleteHighlight(%q, %q)", linkID, highlightID)
+
+	link, err := l.mutateHighlights(ctx, u, linkID, func(link *model.Link) error {
+		idx := findHighlight(link, highlightID)
+		if idx < 0 {
+			return errors.E(op, errors.Str("highlight not found"), http.StatusNotFound)
+		}
+
+		link.Highlights = append(link.Highlights[:idx], link.Highlights[idx+1:]...)
+
+		return nil
+	})
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return link, nil
+}
+
+// mutateHighlights loads the user's link inside a transaction, applies fn, and
+// saves it. fn may return an error carrying an HTTP status to abort.
+func (l *Link) mutateHighlights(
+	ctx context.Context,
+	u *model.User,
+	linkID string,
+	fn func(*model.Link) error,
+) (*model.Link, error) {
+	op := errors.Opf("controller.mutateHighlights(%q)", linkID)
+
+	var link *model.Link
+
+	err := l.Transactor.DoInTransaction(ctx, func(sessCtx context.Context) error {
+		innerOp := errors.Opf("%s.innerTxn", op)
+
+		var err error
+
+		link, err = l.GetLink(sessCtx, u, linkID)
+		if err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		if err := fn(link); err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		if link.Highlights == nil {
+			link.Highlights = model.HighlightList{}
+		}
+
+		link, err = l.Store.UpdateLink(sessCtx, link)
+		if err != nil {
+			return errors.E(innerOp, err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	return link, nil
+}
+
+func findHighlight(link *model.Link, id string) int {
+	for i := range link.Highlights {
+		if link.Highlights[i].ID == id {
+			return i
+		}
+	}
+
+	return -1
 }
 
 func doesFolderExist(u *model.User, folderID string) bool {
