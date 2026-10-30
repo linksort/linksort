@@ -189,7 +189,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
         <Stack
           direction="row"
           as="nav"
-          spacing={1}
+          spacing={0}
           alignItems="center"
           display={["flex", "flex", "flex", "flex", "none"]}
         >
@@ -197,6 +197,7 @@ export default function Header({ isChatVisible, onToggleChat }) {
           <IconButton
             id="mobile-nav"
             display={["flex", "flex", "flex", "flex", "none"]}
+            borderRadius="none"
             ref={buttonRef}
             onClick={onOpen}
             aria-label="Open menu"
@@ -207,10 +208,13 @@ export default function Header({ isChatVisible, onToggleChat }) {
           <IconButton
             id="mobile-nav"
             display={["flex", "flex", "flex", "flex", "none"]}
+            borderRadius="none"
             ref={chatButtonRef}
             onClick={onChatOpen}
             aria-label="Open chat"
             zIndex={10}
+            borderLeftColor="gray.200"
+            borderLeftWidth="thin"
             icon={<ChatIcon />}
             {...quietButton}
           />

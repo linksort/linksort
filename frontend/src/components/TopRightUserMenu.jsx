@@ -27,6 +27,9 @@ export default function TopRightUserMenu({ isMobile }) {
         variant="solid"
         colorScheme="gray"
         size="sm"
+        borderLeftRadius={isMobile ? "none" : "default"}
+        borderLeftColor={isMobile ? "gray.200" : "none"}
+        borderLeftWidth={isMobile ? "thin" : "none"}
         _focus={{ boxShadow: "none" }}
       />
       <MenuList>

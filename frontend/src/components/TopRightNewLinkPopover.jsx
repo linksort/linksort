@@ -70,6 +70,7 @@ export default function TopRightNewLinkPopover({ isMobile }) {
             id={isMobile ? "mobile-new-link" : ""}
             colorScheme="brand"
             size="sm"
+            borderRightRadius="none"
             aria-label="New link"
             icon={<AddIcon boxSize="3" />}
             onClick={handleOpen}
