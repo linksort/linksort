@@ -91,7 +91,7 @@ export default function Closing() {
           direction="column"
           align="center"
           textAlign="center"
-          background="linear-gradient(160deg, rgb(10, 82, 255), #e2aeee)"
+          background="brand.500"
           color="white"
           borderRadius="xl"
           px={{ base: 6, md: 12 }}

@@ -197,11 +197,11 @@ export default function DeviceStage({ images }) {
             color="gray.900"
             mb={3}
           >
-            Your links, on every screen you own.
+            Your links, on all your devices.
           </Heading>
           <Text fontSize={{ base: "md", md: "lg" }} color="gray.700" mb={6}>
-            The same collection in your browser, on your iPhone, and on your
-            iPad. Save from anywhere. Find it anywhere.
+            Linksort works in browser, on your iPhone, and on your
+            iPad. Save links from everywhere. Find them anywhere.
           </Text>
           <Segmented value={active} onChange={setActive} />
           <Box minH="3.5rem" mt={4} px={2}>

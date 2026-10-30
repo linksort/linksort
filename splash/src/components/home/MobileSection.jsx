@@ -29,8 +29,8 @@ function CheckGlyph(props) {
 }
 
 const POINTS = [
-  "Share any link from any app. Safari, Mail, Messages, YouTube: the share sheet has a Linksort button.",
-  "A Safari extension on iPhone and iPad for saving the page you're reading without leaving it.",
+  "Share any link from any app.",
+  "Use the Safari extension on iPhone and iPad.",
   "Chat with the assistant, browse the graph, and read saved articles.",
 ]
 
@@ -70,7 +70,7 @@ export default function MobileSection({ images }) {
               Now on iPhone and iPad.
             </Heading>
             <Text fontSize={{ base: "md", md: "lg" }} color="whiteAlpha.900" mb={6}>
-              A native app with everything the web app does. It's on its way to the App Store now.
+              A native iOS app with everything the web app does. It's on its way to the App Store now.
             </Text>
             <Stack as={List} spacing={3} mb={8}>
               {POINTS.map((p) => (

@@ -196,9 +196,8 @@ export default function AssistantDemo() {
               AI organizes your links.
             </Heading>
             <Text fontSize={{ base: "md", md: "lg" }} color="gray.700" mb={4}>
-              When you return, the AI assistant looks at what you saved since last
-              time, notices what belongs together, and offers to file your links. It
-              never moves a link until you say yes.
+              When you return, Linksort's AI assistant looks at what you saved,
+              notices what belongs together, and offers to file your links.
             </Text>
             <Text fontSize={{ base: "md", md: "lg" }} color="gray.700" mb={6}>
               Ask it anything else, too: summarize a long read, compare two

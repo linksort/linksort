@@ -74,11 +74,10 @@ export default function FeatureBox() {
       <Container maxWidth="7xl" px={6} py={{ base: 16, md: 24 }}>
         <Box maxW="40rem" mb={{ base: 8, md: 10 }}>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} letterSpacing="-0.02em" color="gray.900" mb={3}>
-            All the features you expect.
+            All the features you expect. And more.
           </Heading>
           <Text fontSize={{ base: "md", md: "lg" }} color="gray.700">
-            Metadata is captured and tags assigned the moment you save a link; open an article and a short summary is
-            written for you.
+            All of the tools you'd expect to help you find things easily and keep things tidy.
           </Text>
         </Box>
 
@@ -88,26 +87,26 @@ export default function FeatureBox() {
             demoHeight={{ base: "16rem", md: "20rem" }}
             colSpan={2}
             title="Graph view"
-            text="Every link and every topic as a map. Clusters form on their own; a quick way to see what you've actually been reading about."
+            text="Explore relationships among your links and their topics with network graph view."
             chips={["Web", "iPhone", "iPad"]}
           />
           <FeatureTile
             demo={<AutoTagsDemo />}
             demoHeight={{ base: "16rem", md: "20rem" }}
             title="Auto tags"
-            text="Each save is classified into categories like Food & Drink or Computers & Electronics. No tagging on your part."
+            text="We magically* organize your links into categories for you—okay, we don't have magic, just the next best thing, machine learning."
             chips={["Automatic"]}
           />
           <FeatureTile
             demo={<SearchDemo />}
             title="Search, sort, group, favorite"
-            text="Full-text search over titles, sites and descriptions. Sort by date, group by day or site, star the keepers."
+            text="Full-text search over your links. Sort by date, group by day, star the keepers."
             chips={["Web", "iOS"]}
           />
           <FeatureTile
             demo={<ViewsDemo />}
             title="Three views"
-            text="Tiled for browsing covers, comfy for reading titles, condensed when you want sixty links on one screen."
+            text="Linksort has three ways of displaying your links: tiled view, comfy, or condensed. Whatever you choose, your links will look great."
             chips={["Tiled", "Comfy", "Condensed"]}
           />
           <FeatureTile
@@ -122,21 +121,21 @@ export default function FeatureBox() {
             colSpan={{ md: 2, lg: 1 }}
             demoHeight={{ base: "15rem", md: "17rem", lg: "20rem" }}
             title="Reader view"
-            text="Articles saved as clean, readable text, so a link still works when the page behind it changes."
+            text="Articles saved as clean, readable text."
             chips={["Web", "iOS"]}
           />
           <FeatureTile
             demo={<SummaryDemo />}
             demoHeight="20rem"
             title="AI summaries"
-            text="Open a saved article and a short summary appears, the point first, so you can decide whether it's worth the full read."
+            text="Open a saved article and a short summary is generated."
             chips={["Web", "iOS", "Automatic"]}
           />
           <FeatureTile
             demo={<NotesDemo />}
             demoHeight={{ base: "15rem", md: "20rem" }}
-            title="Notes"
-            text="Jot down why you saved something while it's fresh. Notes are searchable and have their own view."
+            title="Notes & highlights"
+            text="Highlight text from your links and jot down your thoughts as you read."
             chips={["Web", "iOS"]}
           />
         </Grid>
