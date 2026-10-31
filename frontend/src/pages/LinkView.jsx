@@ -612,7 +612,7 @@ export default function LinkView() {
             </HStack>
             <Button
               size="sm"
-              leftIcon={<HighlighterIcon boxSize="3.5" />}
+              leftIcon={<HighlighterIcon boxSize="3" />}
               onClick={toggleNotebook}
               aria-expanded={isNotebookOpen}
               aria-controls="notebook-panel"

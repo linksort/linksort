@@ -28,7 +28,7 @@ export default function SelectionToolbar({ rect, isTouch = false, isBusy = false
           variant="ghost"
           colorScheme="gray"
           borderRadius="full"
-          leftIcon={<HighlighterIcon boxSize="3.5" />}
+          leftIcon={<HighlighterIcon boxSize="3" />}
           onMouseDown={(e) => e.preventDefault()}
           onClick={onHighlight}
           isDisabled={isBusy}
