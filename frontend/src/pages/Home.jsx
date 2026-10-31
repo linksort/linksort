@@ -116,7 +116,7 @@ export default function Home() {
       marginX="auto"
       minHeight="calc(100vh - 5.5rem)"
       position="relative"
-      paddingX={6}
+      paddingX={[4, 4, 4, 4, 6]}
       paddingY={6}
       marginBottom={6}
       overflow="hidden"
@@ -149,7 +149,7 @@ export default function Home() {
           <Button onClick={() => handleSearch("")}>Clear search</Button>
         </Box>
       ) : (
-        <HStack position="absolute" bottom={1} left={6}>
+        <HStack position="absolute" bottom={1} left={[4, 4, 4, 4, 6]}>
           <Button
             isDisabled={pageNumber === "0"}
             onClick={handleGoToPrevPage}

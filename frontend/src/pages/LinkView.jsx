@@ -54,6 +54,10 @@ import {
 // from the breakpoint where the sidebar appears (slot 4, lg).
 const NOTEBOOK_WIDTH = ["100%", "100%", "100%", "100%", "20rem", "20rem"];
 const TOOLBAR_HEIGHT = "3rem";
+// The page content is centred in Chakra's 5xl (64rem) container. The toolbar
+// reproduces that as a grid so its hairline can span the left gutter and the
+// content column while the centred controls stay in the middle track.
+const TOOLBAR_GRID = "minmax(0, 1fr) minmax(0, 64rem) minmax(0, 1fr)";
 const FLASH_MS = 600;
 const PENDING_ID = "pending";
 
@@ -521,6 +525,8 @@ export default function LinkView() {
     return <ErrorScreen error={error} />;
   }
 
+  const isNotebookColumnOpen = isWide && isNotebookOpen;
+
   const notebook = (
     <NotebookPanel
       annotation={annotation}
@@ -548,69 +554,80 @@ export default function LinkView() {
         left={columnLeft}
         width={columnWidth}
         height={TOOLBAR_HEIGHT}
-        paddingY={2}
-        borderBottomWidth="thin"
-        borderBottomColor="gray.100"
+        display="grid"
+        gridTemplateColumns={TOOLBAR_GRID}
         backgroundColor="white"
         zIndex={2}
         translateY={scrollDirection === "DOWN" ? "-8rem" : "0"}
         transform="auto"
         transition="transform ease 0.2s"
       >
-        <HStack
-          maxWidth="5xl"
-          marginX="auto"
-          width="100%"
-          paddingLeft={[4, 4, 4, 4, 6]}
-          paddingRight={isWide && isNotebookOpen ? "calc(20rem + 1.5rem)" : [4, 4, 4, 4, 6]}
-          spacing={2}
-          justify="space-between"
-        >
-          <HStack spacing={2} minWidth={0}>
-            <IconButton
-              size="sm"
-              onClick={() => history.goBack()}
-              icon={<ArrowBackIcon />}
-              aria-label="Back"
-            />
-            <Button
-              size="sm"
-              onClick={() => history.replace(`/links/${link.id}/update`)}
-              leftIcon={<EditIcon boxSize="3" />}
-            >
-              Edit
-            </Button>
-            <Button
-              size="sm"
-              as={Link}
-              isExternal={true}
-              href={link.url}
-              leftIcon={<ExternalLinkIcon boxSize="3" />}
-            >
-              Visit
-            </Button>
-            <LinkControlsMenu
-              link={link}
-              buttonSlot={<IconButton size="sm" as={Box} icon={<DotDotDotVert />} aria-label="More actions" />}
-            />
-          </HStack>
-          <Button
-            size="sm"
-            leftIcon={<HighlighterIcon boxSize="3.5" />}
-            onClick={toggleNotebook}
-            aria-expanded={isNotebookOpen}
-            aria-controls="notebook-panel"
-            bg={isNotebookOpen ? "gray.200" : "gray.100"}
-            flexShrink={0}
+        {/* The hairline runs from the sidebar across the whole column; with
+            the Notebook column open it stops at the Notebook's left edge,
+            whose own border takes over from there. */}
+        <Box
+          gridRow={1}
+          gridColumn={isNotebookColumnOpen ? "1 / 3" : "1 / -1"}
+          marginRight={isNotebookColumnOpen ? NOTEBOOK_WIDTH : 0}
+          borderBottomWidth="thin"
+          borderBottomColor="gray.100"
+          pointerEvents="none"
+          aria-hidden="true"
+        />
+        <Box gridRow={1} gridColumn={2} minWidth={0}>
+          <HStack
+            height="100%"
+            paddingX={[4, 4, 4, 4, 6]}
+            marginRight={isNotebookColumnOpen ? NOTEBOOK_WIDTH : 0}
+            spacing={2}
+            justify="space-between"
           >
-            Notebook
-            {notebookCount > 0 && (
-              <Text as="span" fontWeight="normal" color="gray.600" marginLeft={1.5}>
-                · {notebookCount}
-              </Text>
-            )}
-          </Button>
-        </HStack>
+            <HStack spacing={2} minWidth={0}>
+              <IconButton
+                size="sm"
+                onClick={() => history.goBack()}
+                icon={<ArrowBackIcon />}
+                aria-label="Back"
+              />
+              <Button
+                size="sm"
+                onClick={() => history.replace(`/links/${link.id}/update`)}
+                leftIcon={<EditIcon boxSize="3" />}
+              >
+                Edit
+              </Button>
+              <Button
+                size="sm"
+                as={Link}
+                isExternal={true}
+                href={link.url}
+                leftIcon={<ExternalLinkIcon boxSize="3" />}
+              >
+                Visit
+              </Button>
+              <LinkControlsMenu
+                link={link}
+                buttonSlot={<IconButton size="sm" as={Box} icon={<DotDotDotVert />} aria-label="More actions" />}
+              />
+            </HStack>
+            <Button
+              size="sm"
+              leftIcon={<HighlighterIcon boxSize="3.5" />}
+              onClick={toggleNotebook}
+              aria-expanded={isNotebookOpen}
+              aria-controls="notebook-panel"
+              bg={isNotebookOpen ? "gray.200" : "gray.100"}
+              flexShrink={0}
+            >
+              Notebook
+              {notebookCount > 0 && (
+                <Text as="span" fontWeight="normal" color="gray.600" marginLeft={1.5}>
+                  · {notebookCount}
+                </Text>
+              )}
+            </Button>
+          </HStack>
+        </Box>
       </Box>
 
       <Box maxWidth="5xl" marginX="auto">
